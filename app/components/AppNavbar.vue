@@ -1,5 +1,6 @@
 <template>
-  <nav class="sticky top-0 z-50 bg-slate-950/90 backdrop-blur-md border-b border-slate-900 px-6 py-4">
+  <!-- 1. እዚህ ቦታ ላይ bg-[#0b0f19]/90 እና border-slate-800 ተስተካክሏል -->
+  <nav class="sticky top-0 z-50 bg-[#0b0f19]/90 backdrop-blur-md border-b border-slate-800 px-6 py-4">
     <div class="max-w-7xl mx-auto flex justify-between items-center">
       
       <!-- 1. ሎጎ (Logo) -->
@@ -31,9 +32,9 @@
       </div>
     </div>
 
-    <!-- 4. የሞባይል ሜኑ (Mobile Menu) -->
+    <!-- 4. የሞባይል ሜኑ (Mobile Menu) - የቀለም ማስተካከያ ተደርጎበታል -->
     <Transition name="slide">
-      <div v-if="isMobileMenuOpen" class="lg:hidden absolute top-full left-0 w-full bg-slate-900 border-b border-slate-800 p-6 space-y-4 shadow-xl">
+      <div v-if="isMobileMenuOpen" class="lg:hidden absolute top-full left-0 w-full bg-[#0b0f19] border-b border-slate-800 p-6 space-y-4 shadow-xl">
         <NuxtLink v-for="link in navLinks" :key="link.path" :to="link.path" @click="isMobileMenuOpen = false"
           class="block text-slate-300 hover:text-emerald-400 text-lg font-medium">
           {{ link.name }}
@@ -52,7 +53,7 @@ const isMobileMenuOpen = ref(false)
 const navLinks = [
   { name: 'home', path: '/' },
   { name: 'features', path: '/features' },
-{ name: 'venues', path: '/venues' },
+  { name: 'venues', path: '/venues' },
   { name: 'games', path: '/games' },
   { name: 'Just Play', path: '/justplay' },
   { name: 'Events', path: '/events' },
@@ -62,7 +63,7 @@ const navLinks = [
 </script>
 
 <style scoped>
-/* አክቲቭ የሆነው ሊንክ ላይ ከለር እንዲቀይር (አማራጭ) */
+/* አክቲቭ የሆነው ሊንክ ላይ ከለር እንዲቀይር */
 .router-link-active {
   color: #10b981; /* emerald-500 */
 }

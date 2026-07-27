@@ -1,5 +1,6 @@
 <template>
-  <footer class="bg-slate-950 border-t border-slate-900 pt-16 pb-8 px-6">
+  <!-- 1. እዚህ ቦታ ላይ አስተካክለነዋል -->
+  <footer class="bg-[#0b0f19] border-t border-slate-800 pt-16 pb-8 px-6">
     <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
       
       <!-- ብራንድ መረጃ (Brand Info) -->
@@ -10,11 +11,11 @@
         <p class="text-slate-400 leading-relaxed text-sm">
           የኢትዮጵያ የስፖርት መረጃዎች፣ የቀጥታ ውጤቶች፣ Just Play ማህበረሰብ እና የሜዳ ማስያዣ ፕላትፎርም።
         </p>
-        <!-- Social Icons (አማራጭ) -->
+        <!-- Social Icons -->
         <div class="flex gap-4">
-          <a href="#" class="p-2 bg-slate-900 rounded-full text-slate-400 hover:text-emerald-500 transition"><Icon name="uil:facebook" size="20" /></a>
-          <a href="#" class="p-2 bg-slate-900 rounded-full text-slate-400 hover:text-emerald-500 transition"><Icon name="uil:telegram" size="20" /></a>
-          <a href="#" class="p-2 bg-slate-900 rounded-full text-slate-400 hover:text-emerald-500 transition"><Icon name="uil:twitter" size="20" /></a>
+          <a href="#" class="p-2 bg-slate-900/80 rounded-full text-slate-400 hover:text-emerald-500 transition"><Icon name="uil:facebook" size="20" /></a>
+          <a href="#" class="p-2 bg-slate-900/80 rounded-full text-slate-400 hover:text-emerald-500 transition"><Icon name="uil:telegram" size="20" /></a>
+          <a href="#" class="p-2 bg-slate-900/80 rounded-full text-slate-400 hover:text-emerald-500 transition"><Icon name="uil:twitter" size="20" /></a>
         </div>
       </div>
 
@@ -62,8 +63,8 @@
 
     </div>
 
-    <!-- የታችኛው ክፍል (Bottom Bar) -->
-    <div class="max-w-7xl mx-auto mt-16 pt-8 border-t border-slate-900 text-center">
+    <!-- 2. የታችኛው መስመርም ከ border-slate-900 ወደ border-slate-800 ተቀይሯል -->
+    <div class="max-w-7xl mx-auto mt-16 pt-8 border-t border-slate-800 text-center">
       <p class="text-slate-500 text-sm">
         &copy; {{ new Date().getFullYear() }} EthioSport Hub. መብቱ በህግ የተጠበቀ ነው።
       </p>
