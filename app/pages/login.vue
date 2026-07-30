@@ -1,66 +1,48 @@
-<template>
-  <div class="min-h-screen bg-slate-950 flex items-center justify-center py-12 px-6">
-    <div class="max-w-md w-full bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-2xl">
-      <div class="text-center mb-8">
-        <h1 class="text-3xl font-bold text-white mb-2">እንኳን ደህና መጡ</h1>
-        <p class="text-slate-400 text-sm">ወደ አካውንትዎ ይግቡ</p>
-      </div>
-
-      <form @submit.prevent="handleLogin" class="space-y-5">
-        <!-- ኢሜይል -->
-        <div>
-          <label class="block text-slate-300 mb-2 text-sm">ኢሜይል</label>
-          <input 
-            v-model="loginForm.email" 
-            type="email" 
-            placeholder="example@mail.com" 
-            required 
-            class="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:outline-none transition"
-          >
-        </div>
-
-        <!-- የይለፍ ቃል -->
-        <div>
-          <label class="block text-slate-300 mb-2 text-sm">የይለፍ ቃል</label>
-          <input 
-            v-model="loginForm.password" 
-            type="password" 
-            placeholder="••••••••" 
-            required 
-            class="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:outline-none transition"
-          >
-        </div>
-
-        <!-- መግቢያ በተን -->
-        <button 
-          type="submit" 
-          class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-lg transition-all shadow-lg shadow-emerald-900/20 cursor-pointer"
-        >
-          ይግቡ (Login)
-        </button>
-
-        <!-- ወደ ምዝገባ መመለሻ -->
-        <div class="text-center mt-6">
-          <p class="text-slate-400 text-sm">
-            አካውንት የለዎትም? 
-            <NuxtLink to="/register" class="text-emerald-500 hover:underline font-medium">አሁኑኑ ይመዝገቡ</NuxtLink>
-          </p>
-        </div>
-      </form>
-    </div>
-  </div>
-</template>
-
+<!-- pages/login.vue -->
 <script setup>
-import { ref } from 'vue'
+const email = ref('')
+const password = ref('')
+const { login } = useAuth()
 
-const loginForm = ref({
-  email: '',
-  password: ''
-})
+const handleLogin = async () => {
+  if (!email.value) return
 
-const handleLogin = () => {
-  console.log("Login Data:", loginForm.value)
-  alert("በተሳካ ሁኔታ ገብተዋል!")
+  // 1. Login አድርገን ሚናውን (Role) እንቀበላለን
+  // (ከ Backend ሲሆን ከ API Response የሚመጣውን Role ታስገባለህ)
+  const userRole = login(email.value)
+
+  // 2. በ Role መሰረት መለየት
+  if (userRole === 'admin') {
+    // ኢሜይሉ አድሚን ከሆነ ወደ Admin Dashboard ይሄዳል
+    await navigateTo('/admin/events')
+  } else {
+    // መደበኛ ተጠቃሚ ከሆነ ወደ User Dashboard ይሄዳል
+    await navigateTo('/dashboard')
+  }
 }
 </script>
+
+<template>
+  <div class="max-w-md mx-auto my-12 p-6 bg-white rounded-xl shadow-md">
+    <h2 class="text-xl font-bold mb-4">ይግቡ</h2>
+    <form @submit.prevent="handleLogin" class="space-y-4">
+      <input 
+        v-model="email" 
+        type="email" 
+        placeholder="ኢሜይል አስገባ (ለ Admin: admin@gmail.com)" 
+        class="w-full border p-2 rounded-lg text-sm" 
+        required
+      />
+      <input 
+        v-model="password" 
+        type="password" 
+        placeholder="የይለፍ ቃል" 
+        class="w-full border p-2 rounded-lg text-sm" 
+        required
+      />
+      <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg">
+        Login
+      </button>
+    </form>
+  </div>
+</template>

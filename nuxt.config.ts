@@ -1,9 +1,9 @@
 // nuxt.config.ts
 export default defineNuxtConfig({
+  compatibilityDate: '2024-04-03',
+  devtools: { enabled: true },
   modules: [
     '@nuxtjs/tailwindcss'
   ],
-  css: [
-    '~/assets/css/main.css' // ወይም የ Tailwind CSS ፋይልህ ያለበትን መንገድ
-  ]
+  css: ['~/assets/css/main.css'],
 })
