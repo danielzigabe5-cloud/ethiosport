@@ -13,7 +13,9 @@
           <NuxtLink to="/justplay" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg shadow-lg shadow-emerald-900/20 transition">
             🎮 Just Play (ተጫወቱ)
           </NuxtLink>
-          <NuxtLink to="/contact" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold rounded-lg border border-slate-700 transition">
+          
+          <!-- እዚህ ጋር በተኑ ወደ Booking Page እንዲወስድ ተቀይሯል -->
+          <NuxtLink to="/booking" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold rounded-lg border border-slate-700 transition">
             🏟️ ሜዳ ያስይዙ
           </NuxtLink>
         </div>
@@ -40,7 +42,7 @@
         <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl hover:border-emerald-500/50 transition">
           <div class="text-3xl mb-4">🏟️</div>
           <h3 class="text-lg font-semibold text-white mb-2">የሜዳ ማስያዣ (Turf Booking)</h3>
-          <p class="text-slate-400 text-sm">የሳር እና የቤት ውስጥ ስፖርት ሜዳዎችን በTelebirr ወይም Chapa ያስይዙ።</p>
+          <p class="text-slate-400 text-sm">የሳር እና የቤት ውስጥ ስፖርት ሜዳዎችን ያስይዙ።</p>
         </div>
         <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl hover:border-emerald-500/50 transition">
           <div class="text-3xl mb-4">🎉</div>
@@ -51,3 +53,7 @@
     </section>
   </div>
 </template>
+
+<script setup>
+// እዚህ ጋር ምንም ዓይነት Modal logic አያስፈልገንም
+</script>
