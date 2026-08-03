@@ -1,197 +1,222 @@
-<template>
-  <div class="min-h-screen bg-slate-950 py-12 px-6">
-    <div class="max-w-6xl mx-auto space-y-8">
+import React, { useState } from 'react';
+import { Users, MapPin, Clock, PhoneCall, PlusCircle, Search, Filter, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { GameMatch } from '../types';
+
+interface GamesViewProps {
+  games: GameMatch[];
+  lang: 'am' | 'en';
+}
+
+export const GamesView: React.FC<GamesViewProps> = ({ games, lang }) => {
+  const [filterSubcity, setFilterSubcity] = useState('All');
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [matchTitle, setMatchTitle] = useState('');
+  const [matchVenue, setMatchVenue] = useState('Sarbet Millennium Futsal Arena');
+  const [neededPlayers, setNeededPlayers] = useState('2');
+  const [organizerPhone, setOrganizerPhone] = useState('');
+  const [organizerName, setOrganizerName] = useState('');
+  const [createdMatches, setCreatedMatches] = useState<GameMatch[]>([]);
+
+  const handleCreateMatch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!matchTitle || !organizerPhone) return;
+
+    const newMatch: GameMatch = {
+      id: `custom-${Date.now()}`,
+      title: matchTitle,
+      venueName: matchVenue,
+      subcity: 'Kirkos',
+      date: 'Today',
+      time: '08:00 PM - 09:00 PM',
+      playersNeeded: Number(neededPlayers),
+      totalPlayers: 10,
+      pricePerPlayer: 180,
+      skillLevel: 'Intermediate',
+      organizer: organizerName || 'Match Host',
+      organizerPhone: organizerPhone,
+      sport: '5v5 Futsal'
+    };
+
+    setCreatedMatches([newMatch, ...createdMatches]);
+    setShowCreateForm(false);
+    setMatchTitle('');
+    setOrganizerPhone('');
+  };
+
+  const allGames = [...createdMatches, ...games].filter(
+    (g) => filterSubcity === 'All' || g.subcity === filterSubcity
+  );
+
+  return (
+    <div className="space-y-8">
       
-      <!-- Header -->
-      <div class="text-center md:text-left">
-        <h1 class="text-3xl font-bold text-white mb-2">🏆 ስፖርቶች እና መጫወቻ ሜዳዎች</h1>
-        <p class="text-slate-400 font-light">የሚፈልጉትን ስፖርት እና ከተማ በመምረጥ ዝርዝር መረጃ ያግኙ</p>
+      {/* Header */}
+      <div className="bg-[#131c27] border border-[#212e3e] p-6 sm:p-8 rounded-3xl space-y-4 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div>
+          <div className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-400 uppercase tracking-widest mb-1">
+            <Users className="w-4 h-4" />
+            <span>{lang === 'am' ? 'የተጫዋች ማገናኛ' : 'Pickup Matchmaking Feed'}</span>
+          </div>
+          <h1 className="text-3xl font-black text-white">
+            {lang === 'am' ? 'ጨዋታዎችን ይቀላቀሉ ወይም ተጫዋች ይበሉ' : 'Join Pickup Games in Addis Ababa'}
+          </h1>
+          <p className="text-xs sm:text-sm text-gray-300">
+            {lang === 'am'
+              ? 'ለጨዋታዎ ተጫዋች ጎድሎዎታል? ወይም ብቻዎን ነዎት? በደቂቃዎች ውስጥ ይገናኙ።'
+              : 'Looking for extra players to fill your futsal line-up? Or looking for a game to join tonight?'}
+          </p>
+        </div>
+
+        <button
+          onClick={() => setShowCreateForm(!showCreateForm)}
+          className="bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black px-5 py-3 rounded-xl shadow-lg transition-all flex items-center gap-2 text-xs shrink-0"
+        >
+          <PlusCircle className="w-4 h-4 text-slate-950" />
+          <span>{lang === 'am' ? 'አዲስ ጨዋታ ይፍጠሩ' : 'Host a Match'}</span>
+        </button>
       </div>
 
-      <!-- Selectors Row -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        
-        <!-- 1. ስፖርት መምረጫ (All Sports) -->
-        <div class="relative">
-          <label class="block text-xs text-emerald-500 uppercase tracking-widest mb-2 font-bold">ስፖርት ይምረጡ</label>
-          <div @click="toggleDropdown('sport')" 
-               class="bg-slate-900 border border-slate-800 text-white rounded-xl px-5 py-4 flex justify-between items-center cursor-pointer hover:border-emerald-500 transition shadow-xl">
-            <span class="flex items-center gap-3 font-semibold">
-              <span class="text-xl">{{ selectedSport.icon }}</span> {{ selectedSport.name }}
-            </span>
-            <svg class="w-4 h-4 text-slate-500 transition" :class="{'rotate-180': dropdowns.sport}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <div v-if="dropdowns.sport" class="absolute z-50 w-full mt-2 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl max-h-80 overflow-y-auto overflow-hidden">
-            <div v-for="sport in sportsData" :key="sport.id" @click="selectSport(sport)" class="px-5 py-3 hover:bg-slate-800 text-slate-300 cursor-pointer flex items-center gap-3 border-b border-slate-800/50">
-              <span class="text-xl">{{ sport.icon }}</span> {{ sport.name }}
+      {/* Host Match Modal / Form */}
+      {showCreateForm && (
+        <form onSubmit={handleCreateMatch} className="bg-[#131c27] border border-emerald-500/40 p-6 rounded-2xl space-y-4 shadow-2xl animate-in fade-in duration-200">
+          <h3 className="text-lg font-extrabold text-white flex items-center gap-2">
+            <PlusCircle className="w-5 h-5 text-emerald-400" />
+            <span>{lang === 'am' ? 'አዲስ ጨዋታ ይለጥፉ' : 'Post an Open Game Slot'}</span>
+          </h3>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold text-gray-300 mb-1">{lang === 'am' ? 'የጨዋታው ርዕስ' : 'Game Title'} *</label>
+              <input
+                type="text"
+                required
+                placeholder="e.g. 5v5 Evening Futsal"
+                value={matchTitle}
+                onChange={(e) => setMatchTitle(e.target.value)}
+                className="w-full bg-[#0b111a] border border-[#212e3e] rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-300 mb-1">{lang === 'am' ? 'የሚፈለጉ ተጫዋቾች ብዛት' : 'Players Needed'}</label>
+              <input
+                type="number"
+                min="1"
+                max="10"
+                value={neededPlayers}
+                onChange={(e) => setNeededPlayers(e.target.value)}
+                className="w-full bg-[#0b111a] border border-[#212e3e] rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500"
+              />
             </div>
           </div>
-        </div>
 
-        <!-- 2. ከተማ መምረጫ (All Cities) -->
-        <div class="relative">
-          <label class="block text-xs text-emerald-500 uppercase tracking-widest mb-2 font-bold">ከተማ ይምረጡ</label>
-          <div @click="toggleDropdown('city')" 
-               class="bg-slate-900 border border-slate-800 text-white rounded-xl px-5 py-4 flex justify-between items-center cursor-pointer hover:border-emerald-500 transition shadow-xl">
-            <span class="font-semibold">📍 {{ selectedCity.name }}</span>
-            <svg class="w-4 h-4 text-slate-500 transition" :class="{'rotate-180': dropdowns.city}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <div v-if="dropdowns.city" class="absolute z-50 w-full mt-2 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl max-h-60 overflow-y-auto overflow-hidden">
-            <div v-for="city in citiesData" :key="city.name" @click="selectCity(city)" class="px-5 py-3 hover:bg-slate-800 text-slate-300 cursor-pointer border-b border-slate-800/50">
-              {{ city.name }}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold text-gray-300 mb-1">{lang === 'am' ? 'የአዘጋጁ ስም' : 'Your Name'}</label>
+              <input
+                type="text"
+                placeholder="e.g. Yared"
+                value={organizerName}
+                onChange={(e) => setOrganizerName(e.target.value)}
+                className="w-full bg-[#0b111a] border border-[#212e3e] rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-300 mb-1">{lang === 'am' ? 'ስልክ ቁጥር' : 'Phone Number'} *</label>
+              <input
+                type="tel"
+                required
+                placeholder="+251 9..."
+                value={organizerPhone}
+                onChange={(e) => setOrganizerPhone(e.target.value)}
+                className="w-full bg-[#0b111a] border border-[#212e3e] rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500"
+              />
             </div>
           </div>
-        </div>
 
-        <!-- 3. ክፍለ ከተማ መምረጫ (Sub-City Dropdown) -->
-        <div class="relative">
-          <label class="block text-xs text-emerald-500 uppercase tracking-widest mb-2 font-bold">ክፍለ ከተማ / አካባቢ</label>
-          <div @click="toggleDropdown('subCity')" 
-               class="bg-slate-900 border border-slate-800 text-white rounded-xl px-5 py-4 flex justify-between items-center cursor-pointer hover:border-emerald-500 transition shadow-xl">
-            <span class="font-semibold">🏢 {{ selectedSubCity }}</span>
-            <svg class="w-4 h-4 text-slate-500 transition" :class="{'rotate-180': dropdowns.subCity}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div className="flex justify-end gap-3 pt-2">
+            <button
+              type="button"
+              onClick={() => setShowCreateForm(false)}
+              className="px-4 py-2 rounded-xl bg-[#0b111a] text-xs font-bold text-gray-400 hover:text-white"
+            >
+              {lang === 'am' ? 'ሰርዝ' : 'Cancel'}
+            </button>
+            <button
+              type="submit"
+              className="px-5 py-2 rounded-xl bg-emerald-600 text-slate-950 font-black text-xs shadow-md"
+            >
+              {lang === 'am' ? 'ጨዋታውን ይለጥፉ' : 'Publish Game'}
+            </button>
           </div>
-          <div v-if="dropdowns.subCity" class="absolute z-50 w-full mt-2 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl max-h-60 overflow-y-auto overflow-hidden">
-            <div v-for="sub in selectedCity.subCities" :key="sub" @click="selectSubCity(sub)" class="px-5 py-3 hover:bg-slate-800 text-slate-300 cursor-pointer border-b border-slate-800/50">
-              {{ sub }}
-            </div>
-          </div>
-        </div>
+        </form>
+      )}
 
+      {/* Subcity Filter */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 text-xs">
+        <span className="text-gray-400 font-bold shrink-0">{lang === 'am' ? 'ክፍለ ከተማ:' : 'Subcity:'}</span>
+        {['All', 'Bole', 'Kirkos', 'Yeka', 'Nifas Silk'].map((sub) => (
+          <button
+            key={sub}
+            onClick={() => setFilterSubcity(sub)}
+            className={`px-3.5 py-1.5 rounded-xl font-bold transition-all shrink-0 ${
+              filterSubcity === sub
+                ? 'bg-emerald-600 text-slate-950'
+                : 'bg-[#131c27] border border-[#212e3e] text-gray-300 hover:text-white'
+            }`}
+          >
+            {sub}
+          </button>
+        ))}
       </div>
 
-      <!-- Information Display Card -->
-      <Transition name="slide-up" mode="out-in">
-        <div :key="selectedSport.id" class="grid grid-cols-1 lg:grid-cols-3 gap-8 pt-6">
-          
-          <!-- Detailed Info Section -->
-          <div class="lg:col-span-2 space-y-6">
-            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-lg">
-              <div class="flex items-center gap-5 mb-8 pb-6 border-b border-slate-800">
-                <span class="text-5xl p-4 bg-slate-950 rounded-2xl border border-slate-800 shadow-inner">{{ selectedSport.icon }}</span>
-                <div>
-                  <h2 class="text-3xl font-bold text-white">{{ selectedSport.name }}</h2>
-                  <p class="text-emerald-500 font-medium">📍 {{ selectedCity.name }}፣ {{ selectedSubCity }}</p>
-                </div>
-              </div>
-              
-              <div class="space-y-8">
-                <!-- Status/Game -->
-                <div class="space-y-3">
-                  <h4 class="text-emerald-400 font-bold text-xs uppercase tracking-widest flex items-center gap-2">
-                    <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span> ጨዋታው እና ሁኔታው
-                  </h4>
-                  <p class="text-slate-300 leading-relaxed text-sm md:text-base">{{ selectedSport.game }}</p>
-                </div>
+      {/* Matches Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {allGames.map((game) => (
+          <div
+            key={game.id}
+            className="bg-[#131c27] border border-[#212e3e] hover:border-emerald-500/50 rounded-2xl p-6 space-y-4 shadow-xl transition-all"
+          >
+            <div className="flex items-center justify-between">
+              <span className="bg-amber-500/10 border border-amber-500/30 text-amber-400 font-extrabold text-xs px-3 py-1 rounded-full">
+                {game.playersNeeded} {lang === 'am' ? 'ተጫዋች ይጎድላል' : 'players needed'}
+              </span>
+              <span className="text-xs text-gray-400 font-semibold">{game.sport}</span>
+            </div>
 
-                <!-- Location -->
-                <div class="space-y-3">
-                  <h4 class="text-emerald-400 font-bold text-xs uppercase tracking-widest flex items-center gap-2">
-                    🏛️ የመጫወቻ ቦታ እና ሜዳ
-                  </h4>
-                  <p class="text-slate-300 text-sm md:text-base">{{ selectedSport.location }}</p>
-                </div>
+            <h3 className="text-xl font-extrabold text-white">{game.title}</h3>
 
-                <!-- Business -->
-                <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800 space-y-3">
-                  <h4 class="text-emerald-400 font-bold text-xs uppercase tracking-widest">💼 የቢዝነስ ዕድል</h4>
-                  <p class="text-slate-400 text-sm">{{ selectedSport.business }}</p>
-                </div>
+            <div className="space-y-2 text-xs text-gray-300 bg-[#0b111a] p-3.5 rounded-xl border border-[#212e3e]">
+              <p className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-emerald-400" />
+                <span>{game.venueName} ({game.subcity})</span>
+              </p>
+              <p className="flex items-center gap-2">
+                <Clock className="w-4 h-4 text-amber-400" />
+                <span>{game.date} · {game.time}</span>
+              </p>
+              <p className="flex items-center gap-2">
+                <Users className="w-4 h-4 text-teal-400" />
+                <span>Organizer: {game.organizer} ({game.skillLevel} level)</span>
+              </p>
+            </div>
+
+            <div className="flex items-center justify-between pt-2">
+              <div>
+                <span className="text-xs text-gray-400 block">{lang === 'am' ? 'ተካፋይ ዋጋ' : 'Fee per player'}</span>
+                <span className="text-base font-black text-emerald-400">{game.pricePerPlayer} ETB</span>
               </div>
+              <a
+                href={`tel:${game.organizerPhone}`}
+                className="bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black text-xs py-2.5 px-4 rounded-xl transition-colors shadow-md flex items-center gap-2"
+              >
+                <PhoneCall className="w-4 h-4" />
+                <span>{lang === 'am' ? 'ደውል / ተቀላቀል' : 'Call Host'}</span>
+              </a>
             </div>
           </div>
-
-          <!-- Sidebar Actions -->
-          <div class="space-y-6">
-            <div class="bg-emerald-600 rounded-3xl p-8 text-white shadow-xl shadow-emerald-900/20 relative overflow-hidden group">
-              <div class="relative z-10">
-                <h3 class="text-xl font-bold mb-3 italic">Just Play!</h3>
-                <p class="text-emerald-100 text-sm mb-6">በአቅራቢያዎ ያሉ የ{{ selectedSport.name }} አፍቃሪዎችን ተቀላቀሉ።</p>
-                <NuxtLink to="/justplay" class="block w-full bg-white text-emerald-600 text-center font-bold py-3 rounded-xl hover:scale-105 transition shadow-lg">ቡድን ፈልግ</NuxtLink>
-              </div>
-              <span class="absolute -right-4 -bottom-4 text-8xl opacity-10 group-hover:scale-110 transition">{{ selectedSport.icon }}</span>
-            </div>
-
-            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8">
-              <h3 class="text-white font-bold mb-3">ሜዳ ያስይዙ</h3>
-              <p class="text-slate-400 text-sm mb-6">ምርጥ የ{{ selectedSport.name }} ሜዳዎችን በሰዓት ያስይዙ።</p>
-              <NuxtLink to="/booking" class="block w-full bg-slate-800 text-white text-center font-bold py-3 rounded-xl hover:bg-slate-700 transition">ሜዳ ተመልከት</NuxtLink>
-            </div>
-          </div>
-
-        </div>
-      </Transition>
+        ))}
+      </div>
 
     </div>
-  </div>
-</template>
-
-<script setup>
-import { ref, reactive } from 'vue'
-
-// Dropdown States
-const dropdowns = reactive({
-  sport: false,
-  city: false,
-  subCity: false
-})
-
-const toggleDropdown = (key) => {
-  Object.keys(dropdowns).forEach(k => {
-    if (k === key) dropdowns[k] = !dropdowns[k]
-    else dropdowns[k] = false
-  })
-}
-
-// Data
-const sportsData = [
-  { id: 1, name: 'እግር ኳስ (Football)', icon: '⚽', location: 'የሳር ሜዳዎች፣ የሲንቴቲክ (Artificial turf) እና ክፍት የወጣቶች ሜዳዎች።', game: 'በኢትዮጵያ በብዛት ሜዳ እና ትኩረት የሚሰጠው የመጀመሪያው ስፖርት ነው። ጨዋታው በሁለት ቡድኖች (ከ5v5 እስከ 11v11) መካከል ይደረጋል።', business: 'የሜዳ ኪራይ (ProGrass/Turf)፣ የውድድር አዘጋጅነት (Corporate Tournaments)፣ አካዳሚዎች እና የአልባሳት ሽያጭ።' },
-  { id: 2, name: 'ቅርጫት ኳስ (Basketball)', icon: '🏀', location: 'የሲሚንቶ ወይም የእንጨት (Indoor/Outdoor) ሜዳዎች።', game: 'የተለየ ሜዳ (Court) የሚፈልግ እና ለቡድን መዝናኛ ተወዳጅ ነው። 5v5 መደበኛ ወይም 3v3 (በአሁኑ ሰዓት በጣም ተወዳጅ) ጨዋታዎች ይደረጋሉ።', business: 'የኮርት ኪራይ፣ የ3v3 ውድድሮች እና የስልጠና አካዳሚዎች።' },
-  { id: 3, name: 'መረብ ኳስ (Volleyball)', icon: '🏐', location: 'የአሸዋ ሜዳ (Beach) ወይም የሲሚንቶ/አፈር ሜዳ።', game: 'አነስተኛ ቦታ የሚይዝ ነገር ግን ብዙ ሰዎችን የሚያሳትፍ ነው። 6v6 መደበኛ ወይም በሪዞርቶች አካባቢ Beach Volleyball ይካሄዳል።', business: 'ለሪዞርቶች ደንበኞችን መሳቢያ እና የድርጅቶች ውድድር ማዘጋጀት።' },
-  { id: 4, name: 'ቴኒስ (Tennis)', icon: '🎾', location: 'የሸክላ (Clay) ወይም የኮንክሪት ሜዳዎች (Courts)።', game: 'ልዩ ሜዳ የሚፈልግ ስፖርት ነው። 1v1 ወይም በጥንድ (2v2) የሚጫወቱት ዘመናዊ መዝናኛ።', business: 'የሰዓት ኪራይ፣ የትሬነር (Trainer) አገልግሎት እና የመሳሪያዎች ኪራይ።' },
-  { id: 5, name: 'ጎልፍ (Golf)', icon: '⛳', location: 'ሰፊ የተፈጥሮ የሳር ሜዳዎች (Golf Course)።', game: 'በጣም ሰፊ ቦታ የሚፈልግ የስፖርት አይነት ነው። በግል ወይም በቡድን (Groups of 4) ተያይዞ የሚደረግ መዝናኛ።', business: 'የከፍተኛ ደረጃ አባልነቶች (Membership) እና የኮርፖሬት ስፖንሰርሺፕ ውድድሮች።' },
-  { id: 6, name: 'እጅ ኳስ (Handball)', icon: '🤾', location: 'የኮንክሪት ወይም የቤት ውስጥ (Indoor) ስፖርት ኮምፕሌክስ ሜዳዎች።', game: 'በቡድን የሚከናወን እና የተወሰነ ክፍት ሜዳ የሚፈልግ ነው። 7v7 የሚደረግ ፈጣን ጨዋታ።', business: 'በትምህርት ቤቶች እና በክለቦች ደረጃ ውድድሮችን በማዘጋጀት የሚካሄድ።' },
-  { id: 7, name: 'ፈረስ ግልቢያ (Equestrian)', icon: '🏇', location: 'ሰፊ ክፍት ሜዳዎች (ለምሳሌ፦ ጃንሜዳ እና የግል የፈረስ ክለቦች)።', game: 'ሰፊ የሩጫ እና የመለማመጃ ቦታ የሚፈልግ ባህላዊ እና ዘመናዊ ስፖርት ነው።', business: 'ለቱሪዝም፣ ለፈረስ ግልቢያ ትምህርት (Riding lessons) እና ለመዝናኛ።' },
-  { id: 8, name: 'ቤዝቦል (Baseball)', icon: '⚾', location: 'የክበብ ቅርጽ ያለው ሰፊ የሳር ሜዳ።', game: 'በኢትዮጵያ ውስጥ ገና እድገት ላይ ያለ ነገር ግን የተለየ ሰፊ የመጫወቻ ዲዛይን ያለው ሜዳ የሚፈልግ ስፖርት ነው።', business: 'ለልዩ የስፖርት ክለቦች እና ለትምህርት ቤት ውድድሮች።' },
-  { id: 9, name: 'ሩጫ እና አትሌቲክስ (Running)', icon: '🏃', location: 'በስታዲየም፣ በፓርኮች (ለምሳሌ፡ እንጦጦ) ወይም በከተማ ውጭ ያሉ ቦታዎች።', game: 'በቡድን ሆኖ መሮጥ፣ መራመድ (Hiking) ወይም የ10 ኪ.ሜ / ማራቶን ውድድሮች።', business: 'የHiking አዘጋጅነት፣ የትኬት ሽያጭ እና የስፖንሰርሺፕ ማራቶኖች።' }
-]
-
-const citiesData = [
-  { name: 'አዲስ አበባ', subCities: ['ቦሌ', 'የካ', 'አራዳ', 'ቂርቆስ', 'ልደታ', 'ንፋስ ስልክ', 'ጉለሌ', 'ኮልፌ ቀራኒዮ', 'አዲስ ከተማ', 'አቃቂ ቃሊቲ', 'ለሚ ኩራ'] },
-  { name: 'አዳማ', subCities: ['ቦሌ', 'ዲቤ ቢዬ', 'ገዳ', 'መልካ አዳማ'] },
-  { name: 'ባህር ዳር', subCities: ['ግሸ አባይ', 'በላይ ዘለከ', 'ሽምቢጥ', 'ጣና'] },
-  { name: 'ሀዋሳ', subCities: ['ታቦር', 'ሀይቅ ዳር', 'ምስራቅ', 'መነሐሪያ'] },
-  { name: 'ድሬዳዋ', subCities: ['መገላ', 'ከዚራ', 'ገንደ ተጋሪ'] },
-  { name: 'ቢሾፍቱ', subCities: ['ሆራ', 'ባቦጋያ'] }
-]
-
-// Selections
-const selectedSport = ref(sportsData[0])
-const selectedCity = ref(citiesData[0])
-const selectedSubCity = ref(citiesData[0].subCities[0])
-
-const selectSport = (sport) => {
-  selectedSport.value = sport
-  dropdowns.sport = false
-}
-
-const selectCity = (city) => {
-  selectedCity.value = city
-  selectedSubCity.value = city.subCities[0]
-  dropdowns.city = false
-}
-
-const selectSubCity = (sub) => {
-  selectedSubCity.value = sub
-  dropdowns.subCity = false
-}
-</script>
-
-<style scoped>
-.slide-up-enter-active, .slide-up-leave-active { transition: all 0.3s ease; }
-.slide-up-enter-from { opacity: 0; transform: translateY(15px); }
-.slide-up-leave-to { opacity: 0; transform: translateY(-15px); }
-
-.overflow-y-auto::-webkit-scrollbar { width: 4px; }
-.overflow-y-auto::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
-</style>
+  );
+};

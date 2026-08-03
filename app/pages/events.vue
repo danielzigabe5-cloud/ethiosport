@@ -1,122 +1,141 @@
-<template>
-  <div class="max-w-4xl mx-auto p-6 bg-white shadow-xl rounded-2xl border border-gray-100 my-8">
-    <!-- Header Section (የክስተቱ ርዕስ እና ምድብ) -->
-    <div class="relative">
-      <img 
-        :src="event.coverImage" 
-        alt="Event Banner" 
-        class="w-full h-64 object-cover rounded-xl shadow-sm"
-      />
-      <span class="absolute top-4 right-4 bg-blue-600 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow">
-        {{ event.category }}
-      </span>
-    </div>
+import React, { useState } from 'react';
+import { Calendar, Trophy, Users, Award, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { EventItem } from '../types';
 
-    <!-- Main Details (ዋና ዋና መረጃዎች) -->
-    <div class="mt-6">
-      <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ event.title }}</h1>
-      <p class="text-gray-600 text-sm mb-6 leading-relaxed">{{ event.description }}</p>
-
-      <!-- Grid Information (ቀን፣ ቦታ፣ አደራጅ፣ እና ዋጋ) -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
-        <!-- Date & Time (ቀን እና ሰዓት) -->
-        <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-          <div class="text-blue-600 font-bold">📅</div>
-          <div>
-            <h4 class="text-xs font-semibold text-gray-500 uppercase">ቀን እና ሰዓት</h4>
-            <p class="text-sm font-medium text-gray-800">{{ event.date }} | {{ event.time }}</p>
-          </div>
-        </div>
-
-        <!-- Location (ቦታ) -->
-        <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-          <div class="text-red-500 font-bold">📍</div>
-          <div>
-            <h4 class="text-xs font-semibold text-gray-500 uppercase">ቦታ</h4>
-            <p class="text-sm font-medium text-gray-800">{{ event.location.venue }}, {{ event.location.city }}</p>
-          </div>
-        </div>
-
-        <!-- Organizer (አዘጋጅ) -->
-        <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-          <div class="text-green-600 font-bold">👤</div>
-          <div>
-            <h4 class="text-xs font-semibold text-gray-500 uppercase">አዘጋጅ</h4>
-            <p class="text-sm font-medium text-gray-800">{{ event.organizer.name }} ({{ event.organizer.contact }})</p>
-          </div>
-        </div>
-
-        <!-- Price (ዋጋ) -->
-        <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-          <div class="text-yellow-600 font-bold">🎟️</div>
-          <div>
-            <h4 class="text-xs font-semibold text-gray-500 uppercase">የመግቢያ ዋጋ</h4>
-            <p class="text-sm font-bold text-gray-900">{{ event.price > 0 ? `${event.price} ETB` : 'ነፃ (Free)' }}</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Agenda / Schedule (የፕሮግራም መርሃ ግብር) -->
-      <div class="mt-8">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">የፕሮግራም መርሃ ግብር</h3>
-        <div class="space-y-3">
-          <div 
-            v-for="(agenda, index) in event.schedules" 
-            :key="index"
-            class="flex items-center justify-between p-3 border-l-4 border-blue-600 bg-gray-50 rounded-r-lg"
-          >
-            <span class="font-semibold text-sm text-gray-700">{{ agenda.time }}</span>
-            <span class="text-sm text-gray-800">{{ agenda.activity }}</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Action Button (የተመዝጋቢዎች/የቲኬት መቁረጫ ቁልፍ) -->
-      <div class="mt-8 flex items-center justify-between border-t pt-6">
-        <div>
-          <span class="text-xs text-gray-500 block">የተቀሩ ቦታዎች</span>
-          <span class="text-sm font-semibold text-red-600">{{ event.availableSeats }} ቦታዎች ብቻ ቀርተዋል!</span>
-        </div>
-        <button 
-          @click="registerForEvent"
-          class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl shadow-md transition-all duration-200"
-        >
-          አሁኑኑ ተመዝገብ / ቲኬት ቁረጥ
-        </button>
-      </div>
-    </div>
-  </div>
-</template>
-
-<script setup>
-// የEvent መረጃዎች (Data Structure)
-const event = ref({
-  id: 1,
-  title: "የኢትዮጵያ ስፖርት እና ቴክኖሎጂ ኮንፈረንስ 2026",
-  category: "ስፖርት & ቴክኖሎጂ",
-  description: "በዚህ ዝግጅት ላይ በስፖርት ዘsector ውስጥ ያሉ አዳዲስ ዲጂታል ቴክኖሎጂዎች፣ የስታዲየም ማኔጅመንት እና የስፖርት ሜዲሲን ዙሪያ ሰፊ ውይይት ይደረጋል።",
-  coverImage: "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1200&q=80",
-  date: "ነሐሴ 15, 2018 ዓ.ም",
-  time: "2:00 ከሰዓት - 11:00 ምሽት",
-  location: {
-    venue: "ሚሊኒየም አዳራሽ",
-    city: "አዲስ አበባ"
-  },
-  organizer: {
-    name: "EthioSport Tech Group",
-    contact: "info@ethiosport.et"
-  },
-  price: 500, // 0 ከሆነ Free ይሆናል
-  availableSeats: 45,
-  schedules: [
-    { time: "2:00 - 2:30", activity: "የእንግዶች አቀባበል እና ምዝገባ" },
-    { time: "2:30 - 4:00", activity: "የመክፈቻ ንግግር እና የቴክኖሎጂ ማሳያ" },
-    { time: "4:00 - 5:00", activity: "የፓናል ውይይት (Panel Discussion)" },
-    { time: "5:00 - 6:00", activity: "የእራት እና የኔትወርኪንግ ጊዜ" }
-  ]
-})
-
-const registerForEvent = () => {
-  alert(`ለ "${event.value.title}" ዝግጅት ለመመዝገብ ወደ ክፍያ ገጽ በመሸጋገር ላይ...`)
+interface EventsViewProps {
+  events: EventItem[];
+  lang: 'am' | 'en';
 }
-</script>
+
+export const EventsView: React.FC<EventsViewProps> = ({ events, lang }) => {
+  const [registeredEventId, setRegisteredEventId] = useState<string | null>(null);
+  const [teamName, setTeamName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [submittedEvent, setSubmittedEvent] = useState<string | null>(null);
+
+  const handleRegisterTeam = (eventId: string, e: React.FormEvent) => {
+    e.preventDefault();
+    if (!teamName || !phone) return;
+    setSubmittedEvent(eventId);
+    setRegisteredEventId(null);
+  };
+
+  return (
+    <div className="space-y-10">
+      
+      {/* Header */}
+      <div className="bg-[#131c27] border border-[#212e3e] p-6 sm:p-8 rounded-3xl space-y-3 shadow-xl">
+        <div className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-400 uppercase tracking-widest">
+          <Trophy className="w-4 h-4" />
+          <span>{lang === 'am' ? 'የስፖርት ውድድሮች እና ዋንጫዎች' : 'Ethiopian Leagues & Tournaments'}</span>
+        </div>
+        <h1 className="text-3xl font-black text-white">
+          {lang === 'am' ? 'የ ETHIO-MEDA ኩነቶች እና ሊጎች' : 'Tournaments & Corporate Cups'}
+        </h1>
+        <p className="text-xs sm:text-sm text-gray-300 max-w-2xl">
+          {lang === 'am'
+            ? 'የኩባንያዎ ወይም የሰፈራችሁ ቡድን በሽልማት ውድድሮች ላይ እንዲካፈል ያስመዝግቡ።'
+            : 'Compete in company cups, futsal championships, and youth leagues with substantial cash prize pools.'}
+        </p>
+      </div>
+
+      {/* Events List */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {events.map((evt) => (
+          <div
+            key={evt.id}
+            className="bg-[#131c27] border border-[#212e3e] rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between"
+          >
+            <div>
+              <div className="relative h-48 overflow-hidden">
+                <img
+                  src={evt.image}
+                  alt={evt.title}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute top-3 left-3 bg-emerald-600 text-slate-950 px-2.5 py-1 rounded-full text-xs font-black">
+                  {evt.category}
+                </div>
+                <div className="absolute top-3 right-3 bg-[#0b111a]/90 border border-emerald-500/30 text-emerald-400 px-2.5 py-1 rounded-full text-xs font-bold">
+                  {evt.status}
+                </div>
+              </div>
+
+              <div className="p-6 space-y-3">
+                <h3 className="text-lg font-bold text-white leading-snug">
+                  {lang === 'am' ? evt.titleAm || evt.title : evt.title}
+                </h3>
+
+                <div className="text-xs text-gray-300 space-y-2 pt-1 border-t border-[#212e3e]">
+                  <p className="flex items-center justify-between">
+                    <span className="text-gray-400">{lang === 'am' ? 'አዘጋጅ:' : 'Organizer:'}</span>
+                    <span className="font-bold text-white">{evt.organizer}</span>
+                  </p>
+                  <p className="flex items-center justify-between">
+                    <span className="text-gray-400">{lang === 'am' ? 'ቀን:' : 'Date:'}</span>
+                    <span className="font-bold text-emerald-400">{evt.date}</span>
+                  </p>
+                  <p className="flex items-center justify-between">
+                    <span className="text-gray-400">{lang === 'am' ? 'ቦታ:' : 'Venue:'}</span>
+                    <span className="font-bold text-gray-200">{evt.venue}</span>
+                  </p>
+                  <p className="flex items-center justify-between">
+                    <span className="text-gray-400">{lang === 'am' ? 'የተመዘገቡ ቡድኖች:' : 'Registered Teams:'}</span>
+                    <span className="font-bold text-amber-400">{evt.teamsCount} Teams</span>
+                  </p>
+                </div>
+
+                <div className="bg-[#0b111a] border border-amber-500/30 p-3 rounded-xl flex items-center justify-between mt-3">
+                  <span className="text-xs font-semibold text-gray-300">{lang === 'am' ? 'የሽልማት መጠን:' : 'Prize Pool:'}</span>
+                  <span className="text-sm font-black text-amber-400">{evt.prizePool}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6 pt-0">
+              {submittedEvent === evt.id ? (
+                <div className="bg-emerald-950/40 border border-emerald-500/40 text-emerald-300 p-3 rounded-xl text-xs font-bold text-center flex items-center justify-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <span>{lang === 'am' ? 'ቡድንዎ ተመዝግቧል!' : 'Team Registered!'}</span>
+                </div>
+              ) : registeredEventId === evt.id ? (
+                <form onSubmit={(e) => handleRegisterTeam(evt.id, e)} className="space-y-2 pt-2 border-t border-[#212e3e]">
+                  <input
+                    type="text"
+                    required
+                    placeholder={lang === 'am' ? 'የቡድን ስም (Team Name)' : 'Team Name'}
+                    value={teamName}
+                    onChange={(e) => setTeamName(e.target.value)}
+                    className="w-full bg-[#0b111a] border border-[#212e3e] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
+                  />
+                  <input
+                    type="tel"
+                    required
+                    placeholder={lang === 'am' ? 'የአሰልጣኝ/አዘጋጅ ስልክ' : 'Captain Phone'}
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="w-full bg-[#0b111a] border border-[#212e3e] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
+                  />
+                  <button
+                    type="submit"
+                    className="w-full bg-emerald-600 text-slate-950 font-black text-xs py-2 rounded-xl"
+                  >
+                    {lang === 'am' ? 'ምዝገባውን አረጋግጥ' : 'Confirm Entry'}
+                  </button>
+                </form>
+              ) : (
+                <button
+                  onClick={() => setRegisteredEventId(evt.id)}
+                  className="w-full bg-[#1c2838] hover:bg-emerald-600 text-emerald-400 hover:text-slate-950 border border-[#212e3e] font-bold text-xs py-2.5 rounded-xl transition-all shadow-md"
+                >
+                  {lang === 'am' ? 'ቡድንዎን ያስመዝግቡ' : 'Register Your Team'}
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+    </div>
+  );
+};
