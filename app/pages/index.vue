@@ -1,527 +1,547 @@
-<script setup>
-import { ref } from 'vue'
-
-// 1. Language Toggle State
-const currentLang = ref('AM')
-const toggleLanguage = () => {
-  currentLang.value = currentLang.value === 'AM' ? 'EN' : 'AM'
-}
-
-// 2. Search Filters State
-const searchFilters = ref({
-  sport: '',
-  location: '',
-  date: '',
-  time: '' // የሰዓት መፈለጊያ ታክሏል
-})
-
-const handleSearch = () => {
-  console.log('Searching with filters:', searchFilters.value)
-  return navigateTo({
-    path: '/venues',
-    query: searchFilters.value
-  })
-}
-
-// 3. Newsletter State
-const newsletterEmail = ref('')
-const handleSubscribe = () => {
-  if (newsletterEmail.value) {
-    alert(`እናመሰግናለን! ${newsletterEmail.value} በተሳካ ሁኔታ ተመዝግቧል።`)
-    newsletterEmail.value = ''
-  }
-}
-
-// 4. Sample Venues Data
-const sampleVenues = ref([
-  {
-    id: 1,
-    name: 'ሳርቤት ፉትሳል ሜዳ',
-    category: 'Futsal',
-    location: 'ሳርቤት፣ አዲስ አበባ',
-    rating: '4.8',
-    price: '800',
-    image: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=600&auto=format&fit=crop'
-  },
-  {
-    id: 2,
-    name: 'ቦሌ አሬና ቴኒስ ክለብ',
-    category: 'Tennis',
-    location: 'ቦሌ፣ አዲስ አበባ',
-    rating: '4.9',
-    price: '1200',
-    image: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?q=80&w=600&auto=format&fit=crop'
-  },
-  {
-    id: 3,
-    name: 'ሲኤምሲ ቅርጫት ኳስ ሜዳ',
-    category: 'Basketball',
-    location: 'ሲኤምሲ፣ አዲስ አበባ',
-    rating: '4.7',
-    price: '600',
-    image: 'https://images.unsplash.com/photo-1519861531473-9200262188bf?q=80&w=600&auto=format&fit=crop'
-  }
-])
-
-// 5. Sample Upcoming Pick-up Games Data (አዲስ የተጨመረ)
-const upcomingGames = ref([
-  {
-    id: 101,
-    title: 'የቅዳሜ ጧት የ 5v5 ፉትሳል ጨዋታ',
-    venue: 'ሳርቤት ፉትሳል ሜዳ',
-    time: 'ቅዳሜ | 2:00 - 3:00 ጧት',
-    spotsLeft: 3,
-    totalSpots: 10,
-    pricePerPerson: '80'
-  },
-  {
-    id: 102,
-    title: 'የማታ ቅርጫት ኳስ ግጥሚያ',
-    venue: 'ሲኤምሲ ቅርጫት ኳስ ሜዳ',
-    time: 'እሁድ | 11:00 - 1:00 ማታ',
-    spotsLeft: 2,
-    totalSpots: 8,
-    pricePerPerson: '75'
-  }
-])
-
-// 6. Navigation Links (ከምስሉ ጋር ተመሳሳይ የተስተካከለ)
-const navLinks = [
-
-]
-</script>
-
 <template>
-  <div class="min-h-screen bg-slate-50 dark:bg-[#070b10] text-slate-800 dark:text-slate-100 font-sans pb-16 md:pb-0">
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-950 font-sans selection:bg-green-200 selection:text-green-900 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-50 dark:[&::-webkit-scrollbar-track]:bg-gray-900 [&::-webkit-scrollbar-thumb]:bg-green-600 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-green-700">
     
-    <!-- 1. NAVIGATION BAR (ለ Desktop nav links የተስተካከለበት) -->
-    <header class="sticky top-0 z-40 bg-white/95 dark:bg-[#0b111a]/95 backdrop-blur-md border-b border-slate-200 dark:border-[#212e3e]">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+    <!-- HEADER & NAVBAR -->
+    <header 
+      :class="[
+        'fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b',
+        isScrolled ? 'bg-green-800/95 backdrop-blur-lg border-white/10 shadow-lg py-2' : 'bg-green-700/80 backdrop-blur-sm border-transparent py-4'
+      ]"
+    >
+      <div class="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
+        <!-- Logo -->
         <NuxtLink to="/" class="flex items-center gap-2">
-          <div class="w-9 h-9 bg-emerald-500 rounded-xl flex items-center justify-center text-slate-950 font-black text-xl shadow-md">
-            
-          </div>
-          <span class="font-extrabold text-xl text-slate-900 dark:text-white tracking-tight">
-            <span class="text-emerald-500"></span>
-          </span>
+          <Icon name="lucide:trophy" class="w-8 h-8 text-yellow-400" />
+          <span class="text-2xl font-black text-white tracking-tight">ሜዳወች <span class="text-yellow-400">Ethiopia</span></span>
         </NuxtLink>
 
         <!-- Desktop Navigation Links -->
-        <nav class="hidden md:flex items-center gap-6">
-          <NuxtLink 
-            v-for="link in navLinks" 
-            :key="link.path" 
-            :to="link.path"
-            class="text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-emerald-500 dark:hover:text-emerald-400 transition"
-            active-class="text-emerald-500 dark:text-emerald-400 font-bold border-b-2 border-emerald-500 pb-1"
-          >
-            {{ link.name }}
-          </NuxtLink>
+        <nav class="hidden md:flex items-center gap-8 font-semibold text-white/90 text-sm tracking-wide">
+          <button type="button" @click="scrollToSection('hero')" class="hover:text-yellow-400 transition-colors">መነሻ</button>
+          <button type="button" @click="scrollToSection('sports-info')" class="hover:text-yellow-400 transition-colors">ስለ ስፖርቶች</button>
+          <button type="button" @click="scrollToSection('how-it-works')" class="hover:text-yellow-400 transition-colors">አሰራራችን</button>
+          <button type="button" @click="scrollToSection('venues')" class="hover:text-yellow-400 transition-colors">ሜዳዎች</button>
+          <NuxtLink to="/justplay" class="hover:text-yellow-400 transition-colors">ጨዋታዎች</NuxtLink>
+          <NuxtLink to="/contact" class="hover:text-yellow-400 transition-colors">አግኙን</NuxtLink>
         </nav>
 
-        <!-- Auth & Language Toggle -->
-        <div class="flex items-center gap-2 sm:gap-3">
-          <button 
-            @click="toggleLanguage" 
-            class="px-2.5 py-1 text-xs font-bold bg-slate-100 dark:bg-[#212e3e] hover:bg-slate-200 text-slate-700 dark:text-emerald-400 rounded-lg transition uppercase border border-slate-200 dark:border-transparent"
-          >
-            {{ currentLang }}
-          </button>
-          
-          <NuxtLink 
-            to="/login" 
-            class="hidden sm:inline-flex px-3.5 py-2 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:text-emerald-500 transition"
-          >
-            ግቡ
-          </NuxtLink>
-          
-          <NuxtLink 
-            to="/register" 
-            class="px-4 py-2 text-xs sm:text-sm font-bold text-slate-950 bg-emerald-500 hover:bg-emerald-400 rounded-xl shadow-md shadow-emerald-500/20 transition"
-          >
-            ተመዝገቡ
-          </NuxtLink>
-        </div>
-      </div>
-    </header>
-
-    <main>
-      <!-- 2. HERO SECTION & CALL TO ACTIONS (CTA) -->
-      <section class="relative bg-slate-900 dark:bg-[#0b111a] text-white pt-12 pb-24 sm:pt-20 sm:pb-32 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:16px_16px]"></div>
-
-        <div class="relative max-w-4xl mx-auto text-center space-y-5 sm:space-y-6">
-          <span class="inline-block px-3.5 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-semibold rounded-full uppercase tracking-wider">
-            የኢትዮጵያ ቁጥር #1 የስፖርት ሜዳ ማስያዣ
-          </span>
-          
-          <h1 class="text-3xl sm:text-6xl font-black tracking-tight leading-tight">
-            ሜዳዎን በቀላሉ ይያዙ፣ <span class="text-emerald-400">ወዲያውኑ ይጫወቱ!</span>
-          </h1>
-          
-          <p class="text-base sm:text-xl text-slate-300 max-w-2xl mx-auto font-light leading-relaxed">
-            በአቅራቢያዎ ያሉ የፉትሳል፣ የቴኒስ እና የቅርጫት ኳስ ሜዳዎችን በሰከንዶች ውስጥ በኢንተርኔት ወይም በሞባይል መተግበሪያችን ይያዙ።
-          </p>
-
-          <!-- CTAs -->
-          <div class="flex flex-col sm:flex-row justify-center gap-3.5 pt-2 sm:pt-4">
-            <NuxtLink 
-              to="/venues" 
-              class="px-8 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl shadow-lg shadow-emerald-500/20 transition text-center text-sm sm:text-base"
-            >
-              ሜዳ አሁኑኑ ያዙ (Book Venue)
-            </NuxtLink>
-            
-            <NuxtLink 
-              to="/games" 
-              class="px-8 py-3.5 bg-slate-800 dark:bg-[#131c27] hover:bg-slate-700 text-white font-semibold rounded-xl border border-slate-700 dark:border-[#212e3e] transition text-center text-sm sm:text-base"
-            >
-              ጨዋታ ይቀላቀሉ (Join Game)
-            </NuxtLink>
-          </div>
-        </div>
-      </section>
-
-      <!-- 3. PROMO CARD & SEARCH BAR TOGETHER -->
-      <div class="max-w-5xl mx-auto px-4 sm:px-6 relative z-30 -mt-16 space-y-6">
-        
-        <!-- MOBILE APP PROMO CARD -->
-        <div class="bg-gradient-to-r from-emerald-600 to-teal-700 rounded-2xl p-4 sm:p-6 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div class="flex items-center gap-4 text-center sm:text-left">
-            <div class="hidden sm:flex w-12 h-12 bg-white/10 rounded-2xl items-center justify-center text-2xl">
-              📱
-            </div>
-            <div>
-              <h3 class="font-extrabold text-lg sm:text-xl">የ EthioSport ሞባይል መተግበሪያን ይጫኑ</h3>
-              <p class="text-xs sm:text-sm text-emerald-100">የበለጠ ፈጣን ማስያዣ እና ልዩ ቅናሾችን በስልክዎ ያግኙ!</p>
-            </div>
-          </div>
-          <div class="flex gap-2 w-full sm:w-auto">
-            <button class="flex-1 sm:flex-none px-4 py-2 bg-slate-950 hover:bg-slate-900 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 shadow transition">
-              <span>Google Play</span>
+        <!-- Right Side: Language & Auth -->
+        <div class="hidden md:flex items-center gap-5">
+          <!-- Language Selector -->
+          <div class="relative group">
+            <button type="button" class="flex items-center gap-2 px-2 py-1 text-white font-medium text-sm transition hover:text-yellow-400">
+              <Icon name="lucide:globe" class="w-4 h-4" />
+              <span>{{ currentLang.code }}</span>
+              <Icon name="lucide:chevron-down" class="w-3 h-3" />
             </button>
-            <button class="flex-1 sm:flex-none px-4 py-2 bg-white hover:bg-emerald-50 text-slate-950 text-xs font-bold rounded-xl flex items-center justify-center gap-2 shadow transition">
-              <span>App Store</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- QUICK SEARCH BAR (በከተማ፣ በስፖርት አይነት እና በሰዓት መፈለጊያ) -->
-        <div class="bg-white dark:bg-[#131c27] rounded-2xl shadow-xl p-4 sm:p-6 border border-slate-200 dark:border-[#212e3e]">
-          <form @submit.prevent="handleSearch" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
-            
-            <!-- Sport Type Dropdown -->
-            <div class="flex flex-col">
-              <label class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">የስፖርት አይነት</label>
-              <select 
-                v-model="searchFilters.sport" 
-                class="w-full bg-slate-50 dark:bg-[#0b111a] border border-slate-200 dark:border-[#212e3e] rounded-xl px-3 py-3 font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm"
-              >
-                <option value="">ሁሉም ስፖርቶች</option>
-                <option value="futsal">ፉትሳል (Futsal)</option>
-                <option value="basketball">ባስኬትቦል</option>
-                <option value="tennis">ቴኒስ</option>
-              </select>
-            </div>
-
-            <!-- Location Dropdown -->
-            <div class="flex flex-col">
-              <label class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">ቦታ / ሰፈር</label>
-              <select 
-                v-model="searchFilters.location" 
-                class="w-full bg-slate-50 dark:bg-[#0b111a] border border-slate-200 dark:border-[#212e3e] rounded-xl px-3 py-3 font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm"
-              >
-                <option value="">ሁሉም ቦታዎች</option>
-                <option value="bole">ቦሌ</option>
-                <option value="sarbet">ሳርቤት</option>
-                <option value="kazanchis">ካዛንችስ</option>
-                <option value="cmc">ሲኤምሲ (CMC)</option>
-              </select>
-            </div>
-
-            <!-- Date Picker -->
-            <div class="flex flex-col">
-              <label class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">ቀን</label>
-              <input 
-                v-model="searchFilters.date"
-                type="date" 
-                class="w-full bg-slate-50 dark:bg-[#0b111a] border border-slate-200 dark:border-[#212e3e] rounded-xl px-3 py-3 font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm"
-              />
-            </div>
-
-            <!-- Time Slot Input (የሰዓት መፈለጊያ) -->
-            <div class="flex flex-col">
-              <label class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">ሰዓት</label>
-              <input 
-                v-model="searchFilters.time"
-                type="time" 
-                class="w-full bg-slate-50 dark:bg-[#0b111a] border border-slate-200 dark:border-[#212e3e] rounded-xl px-3 py-3 font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm"
-              />
-            </div>
-
-            <!-- Search Button -->
-            <div class="flex items-end">
+            <div class="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-900 rounded-xl shadow-xl border dark:border-gray-800 py-2 hidden group-hover:block transition-all z-50">
               <button 
-                type="submit" 
-                class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3 px-4 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-sm"
+                type="button"
+                v-for="lang in languages" 
+                :key="lang.code"
+                @click="changeLanguage(lang)"
+                class="w-full px-4 py-2 text-left flex items-center gap-3 text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-800 hover:text-green-600 transition"
               >
-                <span>ፈልግ</span>
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                </svg>
+                <span>{{ lang.flag }}</span>
+                <span>{{ lang.name }}</span>
               </button>
             </div>
-
-          </form>
-        </div>
-      </div>
-
-      <!-- 4. HOW IT WORKS SECTION (አዲስ የተጨመረ - 3 Steps) -->
-      <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div class="text-center max-w-2xl mx-auto mb-12">
-          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">እንዴት ይሰራል? (How It Works)</h2>
-          <p class="text-slate-600 dark:text-slate-400 text-sm mt-2">በ 3 ቀላል ደረጃዎች ሜዳዎን ይያዙ እና ጨዋታዎን ይጀምሩ</p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div class="bg-white dark:bg-[#131c27] p-8 rounded-2xl border border-slate-200 dark:border-[#212e3e] text-center space-y-4 shadow-sm relative">
-            <div class="w-14 h-14 bg-emerald-500/10 text-emerald-500 font-extrabold text-2xl rounded-2xl flex items-center justify-center mx-auto">
-              1
-            </div>
-            <h3 class="text-xl font-bold text-slate-900 dark:text-white">ሜዳ ይፈልጉ (Search)</h3>
-            <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
-              በአቅራቢያዎ የሚገኙ የስፖርት ሜዳዎችን በስፖርት አይነት፣ በቦታ እና ክፍት በሆኑ ሰዓቶች ይፈልጉ።
-            </p>
           </div>
 
-          <div class="bg-white dark:bg-[#131c27] p-8 rounded-2xl border border-slate-200 dark:border-[#212e3e] text-center space-y-4 shadow-sm relative">
-            <div class="w-14 h-14 bg-emerald-500/10 text-emerald-500 font-extrabold text-2xl rounded-2xl flex items-center justify-center mx-auto">
-              2
-            </div>
-            <h3 class="text-xl font-bold text-slate-900 dark:text-white">ሰዓት መርጠው ይክፈሉ (Select & Pay)</h3>
-            <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
-              የሚመችዎትን ሰዓት ይምረጡ፤ በ ቴሌብር፣ CBE Birr ወይም ባንክ ካርድ በሰከንዶች ውስጥ ይክፈሉ።
-            </p>
-          </div>
-
-          <div class="bg-white dark:bg-[#131c27] p-8 rounded-2xl border border-slate-200 dark:border-[#212e3e] text-center space-y-4 shadow-sm relative">
-            <div class="w-14 h-14 bg-emerald-500/10 text-emerald-500 font-extrabold text-2xl rounded-2xl flex items-center justify-center mx-auto">
-              3
-            </div>
-            <h3 class="text-xl font-bold text-slate-900 dark:text-white">ይጫወቱ (Play!)</h3>
-            <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
-              የተላከሎትን ዲጂታል QR Code ቲኬት ለሜዳው አስተዳዳሪ በማሳየት በደስታ ይጫወቱ።
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <!-- 5. FEATURED VENUES SECTION -->
-      <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-3">
-          <div>
-            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">ታዋቂ ሜዳዎች</h2>
-            <p class="text-slate-600 dark:text-slate-400 text-sm mt-1">በተጫዋቾች ዘንድ ከፍተኛ ደረጃ የተሰጣቸው</p>
-          </div>
-          <NuxtLink 
-            to="/venues" 
-            class="text-emerald-500 font-bold hover:text-emerald-400 flex items-center gap-1 transition text-sm"
-          >
-            ሁሉንም ይመልከቱ &rarr;
-          </NuxtLink>
-        </div>
-
-        <!-- Venue Cards Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div 
-            v-for="venue in sampleVenues" 
-            :key="venue.id" 
-            class="bg-white dark:bg-[#131c27] rounded-2xl overflow-hidden border border-slate-200 dark:border-[#212e3e] hover:shadow-xl transition flex flex-col group"
-          >
-            <div class="relative h-48 bg-slate-200 dark:bg-slate-800 overflow-hidden">
-              <img 
-                :src="venue.image" 
-                :alt="venue.name" 
-                class="w-full h-full object-cover group-hover:scale-105 transition duration-300" 
-                loading="lazy"
-              />
-              <span class="absolute top-3 right-3 bg-slate-950/80 backdrop-blur-md px-2.5 py-1 rounded-full text-xs font-bold text-emerald-400 border border-emerald-500/20">
-                ⭐ {{ venue.rating }}
-              </span>
-            </div>
-
-            <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
-              <div>
-                <span class="text-xs font-semibold text-emerald-500 uppercase tracking-wide">{{ venue.category }}</span>
-                <h3 class="text-xl font-bold text-slate-900 dark:text-white mt-1">{{ venue.name }}</h3>
-                <p class="text-slate-500 dark:text-slate-400 text-sm mt-1 flex items-center gap-1">
-                  📍 {{ venue.location }}
-                </p>
-              </div>
-
-              <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-[#212e3e]">
-                <div>
-                  <span class="text-lg font-black text-slate-900 dark:text-white">{{ venue.price }} ETB</span>
-                  <span class="text-xs text-slate-500 dark:text-slate-400"> / ሰዓት</span>
-                </div>
-                <NuxtLink 
-                  :to="`/venues/${venue.id}`" 
-                  class="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold rounded-xl transition shadow-md"
-                >
-                  ያዝ
-                </NuxtLink>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 6. UPCOMING PICK-UP GAMES SECTION (አዲስ የተጨመረ) -->
-      <section class="bg-slate-100 dark:bg-[#0b111a] py-16 px-4 sm:px-6 lg:px-8 border-t border-slate-200 dark:border-[#212e3e]">
-        <div class="max-w-7xl mx-auto">
-          <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-3">
-            <div>
-              <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">በቅርብ የሚደረጉ ጨዋታዎች (Pick-up Games)</h2>
-              <p class="text-slate-600 dark:text-slate-400 text-sm mt-1">ተጫዋች የጎደላቸው ቡድኖችን ይቀላቀሉ ወይም የራስዎን ጨዋታ ይክፈቱ</p>
-            </div>
-            <NuxtLink 
-              to="/games" 
-              class="text-emerald-500 font-bold hover:text-emerald-400 flex items-center gap-1 transition text-sm"
-            >
-              ሁሉንም ጨዋታዎች ይመልከቱ &rarr;
+          <!-- Auth Buttons -->
+          <div class="flex items-center gap-3">
+            <NuxtLink to="/login" class="text-white hover:text-yellow-400 font-semibold text-sm transition">
+              ግባ
+            </NuxtLink>
+            <NuxtLink to="/register" class="bg-yellow-500 hover:bg-yellow-400 text-green-950 font-bold px-5 py-2.5 rounded-xl transition shadow-md flex items-center gap-2 text-sm">
+              <Icon name="lucide:user-plus" class="w-4 h-4" />
+              ተመዝገብ
             </NuxtLink>
           </div>
+        </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div 
-              v-for="game in upcomingGames" 
-              :key="game.id"
-              class="bg-white dark:bg-[#131c27] p-6 rounded-2xl border border-slate-200 dark:border-[#212e3e] shadow-sm flex flex-col justify-between space-y-4"
-            >
-              <div class="flex justify-between items-start">
+        <!-- Mobile Menu Toggle -->
+        <button type="button" @click="isMobileMenuOpen = !isMobileMenuOpen" class="md:hidden text-white p-2">
+          <Icon :name="isMobileMenuOpen ? 'lucide:x' : 'lucide:menu'" class="w-7 h-7" />
+        </button>
+      </div>
+
+      <!-- Mobile Dropdown Menu -->
+      <Transition 
+        enter-active-class="transition duration-300 ease-out"
+        enter-from-class="opacity-0 -translate-y-2"
+        enter-to-class="opacity-100 translate-y-0"
+        leave-active-class="transition duration-200 ease-in"
+        leave-from-class="opacity-100 translate-y-0"
+        leave-to-class="opacity-0 -translate-y-2"
+      >
+        <div v-if="isMobileMenuOpen" class="md:hidden bg-green-800 dark:bg-green-950 border-t border-white/10 px-4 pt-4 pb-6 space-y-4 shadow-xl">
+          <nav class="flex flex-col gap-2 font-semibold text-white text-sm">
+            <button type="button" @click="scrollToSection('hero', true)" class="text-left py-3 border-b border-white/10">መነሻ</button>
+            <button type="button" @click="scrollToSection('sports-info', true)" class="text-left py-3 border-b border-white/10">ስለ ስፖርቶች</button>
+            <button type="button" @click="scrollToSection('how-it-works', true)" class="text-left py-3 border-b border-white/10">አሰራራችን</button>
+            <button type="button" @click="scrollToSection('venues', true)" class="text-left py-3 border-b border-white/10">ሜዳዎች</button>
+            <NuxtLink to="/justplay" @click="isMobileMenuOpen = false" class="py-3 border-b border-white/10">ጨዋታዎች</NuxtLink>
+            <NuxtLink to="/contact" @click="isMobileMenuOpen = false" class="py-3 border-b border-white/10">አግኙን</NuxtLink>
+          </nav>
+          <div class="grid grid-cols-2 gap-3 pt-4">
+            <NuxtLink to="/login" @click="isMobileMenuOpen = false" class="bg-white/10 text-white border border-white/20 font-bold py-3 rounded-xl text-center text-sm">
+              ግባ
+            </NuxtLink>
+            <NuxtLink to="/register" @click="isMobileMenuOpen = false" class="bg-yellow-500 text-green-950 font-bold py-3 rounded-xl text-center text-sm">
+              ተመዝገብ
+            </NuxtLink>
+          </div>
+        </div>
+      </Transition>
+    </header>
+
+    <!-- 1. HERO SECTION -->
+    <section id="hero" class="relative min-h-[85vh] flex items-center bg-gradient-to-br from-green-800 via-green-700 to-green-900 text-white pt-24 pb-16 px-4 overflow-hidden">
+      <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:30px_30px]"></div>
+      
+      <div class="max-w-6xl mx-auto relative z-10">
+        <div class="grid lg:grid-cols-2 gap-8 items-center">
+          <div class="space-y-8 text-center lg:text-left">
+            <div class="inline-flex items-center gap-2 px-4 py-2 bg-green-900/50 backdrop-blur-md border border-green-500/30 rounded-full">
+              <span class="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></span>
+              <span class="text-xs font-bold text-yellow-400 uppercase tracking-wider">የኢትዮጵያ የስፖርት ሜዳዎች መፈለጊያ</span>
+            </div>
+            
+            <h1 class="text-5xl md:text-6xl lg:text-7xl font-black mb-4 leading-[1.1] tracking-tight">
+              የስፖርት ሜዳዎችን <br/> 
+              <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500">በዘመናዊ መንገድ</span> ያግኙ
+            </h1>
+            
+            <p class="text-lg md:text-xl text-green-50/90 leading-relaxed max-w-xl mx-auto lg:mx-0 font-medium">
+              በኢትዮጵያ ውስጥ ያሉ የራሳቸው ሜዳ እና መሰረተ ልማት ያላቸውን የስፖርት ቦታዎች ይፈልጉ፣ ቀጠሮ ይያዙ።
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-2">
+              <NuxtLink to="/download" class="bg-yellow-500 hover:bg-yellow-400 text-green-950 font-bold px-8 py-4 rounded-xl shadow-lg transition-transform transform hover:-translate-y-1 flex items-center justify-center gap-2">
+                <Icon name="lucide:download" class="w-5 h-5" />
+                መተግበሪያውን ያውርዱ
+              </NuxtLink>
+              
+              <NuxtLink to="/justplay" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold px-8 py-4 rounded-xl transition-all flex items-center justify-center gap-2 backdrop-blur-sm">
+                <Icon name="lucide:users" class="w-5 h-5" />
+                ተጫዋች ፈልግ
+              </NuxtLink>
+            </div>
+          </div>
+
+          <!-- Hero Illustration -->
+          <div class="hidden lg:block relative">
+            <div class="absolute inset-0 bg-gradient-to-tr from-green-400/30 to-yellow-500/20 rounded-3xl blur-3xl"></div>
+            <img src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=1000" alt="Football pitch" class="relative rounded-3xl shadow-2xl border border-white/10 object-cover h-[450px] w-full" />
+            
+            <div class="absolute -bottom-6 -left-6 bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-2xl border dark:border-gray-800 flex items-center gap-4 animate-bounce [animation-duration:4s]">
+              <div class="bg-green-100 dark:bg-green-900/50 p-4 rounded-full text-green-600 dark:text-green-400">
+                <Icon name="lucide:activity" class="w-8 h-8" />
+              </div>
+              <div>
+                <p class="text-3xl font-black text-gray-900 dark:text-white">100+</p>
+                <p class="text-sm font-semibold text-gray-500">ዕለታዊ ጨዋታዎች</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. SMART SEARCH BAR -->
+    <div class="max-w-6xl mx-auto px-4 -mt-12 relative z-30 mb-16">
+      <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-xl shadow-gray-200/50 dark:shadow-none border dark:border-gray-800 flex flex-col md:flex-row flex-wrap lg:flex-nowrap gap-3 items-center">
+        
+        <!-- Text Search -->
+        <div class="w-full flex-1 relative group">
+          <Icon name="lucide:search" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-green-500 transition-colors" />
+          <input 
+            v-model="searchQuery"
+            type="text" 
+            placeholder="የሜዳ ስም ወይም ቦታ..." 
+            class="w-full pl-12 pr-4 py-3.5 bg-gray-50 dark:bg-gray-800/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 transition-all dark:text-white text-sm font-medium" 
+          />
+        </div>
+
+        <!-- Dropdown: All Cities -->
+        <div class="w-full md:w-48 lg:w-56 relative group">
+          <Icon name="lucide:map-pin" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-green-500 transition-colors z-10" />
+          <select 
+            v-model="selectedCity"
+            @change="handleCityChange"
+            class="w-full pl-11 pr-8 py-3.5 bg-gray-50 dark:bg-gray-800/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 transition-all dark:text-white appearance-none cursor-pointer text-sm font-medium"
+          >
+            <option value="all">ሁሉም ከተሞች (All Cities)</option>
+            <option v-for="city in cities" :key="city" :value="city">{{ city }}</option>
+          </select>
+          <Icon name="lucide:chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none w-4 h-4" />
+        </div>
+
+        <!-- Dynamic Dropdown: Sub-Cities (Appears only if Addis Ababa is selected) -->
+        <div v-if="selectedCity === 'አዲስ አበባ (Addis Ababa)'" class="w-full md:w-48 lg:w-56 relative group">
+          <Icon name="lucide:building-2" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-green-500 transition-colors z-10" />
+          <select 
+            v-model="selectedSubCity"
+            class="w-full pl-11 pr-8 py-3.5 bg-gray-50 dark:bg-gray-800/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 transition-all dark:text-white appearance-none cursor-pointer text-sm font-medium"
+          >
+            <option value="all">ሁሉም ክፍለ ከተሞች</option>
+            <option v-for="subCity in subCities" :key="subCity" :value="subCity">{{ subCity }}</option>
+          </select>
+          <Icon name="lucide:chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none w-4 h-4" />
+        </div>
+
+        <!-- Dropdown: All Sports -->
+        <div class="w-full md:w-48 lg:w-56 relative group">
+          <Icon name="lucide:trophy" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-green-500 transition-colors z-10" />
+          <select 
+            v-model="selectedSport"
+            class="w-full pl-11 pr-8 py-3.5 bg-gray-50 dark:bg-gray-800/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 transition-all dark:text-white appearance-none cursor-pointer text-sm font-medium"
+          >
+            <option value="all">ሁሉም ስፖርቶች (All Sports)</option>
+            <option v-for="sport in sportsList" :key="sport.id" :value="sport.id">{{ sport.name }}</option>
+          </select>
+          <Icon name="lucide:chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none w-4 h-4" />
+        </div>
+
+        <!-- Search Button -->
+        <button type="button" @click="executeSearch" class="w-full md:w-auto px-8 py-3.5 bg-green-600 hover:bg-green-700 active:scale-95 text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-sm whitespace-nowrap">
+          <Icon name="lucide:search" class="w-4 h-4" />
+          ፈልግ
+        </button>
+
+      </div>
+    </div>
+
+    <!-- 3. SPORTS OVERVIEW SECTION -->
+    <section id="sports-info" class="py-12 bg-white dark:bg-gray-900 border-b dark:border-gray-800">
+      <div class="max-w-6xl mx-auto px-4">
+        <div class="text-center max-w-3xl mx-auto mb-12">
+          <h2 class="text-3xl font-black dark:text-white mb-3">በኢትዮጵያ የራሳቸው ሜዳ ያላቸው የስፖርት ዓይነቶች</h2>
+          <p class="text-gray-500 dark:text-gray-400 text-sm md:text-base leading-relaxed">
+            በሀገራችን በስፋት የሚዘወተሩ፣ የራሳቸው መሰረተ ልማት እና የተዘጋጁ ሜዳዎች ያሏቸው ዋና ዋና የስፖርት ዓይነቶች እና የጨዋታ ቦታዎች መረጃ።
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div v-for="sport in sportsOverview" :key="sport.title" class="p-5 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border dark:border-gray-800 hover:border-green-500/40 transition-all">
+            <div class="w-12 h-12 bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400 rounded-xl flex items-center justify-center mb-4">
+              <Icon :name="sport.icon" class="w-6 h-6" />
+            </div>
+            <h3 class="font-bold text-lg dark:text-white mb-2">{{ sport.title }}</h3>
+            <p class="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">{{ sport.description }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. HOW IT WORKS -->
+    <section id="how-it-works" class="py-20 bg-gray-50 dark:bg-gray-950">
+      <div class="max-w-6xl mx-auto px-4 text-center">
+        <h2 class="text-3xl md:text-4xl font-black dark:text-white mb-3 tracking-tight">አሰራራችን እጅግ ቀላል ነው</h2>
+        <p class="text-gray-500 mb-16 font-medium text-lg">በሶስት ቀላል ደረጃዎች የራስዎን ሜዳ ያግኙ</p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+          <div class="hidden md:block absolute top-12 left-[16%] right-[16%] h-[2px] bg-gradient-to-r from-gray-200 via-green-500 to-gray-200 dark:from-gray-800 dark:via-green-600 dark:to-gray-800 -z-0"></div>
+          
+          <div v-for="(step, i) in steps" :key="i" class="relative z-10 bg-white dark:bg-gray-900 p-8 rounded-3xl shadow-sm border dark:border-gray-800 flex flex-col items-center hover:-translate-y-2 transition-transform duration-300">
+            <div class="w-20 h-20 bg-green-50 dark:bg-green-900/30 text-green-600 rounded-2xl flex items-center justify-center mb-6 shadow-inner rotate-3">
+              <Icon :name="step.icon" class="w-10 h-10" />
+            </div>
+            <h3 class="text-xl font-bold dark:text-white mb-3">{{ step.title }}</h3>
+            <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">{{ step.desc }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. FEATURED VENUES -->
+    <section id="venues" class="py-24 bg-white dark:bg-gray-900">
+      <div class="max-w-6xl mx-auto px-4">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+          <div>
+            <h2 class="text-3xl md:text-4xl font-black dark:text-white mb-3 tracking-tight">የተመዘገቡ ሜዳዎችና ስታዲየሞች</h2>
+            <p class="text-gray-500 font-medium">በመረጡት ቦታ እና የስፖርት አይነት የተለዩ ሜዳዎች</p>
+          </div>
+          <NuxtLink to="/venues" class="text-green-600 font-bold hover:text-green-700 flex items-center gap-1 group">
+            ሁሉንም ተመልከት <Icon name="lucide:arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </NuxtLink>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div v-for="venue in filteredVenues" :key="venue.id" class="bg-gray-50 dark:bg-gray-800/40 rounded-[2rem] overflow-hidden border dark:border-gray-800 hover:shadow-2xl hover:shadow-gray-200 dark:hover:shadow-none hover:border-green-500/30 transition-all duration-300 flex flex-col group">
+            <div class="h-64 relative overflow-hidden">
+              <img :src="venue.image" class="w-full h-full object-cover group-hover:scale-110 transition duration-700" :alt="venue.name" loading="lazy" />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div class="absolute top-4 right-4 px-3 py-1 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md rounded-lg text-xs font-bold text-gray-900 dark:text-white shadow-sm uppercase">
+                {{ venue.sportType }}
+              </div>
+            </div>
+            <div class="p-6 flex flex-col flex-grow">
+              <div class="flex justify-between items-start mb-4">
                 <div>
-                  <span class="px-2.5 py-1 bg-amber-500/10 text-amber-500 border border-amber-500/20 text-xs font-bold rounded-full">
-                    {{ game.spotsLeft }} ሰው ይጎድላል
-                  </span>
-                  <h3 class="text-lg font-bold text-slate-900 dark:text-white mt-2">{{ game.title }}</h3>
-                  <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">📍 {{ game.venue }}</p>
+                  <h3 class="text-xl font-bold dark:text-white mb-2 group-hover:text-green-600 transition-colors">{{ venue.name }}</h3>
+                  <p class="text-gray-500 text-sm flex items-center gap-1.5 font-medium">
+                    <Icon name="lucide:map-pin" class="w-4 h-4 text-gray-400" /> {{ venue.city }} <span v-if="venue.subCity">({{ venue.subCity }})</span>
+                  </p>
+                  <p class="text-xs text-gray-400 mt-1">{{ venue.address }}</p>
                 </div>
-                <div class="text-right">
-                  <span class="text-base font-extrabold text-emerald-500">{{ game.pricePerPerson }} ETB</span>
-                  <span class="text-xs text-slate-400 block">/ሰው</span>
+                <div class="flex items-center gap-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-500 px-2.5 py-1.5 rounded-lg text-xs font-bold">
+                  <Icon name="lucide:star" class="w-3.5 h-3.5 fill-current" />
+                  {{ venue.rating }}
                 </div>
               </div>
-
-              <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-[#212e3e]">
-                <span class="text-xs font-semibold text-slate-600 dark:text-slate-300">🕒 {{ game.time }}</span>
-                <NuxtLink 
-                  to="/games"
-                  class="px-4 py-2 bg-slate-900 dark:bg-emerald-500 hover:bg-slate-800 dark:hover:bg-emerald-400 text-white dark:text-slate-950 text-xs font-bold rounded-xl transition"
-                >
-                  ተቀላቀል (Join)
+              <div class="mt-auto pt-5 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                <div>
+                  <p class="text-xs text-gray-500 font-medium mb-0.5">ዋጋ በሰዓት</p>
+                  <p class="text-xl font-black text-green-600">{{ venue.price }} <span class="text-xs text-gray-500 font-medium">ብር</span></p>
+                </div>
+                <NuxtLink :to="`/venues/${venue.id}`" class="px-6 py-3 bg-gray-900 dark:bg-gray-700 hover:bg-green-600 dark:hover:bg-green-600 text-white rounded-xl font-semibold text-sm transition-colors shadow-sm">
+                  ዝርዝር እይ
                 </NuxtLink>
               </div>
             </div>
           </div>
         </div>
-      </section>
 
-      <!-- 7. PARTNER / VENUE OWNER SECTION -->
-      <section class="bg-slate-900 dark:bg-[#0b111a] text-white py-16 px-4 sm:px-6 lg:px-8 border-t border-b border-slate-800 dark:border-[#212e3e]">
-        <div class="max-w-5xl mx-auto bg-slate-800/60 dark:bg-[#131c27] border border-slate-700 dark:border-[#212e3e] rounded-3xl p-6 sm:p-12 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div class="space-y-2 text-center md:text-left">
-            <h2 class="text-2xl sm:text-3xl font-extrabold">የስፖርት ሜዳ አለዎት?</h2>
-            <p class="text-slate-300 max-w-xl text-sm sm:text-base">
-              ከእኛ ጋር በመስራት የሜዳዎን መርሃግብር ያስተዳድሩ፣ ገቢዎን እና ደንበኞችዎን በቀላሉ ያሳድጉ!
-            </p>
-          </div>
-          <NuxtLink 
-            to="/register-venue" 
-            class="w-full sm:w-auto text-center px-8 py-3.5 bg-emerald-500 text-slate-950 hover:bg-emerald-400 font-bold rounded-xl shadow-lg transition text-sm"
-          >
-            ሜዳዎን ያስመዝግቡ
-          </NuxtLink>
-        </div>
-      </section>
-
-      <!-- 8. TRUST & PAYMENTS SECTION -->
-      <section class="py-10 bg-slate-100 dark:bg-[#070b10] border-b border-slate-200 dark:border-[#212e3e]">
-        <div class="max-w-7xl mx-auto px-4 text-center">
-          <p class="text-xs font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider mb-4">
-            በቀላሉ እና በአስተማማኝ ሁኔታ ይክፈሉ
-          </p>
-          <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-6 font-bold text-slate-700 dark:text-slate-300 text-xs sm:text-sm">
-            <span class="px-4 py-2 bg-white dark:bg-[#131c27] rounded-xl shadow-sm border border-slate-200 dark:border-[#212e3e]">Telebirr (ቴሌብር)</span>
-            <span class="px-4 py-2 bg-white dark:bg-[#131c27] rounded-xl shadow-sm border border-slate-200 dark:border-[#212e3e]">CBE Birr</span>
-            <span class="px-4 py-2 bg-white dark:bg-[#131c27] rounded-xl shadow-sm border border-slate-200 dark:border-[#212e3e]">Bank Cards</span>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <!-- 9. FOOTER SECTION -->
-    <footer class="bg-slate-900 dark:bg-[#0b111a] text-slate-400 py-10 px-4 sm:px-6 lg:px-8 border-t border-slate-800 dark:border-[#212e3e]">
-      <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-        <div class="space-y-3">
-          <span class="font-bold text-xl text-white">EthioSport</span>
-          <p class="text-xs sm:text-sm text-slate-400">
-            በኢትዮጵያ ውስጥ የስፖርት ሜዳዎችን በቀላሉ ለመያዝ እና የስፖርት ማህበረሰቡን ለማገናኘት የተሰራ ዲጂታል ፕላትፎርም።
-          </p>
-        </div>
-
-        <div>
-          <h4 class="text-white font-bold mb-3 text-sm">እኛን ለማግኘት</h4>
-          <ul class="space-y-2 text-xs sm:text-sm">
-            <li>📍 አዲስ አበባ፣ ኢትዮጵያ</li>
-            <li>📞 +251 900 000 000</li>
-            <li>✉️ info@ethiosport.et</li>
-          </ul>
-        </div>
-
-        <div>
-          <h4 class="text-white font-bold mb-3 text-sm">ጋዜጣችንን ይከታተሉ</h4>
-          <form @submit.prevent="handleSubscribe" class="flex flex-col gap-2">
-            <input 
-              v-model="newsletterEmail"
-              type="email" 
-              placeholder="ኢሜይልዎን ያስገቡ" 
-              required
-              class="bg-slate-800 dark:bg-[#131c27] border border-slate-700 dark:border-[#212e3e] rounded-xl px-3 py-2 text-xs sm:text-sm text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            />
-            <button type="submit" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-2 rounded-xl text-xs sm:text-sm transition">
-              Subscribe
-            </button>
-          </form>
+        <!-- Empty State -->
+        <div v-if="filteredVenues.length === 0" class="py-20 text-center bg-gray-50 dark:bg-gray-800/30 rounded-[2rem] border border-dashed dark:border-gray-700 mt-8">
+          <Icon name="lucide:search-x" class="w-16 h-16 text-gray-400 mx-auto mb-4" />
+          <h3 class="text-xl font-bold dark:text-white">ምንም ሜዳ አልተገኘም!</h3>
+          <p class="text-gray-500 text-sm mt-2">እባክዎን ሌላ ከተማ፣ ክፍለ ከተማ ወይም የስፖርት ዓይነት ይሞክሩ።</p>
+          <button type="button" @click="resetFilters" class="mt-4 text-green-600 font-semibold hover:underline">ፍለጋውን አጽዳ</button>
         </div>
       </div>
+    </section>
 
-      <div class="max-w-7xl mx-auto pt-6 border-t border-slate-800 dark:border-[#212e3e] text-center text-xs text-slate-500">
-        &copy; {{ new Date().getFullYear() }} EthioSport. መብቱ በህግ የተጠበቀ ነው።
+    <!-- 6. CALL TO ACTION -->
+    <section class="py-16 bg-green-800 relative overflow-hidden">
+      <div class="absolute -right-20 -top-20 w-96 h-96 bg-green-600 rounded-full blur-3xl opacity-50"></div>
+      
+      <div class="max-w-6xl mx-auto px-4 relative z-10 text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-8">
+        <div class="max-w-2xl">
+          <h2 class="text-3xl md:text-4xl font-black text-white mb-3">የራስዎ የስፖርት ሜዳ አለዎት?</h2>
+          <p class="text-green-100 font-medium text-lg leading-relaxed">በሜዳወች መተግበሪያ ላይ በመመዝገብ ደንበኞችዎን በቀላሉ ያስተዳድሩ፣ ገቢዎን ያሳድጉ። የዘመናዊው አሰራር አካል ይሁኑ።</p>
+        </div>
+        <NuxtLink to="/business/register" class="whitespace-nowrap bg-yellow-500 text-green-950 hover:bg-yellow-400 font-bold px-10 py-5 rounded-2xl shadow-xl transition-all hover:scale-105 flex items-center gap-2">
+          <Icon name="lucide:building" class="w-5 h-5" />
+          ሜዳዎን ያስመዝግቡ
+        </NuxtLink>
       </div>
-    </footer>
-
-    <!-- 10. MOBILE BOTTOM NAVIGATION BAR -->
-    <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 dark:bg-[#0b111a]/95 backdrop-blur-lg border-t border-slate-200 dark:border-[#212e3e] px-4 py-2 flex items-center justify-around shadow-lg">
-      <NuxtLink to="/" class="flex flex-col items-center text-slate-600 dark:text-slate-400 hover:text-emerald-500 dark:hover:text-emerald-400 font-medium text-[11px] gap-1" active-class="text-emerald-500 font-bold">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 00-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-        <span>መነሻ</span>
-      </NuxtLink>
-
-      <NuxtLink to="/venues" class="flex flex-col items-center text-slate-600 dark:text-slate-400 hover:text-emerald-500 dark:hover:text-emerald-400 font-medium text-[11px] gap-1" active-class="text-emerald-500 font-bold">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0v-5a1 1 0 011-1h2a1 1 0 011 1v5"/></svg>
-        <span>ሜዳዎች</span>
-      </NuxtLink>
-
-      <NuxtLink to="/events" class="flex flex-col items-center text-slate-600 dark:text-slate-400 hover:text-emerald-500 dark:hover:text-emerald-400 font-medium text-[11px] gap-1" active-class="text-emerald-500 font-bold">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-        <span>ውድድሮች</span>
-      </NuxtLink>
-
-      <NuxtLink to="/login" class="flex flex-col items-center text-slate-600 dark:text-slate-400 hover:text-emerald-500 dark:hover:text-emerald-400 font-medium text-[11px] gap-1" active-class="text-emerald-500 font-bold">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-        <span>መለያ</span>
-      </NuxtLink>
-    </nav>
-
+    </section>
   </div>
 </template>
+
+<script setup lang="ts">
+interface Language {
+  code: string
+  name: string
+  flag: string
+}
+
+interface Sport {
+  id: string
+  name: string
+}
+
+interface Venue {
+  id: number
+  name: string
+  city: string
+  subCity: string
+  address: string
+  sportType: string
+  price: string
+  rating: string
+  image: string
+}
+
+const isScrolled = ref(false)
+const isMobileMenuOpen = ref(false)
+
+const handleScroll = () => {
+  if (import.meta.client) {
+    isScrolled.value = window.scrollY > 50
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll, { passive: true })
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
+})
+
+const scrollToSection = (id: string, closeMobileMenu = false) => {
+  if (closeMobileMenu) isMobileMenuOpen.value = false
+  
+  const element = document.getElementById(id)
+  if (element) {
+    const headerOffset = 70
+    const elementPosition = element.getBoundingClientRect().top
+    const offsetPosition = elementPosition + window.scrollY - headerOffset
+  
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: 'smooth'
+    })
+  }
+}
+
+// Languages
+const languages: Language[] = [
+  { code: 'AM', name: 'አማርኛ', flag: '🇪🇹' },
+  { code: 'EN', name: 'English', flag: '🇬🇧' }
+]
+const currentLang = ref<Language>(languages[0])
+const changeLanguage = (lang: Language) => { currentLang.value = lang }
+
+// Search State
+const searchQuery = ref('')
+const selectedCity = ref('all')
+const selectedSubCity = ref('all')
+const selectedSport = ref('all')
+
+const handleCityChange = () => {
+  if (selectedCity.value !== 'አዲስ አበባ (Addis Ababa)') {
+    selectedSubCity.value = 'all'
+  }
+}
+
+const resetFilters = () => {
+  searchQuery.value = ''
+  selectedCity.value = 'all'
+  selectedSubCity.value = 'all'
+  selectedSport.value = 'all'
+}
+
+const executeSearch = () => {
+  scrollToSection('venues')
+}
+
+// Cities and Sub-Cities Data
+const cities = [
+  'አዲስ አበባ (Addis Ababa)',
+  'ባህር ዳር (Bahir Dar)',
+  'ሀዋሳ (Hawassa)',
+  'መቀሌ (Mekelle)',
+  'ድሬዳዋ (Dire Dawa)',
+  'ነቀምቴ (Nekemte)',
+  'ወልዲያ (Woldia)',
+  'ሆሳዕና (Hosaena)',
+  'አርባ ምንጭ (Arba Minch)',
+  'ሐረር (Harar)',
+  'ሱሉልታ (Sululta)'
+]
+
+const subCities = [
+  'ቦሌ (Bole)',
+  'አራዳ (Arada)',
+  'አዲስ ከተማ (Addis Ketema)',
+  'ልደታ (Lideta)',
+  'ቂርቆስ / ካዛንችስ / ሜክሲኮ',
+  'የካ (Yeka)',
+  'ጉለሌ (Gullele)',
+  'አቃቂ ቃሊቲ (Akaki Kality)',
+  'ኮልፌ ቀራኒዮ (Kolfe Keraniyo)',
+  'ንፋስ ስልክ ላፍቶ (Nifas Silk Lafto)'
+]
+
+// All Sports List
+const sportsList: Sport[] = [
+  { id: 'football', name: 'እግር ኳስ (Football / Futsal)' },
+  { id: 'athletics', name: 'አትሌቲክስ (Athletics)' },
+  { id: 'basketball', name: 'ቅርጫት ኳስ / ቮሊቦል / ሃንድቦል' },
+  { id: 'tennis', name: 'ቴኒስ (Tennis)' },
+  { id: 'golf', name: 'ጎልፍ (Golf)' },
+  { id: 'equestrian', name: 'የፈረስ ጉልበት / ሽርጥ' },
+  { id: 'swimming', name: 'ዋና (Swimming)' },
+  { id: 'traditional', name: 'ባህላዊ ስፖርቶች (ትግል፣ ገበጣ)' }
+]
+
+// Sports Info Section Data (Updated with standard Lucide icon identifiers)
+const sportsOverview = [
+  {
+    title: 'እግር ኳስ (Football)',
+    icon: 'lucide:trophy',
+    description: 'በኢትዮጵያ ከፍተኛ ቁጥር ያለው የስፖርት ሜዳና ስታዲየም የተዘጋጀለት የስፖርት ዓይነት ነው።'
+  },
+  {
+    title: 'አትሌቲክስ (Athletics)',
+    icon: 'lucide:activity',
+    description: 'አብዛኛዎቹ ዋና ዋና ስታዲየሞች የሩጫ ታርታን አላቸው። እንደ ሱሉልታ ያሉ ልዩ ማሰልጠኛዎች ይገኛሉ።'
+  },
+  {
+    title: 'ሜዳ ኳሶች (Courts)',
+    icon: 'lucide:target',
+    description: 'ቅርጫት ኳስ፣ ቮሊቦልና ሃንድቦል በወጣቶች ማዕከላትና ሜክሲኮ በሚገኘው የቅርጫት ኳስ ሜዳ ይከናወናሉ።'
+  },
+  {
+    title: 'ቴኒስ እና ጎልፍ',
+    icon: 'lucide:flag',
+    description: 'አዲስ አበባ ቴኒስ ክለብ፣ ሆቴሎች እና የአዲስ አበባ ጎልፍ ክለብ (ሜክሲኮ) የተዘጋጁ ሜዳዎች አሏቸው።'
+  },
+  {
+    title: 'ፈረስ ጉልበት (Equestrian)',
+    icon: 'lucide:shield',
+    description: 'የኢትዮጵያ ፈረስ ጉልበት ማህበር በጃንሜዳ አካባቢ የተዘጋጀ የራሱ የፈረስ ግልቢያ ሜዳ አለው።'
+  },
+  {
+    title: 'ዋና (Swimming)',
+    icon: 'lucide:waves',
+    description: 'በብሔራዊ ሆቴሎች፣ በወጣቶች ማዕከላት እና አዲስ ስፖርት ፓርክ ባሉ ቦታዎች የዋና ገንዳዎች አሉ።'
+  },
+  {
+    title: 'ባህላዊ ስፖርቶች',
+    icon: 'lucide:swords',
+    description: 'ትግል፣ ገበጣ እና ቅርጫ በበዓላት ወቅት በጃንሜዳ እና በክልል ባህል ማዕከላት ይካሄዳሉ።'
+  },
+  {
+    title: 'ባህር ዳርና ክልል ስታዲየሞች',
+    icon: 'lucide:map-pin',
+    description: 'በሀዋሳ፣ መቀሌ፣ ድሬዳዋ፣ ወለጋ፣ ወልዲያና ሆሳዕና የሚገኙ ብሔራዊ ደረጃ ያላቸው ስታዲየሞች።'
+  }
+]
+
+const steps = [
+  { icon: 'lucide:search', title: '1. ሜዳ ይፈልጉ', desc: 'በአቅራቢያዎ የሚገኙትን ምርጥ የስፖርት ሜዳዎች በቀላሉ በድረ-ገጻችን ያግኙ።' },
+  { icon: 'lucide:calendar-clock', title: '2. ሰዓት ይምረጡ', desc: 'ለእርስዎ የሚመችዎትን ሰዓት እና ቀን በመምረጥ ክፍያዎን ይፈጽሙ።' },
+  { icon: 'lucide:check-circle-2', title: '3. ይጫወቱ', desc: 'ቦታው ተይዞሎታል! ከጓደኞችዎ ጋር በመሄድ ጨዋታዎን በደስታ ያካሂዱ።' }
+]
+
+// Mock Venues Data
+const venues: Venue[] = [
+  { id: 1, name: 'ይድነቃቸው ተሰማ ስታዲየም', city: 'አዲስ አበባ (Addis Ababa)', subCity: 'ቂርቆስ / ካዛንችስ / ሜክሲኮ', address: 'ለገሃር / መስቀል አደባባይ', sportType: 'football', price: '2500', rating: '4.8', image: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=800' },
+  { id: 2, name: 'አበበ ቢቂላ ስታዲየም', city: 'አዲስ አበባ (Addis Ababa)', subCity: 'አዲስ ከተማ (Addis Ketema)', address: 'ካሳንችስ / አዲስ ከተማ', sportType: 'athletics', price: '1800', rating: '4.6', image: 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?q=80&w=800' },
+  { id: 3, name: 'ጃንሜዳ ስፖርት ማዕከል', city: 'አዲስ አበባ (Addis Ababa)', subCity: 'አራዳ (Arada)', address: 'አራት ኪሎ / 6 ኪሎ', sportType: 'equestrian', price: '1000', rating: '4.7', image: 'https://images.unsplash.com/photo-1551958219-acbc608c6377?q=80&w=800' },
+  { id: 4, name: 'አዲስ አበባ ጎልፍ ክለብ', city: 'አዲስ አበባ (Addis Ababa)', subCity: 'ቂርቆስ / ካዛንችስ / ሜክሲኮ', address: 'ሜክሲኮ / ለገሃር', sportType: 'golf', price: '3000', rating: '4.9', image: 'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?q=80&w=800' },
+  { id: 5, name: 'አዲስ ስፖርት ፓርክ', city: 'አዲስ አበባ (Addis Ababa)', subCity: 'ቦሌ (Bole)', address: 'ቦሌ / አዲስ አበባ', sportType: 'swimming', price: '1200', rating: '4.8', image: 'https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?q=80&w=800' },
+  { id: 6, name: 'ባህር ዳር ዓለም አቀፍ ስታዲየም', city: 'ባህር ዳር (Bahir Dar)', subCity: '', address: 'ባህር ዳር ከተማ', sportType: 'football', price: '2000', rating: '4.9', image: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=800' },
+  { id: 7, name: 'ሱሉልታ አትሌቲክስ ማዕከል', city: 'ሱሉልታ (Sululta)', subCity: '', address: 'ሱሉልታ', sportType: 'athletics', price: '1500', rating: '4.7', image: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=800' }
+]
+
+// Filter Logic
+const filteredVenues = computed(() => {
+  return venues.filter(venue => {
+    // 1. Text Search
+    const query = searchQuery.value.trim().toLowerCase()
+    const matchesSearch = query === '' || 
+      venue.name.toLowerCase().includes(query) || 
+      venue.address.toLowerCase().includes(query)
+
+    // 2. City Filter
+    const matchesCity = selectedCity.value === 'all' || venue.city === selectedCity.value
+
+    // 3. Sub-City Filter (Only applied if Addis Ababa is selected)
+    const matchesSubCity = selectedCity.value !== 'አዲስ አበባ (Addis Ababa)' || 
+                           selectedSubCity.value === 'all' || 
+                           venue.subCity === selectedSubCity.value
+
+    // 4. Sport Filter
+    const matchesSport = selectedSport.value === 'all' || venue.sportType === selectedSport.value
+
+    return matchesSearch && matchesCity && matchesSubCity && matchesSport
+  })
+})
+</script>

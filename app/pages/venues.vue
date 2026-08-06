@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 
 // Page Title & Meta (SEO)
 useHead({
@@ -9,15 +9,10 @@ useHead({
   ]
 })
 
-// Navigation Links (ለ Header)
-const navLinks = [
-  
-]
-
 // Auth State Check
 const userToken = useCookie('auth_token')
 
-// Book Now ሲነካ የሚሰራ Navigation Logic
+// Book Now Navigation Logic
 const handleBooking = (venueId) => {
   if (!userToken.value) {
     return navigateTo(`/login?redirect=/venues/${venueId}`)
@@ -25,12 +20,67 @@ const handleBooking = (venueId) => {
   return navigateTo(`/venues/${venueId}`)
 }
 
+// -------------------------------------------------------------
+// FILTER OPTIONS & DATA
+// -------------------------------------------------------------
+const cities = [
+  'Addis Ababa',
+  'Bahir Dar',
+  'Hawassa',
+  'Mekelle',
+  'Dire Dawa',
+  'Nekemte',
+  'Woldiya',
+  'Hosaena',
+  'Arba Minch',
+  'Wonji',
+  'Harar',
+  'Sululta'
+]
+
+const addisSubCitiesWithVenues = [
+  'Bole',
+  'Yeka',
+  'Kirkos',
+  'Arada',
+  'Lideta',
+  'Nifas Silk-Lafto',
+  'Kolfe Keraniyo',
+  'Gullele',
+  'Akaky Kaliti',
+  'Lemi Kura'
+]
+
+const allSportsOptions = [
+  'Football',
+  'Athletics',
+  'Basketball',
+  'Volleyball',
+  'Handball',
+  'Tennis',
+  'Golf',
+  'Equestrian',
+  'Swimming',
+  'Traditional Sports'
+]
+
+// Filter Input States
+const searchQuery = ref('')
+const selectedCity = ref('All')
+const selectedSubCity = ref('All')
+const selectedSport = ref('All')
+const maxPrice = ref(2000)
+const sortBy = ref('rating')
+const isMobileFilterOpen = ref(false)
+
 // Sample Venues Data
 const venues = ref([
   {
     id: 1,
     name: 'ሳርቤት ፉትሳል ሜዳ',
     sport: 'Football',
+    city: 'Addis Ababa',
+    subCity: 'Nifas Silk-Lafto',
     location: 'ሳርቤት፣ አዲስ አበባ',
     rating: 4.8,
     reviewsCount: 124,
@@ -38,8 +88,7 @@ const venues = ref([
     distance: 2.5,
     images: [
       'https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=600&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1529900748604-07564a03e7a6?q=80&w=600&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=600&auto=format&fit=crop'
+      'https://images.unsplash.com/photo-1529900748604-07564a03e7a6?q=80&w=600&auto=format&fit=crop'
     ],
     currentImageIndex: 0
   },
@@ -47,14 +96,15 @@ const venues = ref([
     id: 2,
     name: 'ቦሌ አሬና ቴኒስ ክለብ',
     sport: 'Tennis',
+    city: 'Addis Ababa',
+    subCity: 'Bole',
     location: 'ቦሌ፣ አዲስ አበባ',
     rating: 4.9,
     reviewsCount: 88,
     price: 1200,
     distance: 4.1,
     images: [
-      'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?q=80&w=600&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?q=80&w=600&auto=format&fit=crop'
+      'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?q=80&w=600&auto=format&fit=crop'
     ],
     currentImageIndex: 0
   },
@@ -62,70 +112,96 @@ const venues = ref([
     id: 3,
     name: 'ሲኤምሲ ቅርጫት ኳስ ሜዳ',
     sport: 'Basketball',
+    city: 'Addis Ababa',
+    subCity: 'Yeka',
     location: 'ሲኤምሲ፣ አዲስ አበባ',
     rating: 4.6,
     reviewsCount: 56,
     price: 600,
     distance: 8.0,
     images: [
-      'https://images.unsplash.com/photo-1519861531473-9200262188bf?q=80&w=600&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=600&auto=format&fit=crop'
+      'https://images.unsplash.com/photo-1519861531473-9200262188bf?q=80&w=600&auto=format&fit=crop'
     ],
     currentImageIndex: 0
   },
   {
     id: 4,
-    name: 'ካዛንችስ ስፖርት ሴንተር',
+    name: 'ባህር ዳር ዓለም አቀፍ ስታዲየም',
     sport: 'Football',
-    location: 'ካዛንችስ፣ አዲስ አበባ',
-    rating: 4.7,
-    reviewsCount: 92,
-    price: 1000,
-    distance: 1.2,
+    city: 'Bahir Dar',
+    subCity: '',
+    location: 'ባህር ዳር',
+    rating: 4.9,
+    reviewsCount: 210,
+    price: 1500,
+    distance: 1.5,
     images: [
-      'https://images.unsplash.com/photo-1529900748604-07564a03e7a6?q=80&w=600&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=600&auto=format&fit=crop'
+      'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=600&auto=format&fit=crop'
     ],
     currentImageIndex: 0
   },
   {
     id: 5,
-    name: 'ጃክሮስ ቴኒስ ሜዳ',
-    sport: 'Tennis',
-    location: 'ጃክሮስ፣ አዲስ አበባ',
-    rating: 4.4,
-    reviewsCount: 34,
-    price: 900,
-    distance: 10.5,
-    images: [
-      'https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?q=80&w=600&auto=format&fit=crop'
-    ],
-    currentImageIndex: 0
-  },
-  {
-    id: 6,
-    name: 'አትሌቲክስ ባስኬትቦል አሬና',
-    sport: 'Basketball',
-    location: 'መክሲኮ፣ አዲስ አበባ',
+    name: 'ሱሉልታ አትሌቲክስ ማዕከል',
+    sport: 'Athletics',
+    city: 'Sululta',
+    subCity: '',
+    location: 'ሱሉልታ',
     rating: 4.8,
-    reviewsCount: 110,
-    price: 750,
-    distance: 3.0,
+    reviewsCount: 45,
+    price: 1000,
+    distance: 18.0,
     images: [
-      'https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=600&auto=format&fit=crop'
+      'https://images.unsplash.com/photo-1530541930197-ff16ac917b0e?q=80&w=600&auto=format&fit=crop'
     ],
     currentImageIndex: 0
   }
 ])
 
-// Filter States
-const maxPrice = ref(2000)
-const selectedSports = ref(['Football', 'Basketball', 'Tennis'])
-const sortBy = ref('rating')
-const searchQuery = ref('')
-const isMobileFilterOpen = ref(false)
+// Reset sub-city selection whenever city changes
+watch(selectedCity, (newCity) => {
+  if (newCity !== 'Addis Ababa') {
+    selectedSubCity.value = 'All'
+  }
+})
 
-// Carousel Actions
+// Dynamic Filter & Sort Logic
+const filteredVenues = computed(() => {
+  return venues.value
+    .filter(venue => {
+      const query = searchQuery.value.trim().toLowerCase()
+      const matchesSearch = !query || 
+        venue.name.toLowerCase().includes(query) ||
+        venue.location.toLowerCase().includes(query)
+
+      const matchesCity = selectedCity.value === 'All' || venue.city === selectedCity.value
+      const matchesSubCity = selectedCity.value !== 'Addis Ababa' || selectedSubCity.value === 'All' || venue.subCity === selectedSubCity.value
+      const matchesSport = selectedSport.value === 'All' || venue.sport === selectedSport.value
+      const matchesPrice = venue.price <= maxPrice.value
+
+      return matchesSearch && matchesCity && matchesSubCity && matchesSport && matchesPrice
+    })
+    .sort((a, b) => {
+      if (sortBy.value === 'price_asc') return a.price - b.price
+      if (sortBy.value === 'price_desc') return b.price - a.price
+      if (sortBy.value === 'rating') return b.rating - a.rating
+      if (sortBy.value === 'distance') return a.distance - b.distance
+      return 0
+    })
+})
+
+// Action performed when user clicks Search / Reset
+const executeSearch = () => {
+  // Clearing input fields triggers re-evaluation of filteredVenues instantly
+  searchQuery.value = ''
+  selectedCity.value = 'All'
+  selectedSubCity.value = 'All'
+  selectedSport.value = 'All'
+  maxPrice.value = 2000
+  sortBy.value = 'rating'
+}
+
+// Carousel Navigation
 const nextImage = (venue) => {
   if (venue.images.length > 1) {
     venue.currentImageIndex = (venue.currentImageIndex + 1) % venue.images.length
@@ -137,86 +213,82 @@ const prevImage = (venue) => {
     venue.currentImageIndex = (venue.currentImageIndex - 1 + venue.images.length) % venue.images.length
   }
 }
-
-// Filter & Sort Logic
-const filteredVenues = computed(() => {
-  return venues.value
-    .filter(venue => {
-      const matchesSport = selectedSports.value.includes(venue.sport)
-      const matchesPrice = venue.price <= maxPrice.value
-      const matchesSearch = venue.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-                            venue.location.toLowerCase().includes(searchQuery.value.toLowerCase())
-      
-      return matchesSport && matchesPrice && matchesSearch
-    })
-    .sort((a, b) => {
-      if (sortBy.value === 'price_asc') return a.price - b.price
-      if (sortBy.value === 'price_desc') return b.price - a.price
-      if (sortBy.value === 'rating') return b.rating - a.rating
-      if (sortBy.value === 'distance') return a.distance - b.distance
-      return 0
-    })
-})
-
-const resetFilters = () => {
-  maxPrice.value = 2000
-  selectedSports.value = ['Football', 'Basketball', 'Tennis']
-  sortBy.value = 'rating'
-  searchQuery.value = ''
-}
 </script>
 
 <template>
   <div class="min-h-screen bg-slate-50 dark:bg-[#070b10] text-slate-800 dark:text-slate-100 font-sans pb-20 md:pb-12">
     
-    <!-- HEADER NAVBAR -->
-    <header class="sticky top-0 z-40 bg-white/95 dark:bg-[#0b111a]/95 backdrop-blur-md border-b border-slate-200 dark:border-[#212e3e]">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        <NuxtLink to="/" class="flex items-center gap-2">
-          <div class="w-9 h-9 bg-emerald-500 rounded-xl flex items-center justify-center text-slate-950 font-black text-xl shadow-md">
-            E
-          </div>
-          <span class="font-extrabold text-xl text-slate-900 dark:text-white tracking-tight">
-            ETHIO-<span class="text-emerald-500">sports</span>
-          </span>
-        </NuxtLink>
-
-        <nav class="hidden md:flex items-center gap-6">
-          <NuxtLink 
-            v-for="link in navLinks" 
-            :key="link.path" 
-            :to="link.path"
-            class="text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-emerald-500 dark:hover:text-emerald-400 transition"
-            active-class="text-emerald-500 dark:text-emerald-400 font-bold border-b-2 border-emerald-500 pb-1"
-          >
-            {{ link.name }}
-          </NuxtLink>
-        </nav>
-
-        <div class="flex items-center gap-3">
-          <NuxtLink to="/login" class="px-4 py-2 text-xs sm:text-sm font-bold text-slate-950 bg-emerald-500 hover:bg-emerald-400 rounded-xl shadow-md transition">
-            ግቡ
-          </NuxtLink>
-        </div>
-      </div>
-    </header>
-
-    <!-- SEARCH HERO BAR -->
+    <!-- SEARCH HERO BAR & DYNAMIC LOCATION/SPORT DROPDOWNS -->
     <section class="bg-slate-900 dark:bg-[#0b111a] text-white py-8 px-4 sm:px-6 lg:px-8 border-b border-slate-800 dark:border-[#212e3e]">
-      <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div class="max-w-7xl mx-auto space-y-6">
         <div>
           <h1 class="text-2xl sm:text-3xl font-black tracking-tight">የስፖርት ሜዳዎችን ይፈልጉ</h1>
-          <p class="text-slate-400 text-xs sm:text-sm mt-1">በአቅራቢያዎ ያሉ የተሻሉ የፉትሳል፣ ቴኒስ እና ባስኬትቦል ሜዳዎች</p>
+          <p class="text-slate-400 text-xs sm:text-sm mt-1">በአቅራቢያዎ ያሉ የተሻሉ የፉትሳል፣ አትሌቲክስ፣ ቴኒስ እና ሌሎች የስፖርት ሜዳዎች</p>
         </div>
 
-        <div class="w-full md:w-80 relative">
-          <input 
-            v-model="searchQuery"
-            type="text" 
-            placeholder="በስም ወይም በቦታ ይፈልጉ..." 
-            class="w-full bg-slate-800 dark:bg-[#131c27] text-white border border-slate-700 dark:border-[#212e3e] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 pl-10"
-          />
-          <span class="absolute left-3 top-3 text-slate-400">🔍</span>
+        <!-- Dynamic Dropdowns Grid -->
+        <div class="bg-slate-800/80 dark:bg-[#131c27] p-4 rounded-2xl border border-slate-700/60 dark:border-[#212e3e] shadow-xl">
+          <div 
+            class="grid gap-3" 
+            :class="selectedCity === 'Addis Ababa' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-5' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'"
+          >
+            <!-- Search Text Input -->
+            <div class="relative">
+              <input 
+                v-model="searchQuery"
+                type="text" 
+                placeholder="በስም ወይም በቦታ ይፈልጉ..." 
+                class="w-full bg-slate-900/90 dark:bg-[#0b111a] text-white border border-slate-700 dark:border-[#212e3e] rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              />
+              <span class="absolute left-3.5 top-3.5 text-slate-400 text-xs">🔍</span>
+            </div>
+
+            <!-- City Select -->
+            <div class="relative">
+              <select 
+                v-model="selectedCity"
+                class="w-full bg-slate-900/90 dark:bg-[#0b111a] text-slate-200 text-sm font-medium px-4 py-3 rounded-xl border border-slate-700 dark:border-[#212e3e] focus:outline-none focus:ring-2 focus:ring-emerald-500 appearance-none cursor-pointer"
+              >
+                <option value="All">All Cities (ሁሉም ከተሞች)</option>
+                <option v-for="c in cities" :key="c" :value="c">{{ c }}</option>
+              </select>
+              <span class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs">▼</span>
+            </div>
+
+            <!-- Conditional Sub-City Select (Only rendered if Addis Ababa is selected) -->
+            <div v-if="selectedCity === 'Addis Ababa'" class="relative">
+              <select 
+                v-model="selectedSubCity"
+                class="w-full bg-slate-900/90 dark:bg-[#0b111a] text-slate-200 text-sm font-medium px-4 py-3 rounded-xl border border-slate-700 dark:border-[#212e3e] focus:outline-none focus:ring-2 focus:ring-emerald-500 appearance-none cursor-pointer"
+              >
+                <option value="All">All Sub-Cities (ሁሉም ክፍለ ከተሞች)</option>
+                <option v-for="sc in addisSubCitiesWithVenues" :key="sc" :value="sc">{{ sc }}</option>
+              </select>
+              <span class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs">▼</span>
+            </div>
+
+            <!-- Sport Type Select -->
+            <div class="relative">
+              <select 
+                v-model="selectedSport"
+                class="w-full bg-slate-900/90 dark:bg-[#0b111a] text-slate-200 text-sm font-medium px-4 py-3 rounded-xl border border-slate-700 dark:border-[#212e3e] focus:outline-none focus:ring-2 focus:ring-emerald-500 appearance-none cursor-pointer"
+              >
+                <option value="All">All Sports (ሁሉም ስፖርቶች)</option>
+                <option v-for="s in allSportsOptions" :key="s" :value="s">{{ s }}</option>
+              </select>
+              <span class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs">▼</span>
+            </div>
+
+            <!-- Search / Reset Button -->
+            <button 
+              @click="executeSearch" 
+              type="button"
+              class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm py-3 rounded-xl shadow-md transition-transform active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <span>🔍</span>
+              <span>ይፈልጉ (Search)</span>
+            </button>
+          </div>
         </div>
       </div>
     </section>
@@ -230,7 +302,7 @@ const resetFilters = () => {
           @click="isMobileFilterOpen = !isMobileFilterOpen"
           class="flex items-center gap-2 bg-white dark:bg-[#131c27] px-4 py-2 rounded-xl border border-slate-200 dark:border-[#212e3e] text-sm font-bold shadow-sm"
         >
-          <span>⚙️ ማጣሪያዎች (Filters)</span>
+          <span>⚙️ ተጨማሪ ማጣሪያዎች (Filters)</span>
         </button>
         <span class="text-xs font-semibold text-slate-500">{{ filteredVenues.length }} ሜዳዎች ተገኝተዋል</span>
       </div>
@@ -244,12 +316,12 @@ const resetFilters = () => {
             isMobileFilterOpen ? 'block' : 'hidden md:block'
           ]"
         >
-          <div class="bg-white dark:bg-[#131c27] p-6 rounded-2xl border border-slate-200 dark:border-[#212e3e] shadow-sm space-y-6 sticky top-24">
+          <div class="bg-white dark:bg-[#131c27] p-6 rounded-2xl border border-slate-200 dark:border-[#212e3e] shadow-sm space-y-6 sticky top-8">
             
             <div class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-[#212e3e]">
-              <h3 class="font-extrabold text-base text-slate-900 dark:text-white">ማጣሪያዎች</h3>
-              <button @click="resetFilters" class="text-xs text-emerald-500 hover:underline font-semibold">
-                አጽዳ (Reset)
+              <h3 class="font-extrabold text-base text-slate-900 dark:text-white">ተጨማሪ ማጣሪያዎች</h3>
+              <button @click="executeSearch" class="text-xs text-emerald-500 hover:underline font-semibold">
+                አጽዳ
               </button>
             </div>
 
@@ -270,40 +342,6 @@ const resetFilters = () => {
               <div class="flex justify-between text-[11px] text-slate-400">
                 <span>300 ETB</span>
                 <span>2000 ETB</span>
-              </div>
-            </div>
-
-            <!-- Sport Type Checkboxes -->
-            <div class="space-y-3">
-              <label class="font-bold text-sm text-slate-700 dark:text-slate-300 block">የስፖርት ዓይነት</label>
-              <div class="space-y-2">
-                <label class="flex items-center gap-2.5 text-sm cursor-pointer text-slate-600 dark:text-slate-300">
-                  <input 
-                    type="checkbox" 
-                    value="Football" 
-                    v-model="selectedSports" 
-                    class="w-4 h-4 rounded text-emerald-500 focus:ring-emerald-500 accent-emerald-500"
-                  />
-                  ⚽ Football (ፉትሳል)
-                </label>
-                <label class="flex items-center gap-2.5 text-sm cursor-pointer text-slate-600 dark:text-slate-300">
-                  <input 
-                    type="checkbox" 
-                    value="Basketball" 
-                    v-model="selectedSports" 
-                    class="w-4 h-4 rounded text-emerald-500 focus:ring-emerald-500 accent-emerald-500"
-                  />
-                  🏀 Basketball (ቅርጫት ኳስ)
-                </label>
-                <label class="flex items-center gap-2.5 text-sm cursor-pointer text-slate-600 dark:text-slate-300">
-                  <input 
-                    type="checkbox" 
-                    value="Tennis" 
-                    v-model="selectedSports" 
-                    class="w-4 h-4 rounded text-emerald-500 focus:ring-emerald-500 accent-emerald-500"
-                  />
-                  🎾 Tennis (ቴኒስ)
-                </label>
               </div>
             </div>
 
@@ -332,15 +370,17 @@ const resetFilters = () => {
             </p>
           </div>
 
+          <!-- Empty State -->
           <div v-if="filteredVenues.length === 0" class="text-center py-16 bg-white dark:bg-[#131c27] rounded-2xl border border-slate-200 dark:border-[#212e3e]">
             <span class="text-4xl">🏟️</span>
             <h3 class="text-lg font-bold mt-2 text-slate-800 dark:text-white">ምንም ሜዳ አልተገኘም</h3>
             <p class="text-slate-500 text-xs sm:text-sm mt-1">እባክዎን የማጣሪያ መስፈርቶችን ቀይረው እንደገና ይሞክሩ።</p>
-            <button @click="resetFilters" class="mt-4 px-4 py-2 bg-emerald-500 text-slate-950 text-xs font-bold rounded-xl">
+            <button @click="executeSearch" class="mt-4 px-4 py-2 bg-emerald-500 text-slate-950 text-xs font-bold rounded-xl cursor-pointer">
               ማጣሪያዎችን አጽዳ
             </button>
           </div>
 
+          <!-- Cards Grid -->
           <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
             <div 
               v-for="venue in filteredVenues" 

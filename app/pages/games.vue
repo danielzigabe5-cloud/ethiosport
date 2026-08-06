@@ -1,16 +1,45 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 
 // SEO Page Title
-useHead({ title: 'Games - EthioSport' })
-
-// Navigation Links
-const navLinks = [
- 
-]
+useHead({ title: 'Search Sports & Games - EthioSport' })
 
 const isModalOpen = ref(false)
 const selectedSportCategory = ref('All')
+
+// Search & Filter Input States
+const searchQuery = ref('')
+const selectedCity = ref('All')
+const selectedSubCity = ref('All')
+const selectedSport = ref('All')
+const selectedDate = ref('')
+
+// Cities Options
+const cities = [
+  'Addis Ababa',
+  'Bahir Dar',
+  'Hawassa',
+  'Mekelle',
+  'Dire Dawa',
+  'Adama'
+]
+
+// Available Sub-Cities in Addis Ababa with Sports Venues
+const addisSubCitiesWithVenues = [
+  'Bole',
+  'Yeka',
+  'Kirkos',
+  'Arada',
+  'Lideta',
+  'Nifas Silk-Lafto',
+  'Kolfe Keraniyo',
+  'Gullele',
+  'Akaky Kaliti',
+  'Lemi Kura'
+]
+
+// Sports Options
+const sportsOptions = ['Football', 'Basketball', 'Tennis', 'Volleyball']
 
 // Sample Games Mock Data
 const games = ref([
@@ -19,8 +48,11 @@ const games = ref([
     hostName: 'አበበ በቀለ',
     hostAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop',
     venue: 'ሳርቤት ፉትሳል ሜዳ',
+    city: 'Addis Ababa',
+    subCity: 'Nifas Silk-Lafto',
     sport: 'Football',
-    time: 'ዛሬ - 05:00 PM',
+    time: '2026-08-10 05:00 PM',
+    date: '2026-08-10',
     joinedPlayers: 7,
     totalPlayers: 10,
     pricePerPerson: 80,
@@ -31,8 +63,11 @@ const games = ref([
     hostName: 'ኬቨን ዴብሩይነ',
     hostAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop',
     venue: 'ቦሌ አሬና ቴኒስ',
+    city: 'Addis Ababa',
+    subCity: 'Bole',
     sport: 'Tennis',
-    time: 'ነገ - 04:00 PM',
+    time: '2026-08-11 04:00 PM',
+    date: '2026-08-11',
     joinedPlayers: 4,
     totalPlayers: 4,
     pricePerPerson: 300,
@@ -43,8 +78,11 @@ const games = ref([
     hostName: 'ዮናስ ታደሰ',
     hostAvatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop',
     venue: 'ሲኤምሲ ቅርጫት ኳስ ሜዳ',
+    city: 'Addis Ababa',
+    subCity: 'Yeka',
     sport: 'Basketball',
-    time: 'ዛሬ - 07:00 PM',
+    time: '2026-08-10 07:00 PM',
+    date: '2026-08-10',
     joinedPlayers: 5,
     totalPlayers: 8,
     pricePerPerson: 70,
@@ -52,11 +90,21 @@ const games = ref([
   }
 ])
 
+// Reset sub-city selection whenever city changes
+watch(selectedCity, (newCity) => {
+  if (newCity !== 'Addis Ababa') {
+    selectedSubCity.value = 'All'
+  }
+})
+
 // Form input state
 const newGame = ref({
   venue: '',
+  city: 'Addis Ababa',
+  subCity: 'Bole',
   sport: 'Football',
   time: '',
+  date: new Date().toISOString().split('T')[0],
   totalPlayers: 10,
   pricePerPerson: 100
 })
@@ -70,8 +118,11 @@ const createGame = () => {
     hostName: 'እርስዎ (You)',
     hostAvatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop',
     venue: newGame.value.venue,
+    city: newGame.value.city,
+    subCity: newGame.value.city === 'Addis Ababa' ? newGame.value.subCity : '',
     sport: newGame.value.sport,
     time: newGame.value.time,
+    date: newGame.value.date,
     joinedPlayers: 1,
     totalPlayers: newGame.value.totalPlayers,
     pricePerPerson: newGame.value.pricePerPerson,
@@ -81,8 +132,11 @@ const createGame = () => {
   // Reset Form
   newGame.value = {
     venue: '',
+    city: 'Addis Ababa',
+    subCity: 'Bole',
     sport: 'Football',
     time: '',
+    date: new Date().toISOString().split('T')[0],
     totalPlayers: 10,
     pricePerPerson: 100
   }
@@ -102,51 +156,41 @@ const toggleJoinGame = (game) => {
   }
 }
 
-// Filter games by sport type
+// Computed Filtered List
 const filteredGames = computed(() => {
-  if (selectedSportCategory.value === 'All') return games.value
-  return games.value.filter(g => g.sport === selectedSportCategory.value)
+  return games.value.filter(game => {
+    const matchesCategoryTab = selectedSportCategory.value === 'All' || game.sport === selectedSportCategory.value
+    
+    const query = searchQuery.value.trim().toLowerCase()
+    const matchesText = !query || 
+      game.venue.toLowerCase().includes(query) || 
+      game.hostName.toLowerCase().includes(query) ||
+      game.sport.toLowerCase().includes(query)
+
+    const matchesCity = selectedCity.value === 'All' || game.city === selectedCity.value
+    const matchesSubCity = selectedCity.value !== 'Addis Ababa' || selectedSubCity.value === 'All' || game.subCity === selectedSubCity.value
+    const matchesSport = selectedSport.value === 'All' || game.sport === selectedSport.value
+    const matchesDate = !selectedDate.value || game.date === selectedDate.value
+
+    return matchesCategoryTab && matchesText && matchesCity && matchesSubCity && matchesSport && matchesDate
+  })
 })
+
+const resetSearch = () => {
+  searchQuery.value = ''
+  selectedCity.value = 'All'
+  selectedSubCity.value = 'All'
+  selectedSport.value = 'All'
+  selectedDate.value = ''
+}
 </script>
 
 <template>
-  <div class="min-h-screen bg-slate-50 dark:bg-[#070b10] text-slate-800 dark:text-slate-100 font-sans pb-16">
+  <div class="min-h-screen bg-slate-50 dark:bg-[#070b10] text-slate-800 dark:text-slate-100 font-sans pb-16 pt-6">
     
-    <!-- HEADER NAVBAR -->
-    <header class="sticky top-0 z-40 bg-white/95 dark:bg-[#0b111a]/95 backdrop-blur-md border-b border-slate-200 dark:border-[#212e3e]">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        <NuxtLink to="/" class="flex items-center gap-2">
-          <div class="w-9 h-9 bg-emerald-500 rounded-xl flex items-center justify-center text-slate-950 font-black text-xl shadow-md">
-            E
-          </div>
-          <span class="font-extrabold text-xl text-slate-900 dark:text-white tracking-tight">
-            <span class="text-emerald-500"></span>
-          </span>
-        </NuxtLink>
-
-        <nav class="hidden md:flex items-center gap-6">
-          <NuxtLink 
-            v-for="link in navLinks" 
-            :key="link.path" 
-            :to="link.path"
-            class="text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-emerald-500 dark:hover:text-emerald-400 transition"
-            active-class="text-emerald-500 dark:text-emerald-400 font-bold border-b-2 border-emerald-500 pb-1"
-          >
-            {{ link.name }}
-          </NuxtLink>
-        </nav>
-
-        <div class="flex items-center gap-3">
-          <NuxtLink to="/login" class="px-4 py-2 text-xs sm:text-sm font-bold text-slate-950 bg-emerald-500 hover:bg-emerald-400 rounded-xl shadow-md transition">
-            ግቡ
-          </NuxtLink>
-        </div>
-      </div>
-    </header>
-
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
       
-      <!-- Top Action Bar -->
+      <!-- Top Section Banner & Action Button -->
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-[#131c27] p-6 rounded-2xl border border-slate-200 dark:border-[#212e3e]">
         <div>
           <h1 class="text-2xl font-black text-slate-900 dark:text-white">የጨዋታ ጥሪዎች (Join Games)</h1>
@@ -158,6 +202,78 @@ const filteredGames = computed(() => {
         >
           + Create Game (አዲስ ጥሪ)
         </button>
+      </div>
+
+      <!-- MAIN SEARCH BAR & DYNAMIC FILTERS -->
+      <div class="bg-[#242628] p-4 sm:p-5 rounded-2xl shadow-xl space-y-3">
+        <!-- Text Input Search Bar -->
+        <div>
+          <input 
+            v-model="searchQuery"
+            type="text" 
+            placeholder="Search by game name, venue, or host..."
+            class="w-full bg-[#1b1c1e] text-slate-200 placeholder-slate-400 text-sm px-4 py-3.5 rounded-xl border border-transparent focus:border-[#a3ff12] focus:outline-none transition"
+          />
+        </div>
+
+        <!-- Dynamic Filter Controls -->
+        <div 
+          class="grid gap-3 pt-1" 
+          :class="selectedCity === 'Addis Ababa' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-5' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'"
+        >
+          <!-- Cities Selection Dropdown -->
+          <div class="relative">
+            <select 
+              v-model="selectedCity"
+              class="w-full bg-[#1b1c1e] text-slate-200 text-sm font-medium px-4 py-3 rounded-xl border border-transparent focus:border-[#a3ff12] focus:outline-none appearance-none cursor-pointer"
+            >
+              <option value="All">All Cities</option>
+              <option v-for="c in cities" :key="c" :value="c">{{ c }}</option>
+            </select>
+            <span class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs">▼</span>
+          </div>
+
+          <!-- Sub-Cities Dropdown (Renders only when Addis Ababa is selected) -->
+          <div v-if="selectedCity === 'Addis Ababa'" class="relative">
+            <select 
+              v-model="selectedSubCity"
+              class="w-full bg-[#1b1c1e] text-slate-200 text-sm font-medium px-4 py-3 rounded-xl border border-transparent focus:border-[#a3ff12] focus:outline-none appearance-none cursor-pointer"
+            >
+              <option value="All">All Sub-Cities (ክፍለ ከተማ)</option>
+              <option v-for="sc in addisSubCitiesWithVenues" :key="sc" :value="sc">{{ sc }}</option>
+            </select>
+            <span class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs">▼</span>
+          </div>
+
+          <!-- All Sports Dropdown -->
+          <div class="relative">
+            <select 
+              v-model="selectedSport"
+              class="w-full bg-[#1b1c1e] text-slate-200 text-sm font-medium px-4 py-3 rounded-xl border border-transparent focus:border-[#a3ff12] focus:outline-none appearance-none cursor-pointer"
+            >
+              <option value="All">All Sports</option>
+              <option v-for="s in sportsOptions" :key="s" :value="s">{{ s }}</option>
+            </select>
+            <span class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs">▼</span>
+          </div>
+
+          <!-- Date Selector -->
+          <div class="relative">
+            <input 
+              v-model="selectedDate"
+              type="date" 
+              class="w-full bg-[#1b1c1e] text-slate-200 text-sm font-medium px-4 py-3 rounded-xl border border-transparent focus:border-[#a3ff12] focus:outline-none appearance-none cursor-pointer"
+            />
+          </div>
+
+          <!-- Search Button -->
+          <button 
+            type="button" 
+            class="w-full bg-[#a3ff12] hover:bg-[#8ee600] text-black font-extrabold text-sm py-3 rounded-xl shadow-md transition-transform active:scale-95 flex items-center justify-center cursor-pointer"
+          >
+            Search
+          </button>
+        </div>
       </div>
 
       <!-- Category Filter Tabs -->
@@ -181,7 +297,8 @@ const filteredGames = computed(() => {
       <div v-if="filteredGames.length === 0" class="text-center py-16 bg-white dark:bg-[#131c27] rounded-2xl border border-slate-200 dark:border-[#212e3e]">
         <span class="text-4xl">⚽</span>
         <h3 class="text-lg font-bold mt-2">ምንም ጨዋታ አልተገኘም</h3>
-        <p class="text-slate-500 text-xs mt-1">በዚህ ዘርፍ የተከፈተ የጨዋታ ጥሪ የለም። እርሶ አዲስ ጥሪ መክፈት ይችላሉ!</p>
+        <p class="text-slate-500 text-xs mt-1">በዚህ ፍለጋ የተከፈተ የጨዋታ ጥሪ የለም። እርሶ አዲስ ጥሪ መክፈት ይችላሉ!</p>
+        <button @click="resetSearch" class="mt-4 text-xs font-bold text-emerald-500 hover:underline">ፍለጋውን አጽዳ</button>
       </div>
 
       <!-- Game Cards Grid -->
@@ -209,7 +326,10 @@ const filteredGames = computed(() => {
             <!-- Game Details -->
             <div class="space-y-1.5 text-xs text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-[#0b111a] p-3 rounded-xl border border-slate-100 dark:border-[#212e3e]">
               <p class="flex items-center gap-1.5">
-                <span>📍</span> <strong class="text-slate-900 dark:text-white">{{ game.venue }}</strong>
+                <span>📍</span> 
+                <strong class="text-slate-900 dark:text-white">
+                  {{ game.venue }} ({{ game.city }}<span v-if="game.subCity">, {{ game.subCity }}</span>)
+                </strong>
               </p>
               <p class="flex items-center gap-1.5">
                 <span>⏰</span> {{ game.time }}
@@ -258,6 +378,69 @@ const filteredGames = computed(() => {
         </div>
       </div>
 
+      <!-- JOIN WITH US & APP DOWNLOAD SECTION -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
+        <!-- Join With Us CTA -->
+        <div class="bg-gradient-to-r from-emerald-600 to-teal-700 p-6 sm:p-8 rounded-2xl text-white space-y-4 shadow-xl flex flex-col justify-between">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider bg-white/20 px-3 py-1 rounded-full">ለስፖርት ማዕከላት</span>
+            <h3 class="text-2xl font-black mt-3">Join With Us (ከእኛ ጋር ይስሩ)</h3>
+            <p class="text-xs sm:text-sm text-emerald-100 mt-2 leading-relaxed">
+              የራስዎ የስፖርት ሜዳ አለዎት? በEthioSport መተግበሪያ ላይ በመመዝገብ ሜዳዎን ያስተዳድሩ፣ ገቢዎን ያሳድጉ።
+            </p>
+          </div>
+          <NuxtLink 
+            to="/business/register" 
+            class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white hover:bg-emerald-50 text-slate-950 font-extrabold text-xs sm:text-sm rounded-xl shadow-md transition"
+          >
+            ሜዳዎን ያስመዝግቡ (Partner Registration) &rarr;
+          </NuxtLink>
+        </div>
+
+        <!-- App Store & Google Play Download -->
+        <div class="bg-slate-900 border border-slate-800 p-6 sm:p-8 rounded-2xl text-white space-y-5 flex flex-col justify-between">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full">Mobile App</span>
+            <h3 class="text-2xl font-black mt-3">መተግበሪያችንን ያውርዱ</h3>
+            <p class="text-xs sm:text-sm text-slate-400 mt-2 leading-relaxed">
+              በቀላሉ በስልክዎ ሜዳዎችን ለመያዝ እና ከጓደኞችዎ ጋር ለመጫወት የEthioSport ሞባይል መተግበሪያን ያውርዱ።
+            </p>
+          </div>
+          
+          <div class="flex flex-wrap items-center gap-3">
+            <!-- Google Play Button -->
+            <a 
+              href="https://play.google.com" 
+              target="_blank" 
+              class="flex items-center gap-3 px-4 py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl transition shadow-md"
+            >
+              <svg class="w-6 h-6 fill-current text-emerald-400" viewBox="0 0 24 24">
+                <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L18.81,13.12C19.44,12.5 19.44,11.5 18.81,10.88L16.81,8.88L14.75,10.94L16.81,15.12M4.5,3.32L14,12.82L15.4,11.42L4.5,0.52C4.5,0.52 4.5,3.32 4.5,3.32Z"/>
+              </svg>
+              <div class="text-left">
+                <div class="text-[9px] uppercase tracking-wide text-slate-400">Get it on</div>
+                <div class="text-xs font-bold text-white">Google Play</div>
+              </div>
+            </a>
+
+            <!-- App Store Button -->
+            <a 
+              href="https://apple.com/app-store" 
+              target="_blank" 
+              class="flex items-center gap-3 px-4 py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl transition shadow-md"
+            >
+              <svg class="w-6 h-6 fill-current text-white" viewBox="0 0 24 24">
+                <path d="M18.71,19.5C17.88,20.74 17,21.95 15.66,21.97C14.32,22 13.89,21.18 12.37,21.18C10.84,21.18 10.37,21.95 9.1,21.97C7.79,22 6.82,20.68 5.97,19.47C4.25,17 2.94,12.45 4.7,9.39C5.57,7.87 7.13,6.91 8.82,6.88C10.1,6.86 11.32,7.75 12.11,7.75C12.89,7.75 14.37,6.68 15.92,6.84C16.57,6.87 18.39,7.1 19.56,8.82C19.47,8.88 17.39,10.1 17.41,12.63C17.44,15.65 20.06,16.66 20.09,16.67C20.06,16.74 19.67,18.11 18.71,19.5M13,3.5C13.73,2.67 14.94,2.04 15.94,2C16.07,3.17 15.6,4.35 14.9,5.19C14.21,6.04 13.07,6.7 11.95,6.61C11.8,5.46 12.36,4.26 13,3.5Z"/>
+              </svg>
+              <div class="text-left">
+                <div class="text-[9px] uppercase tracking-wide text-slate-400">Download on the</div>
+                <div class="text-xs font-bold text-white">App Store</div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+
       <!-- Create Game Modal (Pop-up Window) -->
       <div v-if="isModalOpen" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white dark:bg-[#131c27] max-w-md w-full p-6 rounded-2xl border border-slate-200 dark:border-[#212e3e] space-y-6 shadow-2xl">
@@ -279,6 +462,26 @@ const filteredGames = computed(() => {
             </div>
 
             <div>
+              <label class="block mb-1 text-slate-700 dark:text-slate-300">ከተማ</label>
+              <select 
+                v-model="newGame.city"
+                class="w-full p-3 rounded-xl bg-slate-50 dark:bg-[#0b111a] border border-slate-200 dark:border-[#212e3e] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              >
+                <option v-for="c in cities" :key="c" :value="c">{{ c }}</option>
+              </select>
+            </div>
+
+            <div v-if="newGame.city === 'Addis Ababa'">
+              <label class="block mb-1 text-slate-700 dark:text-slate-300">ክፍለ ከተማ</label>
+              <select 
+                v-model="newGame.subCity"
+                class="w-full p-3 rounded-xl bg-slate-50 dark:bg-[#0b111a] border border-slate-200 dark:border-[#212e3e] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              >
+                <option v-for="sc in addisSubCitiesWithVenues" :key="sc" :value="sc">{{ sc }}</option>
+              </select>
+            </div>
+
+            <div>
               <label class="block mb-1 text-slate-700 dark:text-slate-300">የስፖርት ዓይነት</label>
               <select 
                 v-model="newGame.sport"
@@ -296,7 +499,7 @@ const filteredGames = computed(() => {
                 v-model="newGame.time" 
                 type="text" 
                 required
-                placeholder="ለምሳሌ: ዛሬ - 05:00 PM" 
+                placeholder="ለምሳሌ: 2026-08-10 05:00 PM" 
                 class="w-full p-3 rounded-xl bg-slate-50 dark:bg-[#0b111a] border border-slate-200 dark:border-[#212e3e] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500" 
               />
             </div>
