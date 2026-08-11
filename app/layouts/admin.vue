@@ -1,98 +1,194 @@
-<!-- app/layouts/admin.vue -->
-<script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-
-const router = useRouter()
-const isMobileMenuOpen = ref(false)
-
-// የSidebar ሊንኮች ዝርዝር
-const navItems = [
-  { name: 'Dashboard', path: '/admin', icon: '📊' },
-  { name: 'Venues', path: '/admin/venues', icon: '🏟️' },
-  { name: 'Bookings', path: '/admin/bookings', icon: '📅' },
-  { name: 'Users', path: '/admin/users', icon: '👥' },
-  { name: 'Reports', path: '/admin/reports', icon: '📈' },
-  { name: 'Settings', path: '/admin/settings', icon: '⚙️' }
-]
-
-const handleLogout = () => {
-  router.push('/login')
-}
-</script>
-
 <template>
-  <div class="min-h-screen bg-[#06090e] text-slate-100 flex flex-col font-sans">
+  <div class="min-h-screen bg-[#070c14] text-slate-100 flex flex-col font-sans">
     
-    <!-- MAIN WRAPPER -->
-    <div class="flex flex-1 min-h-screen">
+    <!-- TOP NAVBAR (ከላይ ያለው ዋና ናቭባር) -->
+    <header class="h-16 border-b border-slate-800 bg-[#0b1320] px-6 flex items-center justify-between sticky top-0 z-50">
       
-      <!-- SIDEBAR -->
-      <aside 
-        class="bg-[#0b111a] border-r border-[#1a2432] w-64 p-5 flex flex-col justify-between shrink-0 h-screen sticky top-0 z-30"
-      >
-        <div class="space-y-6">
-          <!-- Logo -->
-          <div class="flex items-center gap-3 px-2">
-            <div class="w-9 h-9 bg-emerald-500 rounded-xl flex items-center justify-center text-slate-950 font-black text-lg shadow-lg shadow-emerald-500/20">
-              E
-            </div>
-            <div>
-              <h2 class="font-black text-base text-white tracking-wide">
-                ETHIO-<span class="text-emerald-400">ADMIN</span>
-              </h2>
-            </div>
-          </div>
+      <!-- Logo & Main Nav Links -->
+      <div class="flex items-center gap-8">
+        <NuxtLink to="/" class="flex items-center gap-2">
+          <span class="text-emerald-500 font-black text-2xl tracking-wide">ETHIO<span class="text-emerald-400">SPORT</span></span>
+        </NuxtLink>
 
-          <!-- NAV LINKS (እነዚህ ናቸው የጠፉት) -->
-          <nav class="space-y-1 font-semibold text-xs">
-            <NuxtLink 
-              v-for="item in navItems" 
-              :key="item.path" 
-              :to="item.path"
-              class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-[#131c27] transition-all"
-              active-class="bg-emerald-500/10 !text-emerald-400 border border-emerald-500/30 font-bold shadow-sm"
-            >
-              <span class="text-base">{{ item.icon }}</span>
-              <span>{{ item.name }}</span>
-            </NuxtLink>
-          </nav>
+        <!-- Main Website Links -->
+        <nav class="hidden lg:flex items-center gap-6 text-xs font-semibold text-slate-300">
+          <NuxtLink to="/" class="hover:text-emerald-400 transition">Home</NuxtLink>
+          <NuxtLink to="/games" class="hover:text-emerald-400 transition">Games</NuxtLink>
+          <NuxtLink to="/venues" class="hover:text-emerald-400 transition">Venues</NuxtLink>
+          <NuxtLink to="/events" class="hover:text-emerald-400 transition">Events</NuxtLink>
+          <NuxtLink to="/blogs" class="hover:text-emerald-400 transition">Blogs</NuxtLink>
+          <NuxtLink to="/justplay" class="hover:text-emerald-400 transition">JustPlay</NuxtLink>
+          <NuxtLink to="/contact" class="hover:text-emerald-400 transition">Contact</NuxtLink>
+        </nav>
+      </div>
+
+      <!-- Right Side Controls -->
+      <div class="flex items-center gap-3">
+        <!-- Language Switcher -->
+        <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-800 bg-[#070c14] text-xs font-bold text-slate-300 hover:text-white transition">
+          <Icon name="lucide:languages" class="w-4 h-4 text-emerald-400" />
+          <span>አማ</span>
+        </button>
+
+        <!-- Theme Toggle -->
+        <button class="p-2 rounded-xl border border-slate-800 bg-[#070c14] text-slate-400 hover:text-white transition">
+          <Icon name="lucide:moon" class="w-4 h-4" />
+        </button>
+
+        <div class="h-5 w-[1px] bg-slate-800 mx-1"></div>
+
+        <!-- Admin Badge -->
+        <div class="flex items-center gap-2 px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-xs font-bold text-white">
+          <Icon name="lucide:shield-check" class="w-4 h-4 text-emerald-400" />
+          <span>Admin</span>
         </div>
 
-        <!-- Admin Profile & Logout -->
-        <div class="pt-4 border-t border-[#1a2432] space-y-2">
-          <div class="bg-[#131c27] p-3 rounded-2xl border border-[#212e3e] flex items-center gap-3">
-            <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-black text-xs">
-              AD
-            </div>
-            <div class="truncate">
-              <p class="text-xs font-bold text-white truncate">System Admin</p>
-              <p class="text-[10px] text-slate-400 truncate">admin@ethiosport.et</p>
-            </div>
+        <!-- Partner Link -->
+        <NuxtLink to="/partner" class="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-xs font-bold text-emerald-400 hover:bg-emerald-500/20 transition">
+          <Icon name="lucide:building" class="w-4 h-4" />
+          <span>Partner</span>
+        </NuxtLink>
+
+        <!-- Logout -->
+        <NuxtLink to="/login" class="flex items-center gap-2 px-3 py-1.5 bg-rose-500/10 border border-rose-500/30 rounded-xl text-xs font-bold text-rose-400 hover:bg-rose-500/20 transition">
+          <Icon name="lucide:log-out" class="w-4 h-4" />
+          <span>ወጣ</span>
+        </NuxtLink>
+      </div>
+    </header>
+
+    <!-- BODY CONTAINER (SIDEBAR + MAIN CONTENT) -->
+    <div class="flex flex-1">
+      
+      <!-- ADMIN SIDEBAR (ከጎን ያለው አድሚን ሳይድባር) -->
+      <aside class="w-64 min-w-[256px] min-h-[calc(100vh-4rem)] bg-[#0b1320] border-r border-slate-800 p-4 flex flex-col justify-between shrink-0">
+        <div class="space-y-6">
+          
+          <div class="px-2">
+            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">የአድሚን ማውጫ</span>
           </div>
 
-          <button 
-            @click="handleLogout"
-            class="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-rose-400 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 transition-all cursor-pointer"
-          >
-            <span>🚪</span>
-            <span>Logout</span>
-          </button>
+          <!-- Navigation Links -->
+          <nav class="space-y-1.5">
+            
+            <!-- 1. ዳሽቦርድ -->
+            <NuxtLink
+              to="/admin"
+              class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-xs font-semibold transition"
+              :class="[
+                $route.path === '/admin'
+                  ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 font-bold'
+                  : 'text-slate-400 hover:bg-slate-800/60 hover:text-white'
+              ]"
+            >
+              <Icon name="lucide:layout-dashboard" class="w-4 h-4 shrink-0" />
+              <span>ዳሽቦርድ</span>
+            </NuxtLink>
+
+            <!-- 2. ፓርትነሮች (ሜዳዎች) -->
+            <NuxtLink
+              to="/admin/partners"
+              class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-xs font-semibold transition"
+              :class="[
+                $route.path === '/admin/partners'
+                  ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 font-bold'
+                  : 'text-slate-400 hover:bg-slate-800/60 hover:text-white'
+              ]"
+            >
+              <Icon name="lucide:building" class="w-4 h-4 shrink-0" />
+              <span>ፓርትነሮች (ሜዳዎች)</span>
+            </NuxtLink>
+
+            <!-- 3. ተጠቃሚዎች -->
+            <NuxtLink
+              to="/admin/users"
+              class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-xs font-semibold transition"
+              :class="[
+                $route.path === '/admin/users'
+                  ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 font-bold'
+                  : 'text-slate-400 hover:bg-slate-800/60 hover:text-white'
+              ]"
+            >
+              <Icon name="lucide:users" class="w-4 h-4 shrink-0" />
+              <span>ተጠቃሚዎች</span>
+            </NuxtLink>
+
+            <!-- 4. ፋይናንስ እና ክፍያዎች -->
+            <NuxtLink
+              to="/admin/payouts"
+              class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-xs font-semibold transition"
+              :class="[
+                $route.path === '/admin/payouts'
+                  ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 font-bold'
+                  : 'text-slate-400 hover:bg-slate-800/60 hover:text-white'
+              ]"
+            >
+              <Icon name="lucide:wallet" class="w-4 h-4 shrink-0" />
+              <span>ፋይናንስ እና ክፍያዎች</span>
+            </NuxtLink>
+
+            <!-- 5. ሪፖርቶችና ቅሬታዎች -->
+            <NuxtLink
+              to="/admin/reports"
+              class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-xs font-semibold transition relative"
+              :class="[
+                $route.path === '/admin/reports'
+                  ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 font-bold'
+                  : 'text-slate-400 hover:bg-slate-800/60 hover:text-white'
+              ]"
+            >
+              <Icon name="lucide:flag" class="w-4 h-4 shrink-0" />
+              <span>ሪፖርቶችና ቅሬታዎች</span>
+              <span class="ml-auto bg-rose-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full">5</span>
+            </NuxtLink>
+
+            <!-- 6. መቼቶች (Settings) -->
+            <NuxtLink
+              to="/admin/settings"
+              class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-xs font-semibold transition"
+              :class="[
+                $route.path === '/admin/settings'
+                  ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 font-bold'
+                  : 'text-slate-400 hover:bg-slate-800/60 hover:text-white'
+              ]"
+            >
+              <Icon name="lucide:settings" class="w-4 h-4 shrink-0" />
+              <span>መቼቶች (Settings)</span>
+            </NuxtLink>
+
+          </nav>
         </div>
       </aside>
 
-      <!-- MAIN CONTENT -->
-      <div class="flex-1 flex flex-col min-w-0">
-        <!-- Top Navbar -->
-        <header class="bg-[#0b111a] border-b border-[#1a2432] px-8 py-4">
-          <h1 class="text-sm font-bold text-slate-300">የአስተዳዳሪ መቆጣጠሪያ ፕላትፎርም</h1>
-        </header>
-
-        <main class="flex-1 p-8">
+      <!-- PAGE CONTENT SLOT + ADMIN FOOTER -->
+      <main class="flex-1 p-6 overflow-y-auto flex flex-col justify-between">
+        
+        <!-- Page Body Content -->
+        <div>
           <slot />
-        </main>
-      </div>
+        </div>
+
+        <!-- Dedicated Admin Footer -->
+        <footer class="mt-12 pt-4 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-3">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <p>© 2026 EthioSport Admin Portal. All rights reserved.</p>
+          </div>
+          
+          <div class="flex items-center gap-4 text-[11px] font-medium">
+            <span class="bg-slate-800/80 text-slate-400 px-2.5 py-1 rounded-md border border-slate-700/50">v1.0.0</span>
+            <NuxtLink to="/admin/settings" class="hover:text-emerald-400 transition">የሲስተም መቼቶች</NuxtLink>
+            <NuxtLink to="/contact" class="hover:text-emerald-400 transition">እርዳታ (Support)</NuxtLink>
+          </div>
+        </footer>
+
+      </main>
 
     </div>
+
   </div>
 </template>
+
+<script setup lang="ts">
+// Admin Layout Script
+</script>

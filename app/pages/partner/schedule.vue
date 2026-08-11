@@ -1,53 +1,65 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 
-definePageMeta({ layout: 'partner' })
+definePageMeta({
+  layout: 'partner'
+})
 
-const timeSlots = ref([
-  { id: 1, time: '06:00 AM - 07:00 AM', status: 'Available', price: 500 },
-  { id: 2, time: '07:00 AM - 08:00 AM', status: 'Available', price: 500 },
-  { id: 3, time: '02:00 PM - 03:00 PM', status: 'Booked', price: 600 },
-  { id: 4, time: '04:00 PM - 05:00 PM', status: 'Booked', price: 600 },
-  { id: 5, time: '05:00 PM - 06:00 PM', status: 'Available', price: 800 },
-  { id: 6, time: '06:00 PM - 07:00 PM', status: 'Closed', price: 800 }
+const slots = ref([
+  { time: '08:00 AM - 09:00 AM', status: 'Free', price: 600 },
+  { time: '09:00 AM - 10:00 AM', status: 'Booked', customer: 'አቤል ተስፋዬ', price: 600 },
+  { time: '10:00 AM - 11:00 AM', status: 'Booked', customer: 'ዮሴፍ ቄስ', price: 600 },
+  { time: '11:00 AM - 12:00 PM', status: 'Blocked', price: 600 },
+  { time: '02:00 PM - 03:00 PM', status: 'Free', price: 800 }
 ])
 
-const toggleSlotStatus = (slot) => {
-  if (slot.status === 'Booked') return
-  slot.status = slot.status === 'Available' ? 'Closed' : 'Available'
+const toggleBlock = (index: number) => {
+  if (slots.value[index].status === 'Free') {
+    slots.value[index].status = 'Blocked'
+  } else if (slots.value[index].status === 'Blocked') {
+    slots.value[index].status = 'Free'
+  }
 }
 </script>
 
 <template>
-  <div class="space-y-6 max-w-5xl mx-auto">
+  <div class="space-y-6 max-w-6xl mx-auto font-sans">
     <div>
-      <h1 class="text-xl font-black text-white">⏰ Time Slots & Pricing</h1>
-      <p class="text-xs text-slate-400">የቀን ክፍለ-ጊዜዎችን ይክፈቱ፣ ይዝጉ ወይም ዋጋ ያስተካክሉ።</p>
+      <h1 class="text-xl font-black text-white">📅 የቀጠሮ ሰሌዳ (Schedule)</h1>
+      <p class="text-xs text-slate-400">የሜዳዎን ክፍት እና የተያዙ ሰዓቶች ያስተዳድሩ።</p>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+    <div class="bg-[#0b111a] border border-[#1a2432] rounded-2xl p-5 divide-y divide-[#1a2432]">
       <div 
-        v-for="s in timeSlots" 
-        :key="s.id"
-        class="bg-[#0b111a] border border-[#1a2432] p-4 rounded-2xl flex items-center justify-between"
+        v-for="(slot, i) in slots" 
+        :key="i"
+        class="py-3 flex items-center justify-between text-xs"
       >
-        <div>
-          <p class="text-xs font-bold text-white">{{ s.time }}</p>
-          <p class="text-[11px] text-emerald-400 font-semibold mt-0.5">{{ s.price }} ETB</p>
+        <div class="flex items-center gap-4">
+          <span class="font-bold text-white w-36">{{ slot.time }}</span>
+          <span 
+            class="px-2.5 py-1 rounded-lg text-[10px] font-bold"
+            :class="{
+              'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20': slot.status === 'Free',
+              'bg-blue-500/10 text-blue-400 border border-blue-500/20': slot.status === 'Booked',
+              'bg-rose-500/10 text-rose-400 border border-rose-500/20': slot.status === 'Blocked'
+            }"
+          >
+            {{ slot.status === 'Free' ? 'ክፍት (Free)' : slot.status === 'Booked' ? `የተያዘ (${slot.customer})` : 'የተዘጋ (Blocked)' }}
+          </span>
         </div>
 
-        <button 
-          @click="toggleSlotStatus(s)"
-          :disabled="s.status === 'Booked'"
-          :class="[
-            'px-3 py-1.5 rounded-xl text-[10px] font-bold transition',
-            s.status === 'Available' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : '',
-            s.status === 'Booked' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/30 cursor-not-allowed' : '',
-            s.status === 'Closed' ? 'bg-slate-800/60 text-slate-500 border border-slate-700' : ''
-          ]"
-        >
-          {{ s.status }}
-        </button>
+        <div class="flex items-center gap-3">
+          <span class="text-slate-400 font-semibold">{{ slot.price }} ETB</span>
+          <button 
+            v-if="slot.status !== 'Booked'"
+            @click="toggleBlock(i)"
+            class="px-3 py-1.5 rounded-lg text-[11px] font-bold transition cursor-pointer"
+            :class="slot.status === 'Blocked' ? 'bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30' : 'bg-rose-500/20 text-rose-400 hover:bg-rose-500/30'"
+          >
+            {{ slot.status === 'Blocked' ? 'ክፈት (Unblock)' : 'ዝጋ (Block)' }}
+          </button>
+        </div>
       </div>
     </div>
   </div>

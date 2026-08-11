@@ -1,5 +1,4 @@
 <template>
-  <!-- font-['Noto_Sans_Ethiopic',sans-serif] በመጠቀም ፎንቱን በ Tailwind ብቻ አድርገነዋል -->
   <nav class="font-['Noto_Sans_Ethiopic',sans-serif] bg-white dark:bg-gray-900 shadow-md fixed top-0 left-0 right-0 z-[100] border-b dark:border-gray-800 transition-colors duration-300">
     <div class="max-w-7xl mx-auto px-4">
       <div class="flex justify-between items-center h-16">
@@ -11,7 +10,7 @@
           </span>
         </NuxtLink>
 
-        <!-- 2. የዴስክቶፕ ሜኑ (Nav Links) -->
+        <!-- 2. የዴስክቶፕ ሜኑ (Nav Links) - አሁንም ለሁሉም ይታያል -->
         <div class="hidden lg:flex items-center gap-1">
           <NuxtLink v-for="item in navItems" :key="item.path" :to="item.path" 
             class="px-3 py-2 rounded-lg text-sm font-bold transition-all duration-200"
@@ -25,31 +24,51 @@
         <!-- 3. የቀኝ በኩል አዝራሮች (Auth + Settings) -->
         <div class="flex items-center gap-1 sm:gap-3">
           
-          <!-- የቋንቋ መቀያየሪያ -->
-          <button @click="toggleLang" 
-            class="flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-gray-800 rounded-xl text-xs font-black text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700 hover:border-green-500 transition-all active:scale-95">
+          <button @click="toggleLang" class="flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-gray-800 rounded-xl text-xs font-black text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700 hover:border-green-500 transition-all active:scale-95">
             <Icon name="lucide:languages" class="w-4 h-4 text-green-600" />
             <span class="w-5 text-center">{{ currentLang === 'am' ? 'EN' : 'አማ' }}</span>
           </button>
 
-          <!-- የጨለማ ሁነታ -->
-          <button @click="toggleTheme" 
-            class="p-2.5 bg-gray-50 dark:bg-gray-800 rounded-xl text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:text-green-600 transition-all">
+          <button @click="toggleTheme" class="p-2.5 bg-gray-50 dark:bg-gray-800 rounded-xl text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:text-green-600 transition-all">
             <Icon :name="isDark ? 'lucide:sun' : 'lucide:moon'" class="w-4 h-4" />
           </button>
 
-          <!-- Login/Signup (ዴስክቶፕ) -->
+          <!-- የዴስክቶፕ Login/Logout ሁኔታ (Auth Logic) -->
           <div class="hidden md:flex items-center gap-2 ml-2 border-l border-gray-200 dark:border-gray-700 pl-4">
-            <NuxtLink to="/login" class="text-sm font-black text-gray-600 dark:text-gray-300 hover:text-green-600 transition">
-              {{ t.login }}
-            </NuxtLink>
-            <NuxtLink to="/signup" class="bg-green-600 hover:bg-green-700 text-white text-xs font-black px-5 py-2.5 rounded-xl transition shadow-lg shadow-green-600/20 active:scale-95">
-              {{ t.signup }}
-            </NuxtLink>
+            
+            <!-- ማንም ሎግ-ኢን ካላደረገ -->
+            <template v-if="!userRole">
+              <NuxtLink to="/login" class="text-sm font-black text-gray-600 dark:text-gray-300 hover:text-green-600 transition">{{ t.login }}</NuxtLink>
+              <NuxtLink to="/signup" class="bg-green-600 hover:bg-green-700 text-white text-xs font-black px-5 py-2.5 rounded-xl transition shadow-lg shadow-green-600/20 active:scale-95">{{ t.signup }}</NuxtLink>
+            </template>
+
+            <!-- ፓርትነር (Partner) ሎግ-ኢን ካደረገ -->
+            <template v-else-if="userRole === 'partner'">
+              <NuxtLink to="/partner" class="flex items-center gap-1.5 text-xs font-black bg-green-100 text-green-700 px-4 py-2.5 rounded-xl hover:bg-green-200 transition">
+                <Icon name="lucide:building" class="w-4 h-4" /> Partner
+              </NuxtLink>
+              <button @click="handleLogout" class="flex items-center gap-1.5 text-xs font-black bg-red-50 text-red-600 px-4 py-2.5 rounded-xl hover:bg-red-100 transition">
+                <Icon name="lucide:log-out" class="w-4 h-4" /> ውጣ
+              </button>
+            </template>
+
+            <!-- አድሚን (Admin) ሎግ-ኢን ካደረገ -->
+            <template v-else-if="userRole === 'admin'">
+              <NuxtLink to="/admin" class="flex items-center gap-1.5 text-xs font-black bg-gray-900 text-white px-4 py-2.5 rounded-xl hover:bg-gray-800 transition">
+                <Icon name="lucide:shield-check" class="w-4 h-4" /> Admin
+              </NuxtLink>
+              <NuxtLink to="/partner" class="flex items-center gap-1.5 text-xs font-black bg-green-100 text-green-700 px-4 py-2.5 rounded-xl hover:bg-green-200 transition">
+                <Icon name="lucide:building" class="w-4 h-4" /> Partner
+              </NuxtLink>
+              <button @click="handleLogout" class="flex items-center gap-1.5 text-xs font-black bg-red-50 text-red-600 px-4 py-2.5 rounded-xl hover:bg-red-100 transition">
+                <Icon name="lucide:log-out" class="w-4 h-4" /> ውጣ
+              </button>
+            </template>
+
           </div>
 
           <!-- የሞባይል ሜኑ መክፈቻ (hamburger) -->
-          <button @click="isOpen = !isOpen" class="lg:hidden p-2.5 bg-gray-50 dark:bg-gray-800 rounded-xl text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
+          <button @click="isOpen = !isOpen" class="md:hidden p-2.5 bg-gray-50 dark:bg-gray-800 rounded-xl text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
             <div class="w-6 h-5 flex flex-col justify-between overflow-hidden">
               <span class="w-full h-0.5 bg-current transition-all duration-300 origin-left" :class="{'rotate-45 translate-x-1': isOpen}"></span>
               <span class="w-full h-0.5 bg-current transition-all duration-300" :class="{'translate-x-10 opacity-0': isOpen}"></span>
@@ -69,16 +88,35 @@
       leave-from-class="transform translate-y-0 opacity-100"
       leave-to-class="transform -translate-y-10 opacity-0"
     >
-      <div v-if="isOpen" class="lg:hidden absolute top-16 left-0 w-full bg-white dark:bg-gray-900 border-t dark:border-gray-800 shadow-2xl p-4 flex flex-col gap-2 overflow-y-auto max-h-[calc(100vh-4rem)]">
+      <div v-if="isOpen" class="md:hidden absolute top-16 left-0 w-full bg-white dark:bg-gray-900 border-t dark:border-gray-800 shadow-2xl p-4 flex flex-col gap-2 overflow-y-auto max-h-[calc(100vh-4rem)]">
         
-        <!-- Auth Buttons for Mobile -->
+        <!-- የሞባይል Auth Buttons Logic -->
         <div class="grid grid-cols-2 gap-3 pb-4 mb-2 border-b dark:border-gray-800">
-          <NuxtLink to="/login" @click="isOpen = false" class="flex items-center justify-center py-3 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-white rounded-xl font-black text-sm">
-            {{ t.login }}
-          </NuxtLink>
-          <NuxtLink to="/signup" @click="isOpen = false" class="flex items-center justify-center py-3 bg-green-600 text-white rounded-xl font-black text-sm shadow-lg shadow-green-600/20">
-            {{ t.signup }}
-          </NuxtLink>
+          <template v-if="!userRole">
+            <NuxtLink to="/login" @click="isOpen = false" class="flex items-center justify-center py-3 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-white rounded-xl font-black text-sm">{{ t.login }}</NuxtLink>
+            <NuxtLink to="/signup" @click="isOpen = false" class="flex items-center justify-center py-3 bg-green-600 text-white rounded-xl font-black text-sm shadow-lg shadow-green-600/20">{{ t.signup }}</NuxtLink>
+          </template>
+
+          <template v-else-if="userRole === 'partner'">
+            <NuxtLink to="/partner" @click="isOpen = false" class="flex items-center justify-center gap-2 py-3 bg-green-100 text-green-700 rounded-xl font-black text-sm">
+              <Icon name="lucide:building" class="w-4 h-4" /> Partner
+            </NuxtLink>
+            <button @click="handleLogout(); isOpen = false" class="flex items-center justify-center gap-2 py-3 bg-red-50 text-red-600 rounded-xl font-black text-sm">
+              <Icon name="lucide:log-out" class="w-4 h-4" /> ውጣ
+            </button>
+          </template>
+
+          <template v-else-if="userRole === 'admin'">
+            <NuxtLink to="/admin" @click="isOpen = false" class="flex items-center justify-center gap-2 py-3 bg-gray-900 text-white rounded-xl font-black text-sm">
+              <Icon name="lucide:shield-check" class="w-4 h-4" /> Admin
+            </NuxtLink>
+            <NuxtLink to="/partner" @click="isOpen = false" class="flex items-center justify-center gap-2 py-3 bg-green-100 text-green-700 rounded-xl font-black text-sm">
+              <Icon name="lucide:building" class="w-4 h-4" /> Partner
+            </NuxtLink>
+            <button @click="handleLogout(); isOpen = false" class="col-span-2 flex items-center justify-center gap-2 py-3 bg-red-50 text-red-600 rounded-xl font-black text-sm">
+              <Icon name="lucide:log-out" class="w-4 h-4" /> ውጣ
+            </button>
+          </template>
         </div>
 
         <!-- Nav Links -->
@@ -105,7 +143,6 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 
-// የጉግል ፎንትን በ Nuxt head ውስጥ እናስገባዋለን (ከ <style> ይልቅ)
 useHead({
   link: [
     {
@@ -116,25 +153,18 @@ useHead({
 })
 
 const route = useRoute()
+const router = useRouter()
 const isDark = ref(false)
 const isOpen = ref(false)
 
-// --- የቋንቋ Logic ---
+// ማን እንደገባ የሚይዝ State
+const userRole = useState('userRole', () => null)
 const currentLang = useState('locale', () => 'am')
 
-// --- የቋንቋ መዝገብ (Translations) ---
 const translations = {
-  am: {
-    login: 'ይግቡ',
-    signup: 'ይመዝገቡ',
-  },
-  en: {
-    login: 'Login',
-    signup: 'Sign Up',
-  }
+  am: { login: 'ይግቡ', signup: 'ይመዝገቡ' },
+  en: { login: 'Login', signup: 'Sign Up' }
 }
-
-// አሁን ያለውን ቋንቋ መዝገብ የሚመልስ computed
 const t = computed(() => translations[currentLang.value])
 
 const navItems = [
@@ -158,12 +188,21 @@ const toggleLang = () => {
   localStorage.setItem('locale', currentLang.value)
 }
 
+// ሎግ አውት ሲያደርጉ (Logout Function)
+const handleLogout = () => {
+  userRole.value = null
+  localStorage.removeItem('userRole')
+  router.push('/') // ወደ መነሻ ገፅ ይመለሳል
+}
+
 onMounted(() => {
-  // ቋንቋን ከማህደረ ትውስታ መመለስ
+  // Page ሪፍሬሽ ሲደረግ ሎጊን መደረግ አለመደረጉን ቼክ ማድረግ
+  const savedRole = localStorage.getItem('userRole')
+  if (savedRole) userRole.value = savedRole
+
   const savedLocale = localStorage.getItem('locale')
   if (savedLocale) currentLang.value = savedLocale
 
-  // ጭብጥን (Theme) ከማህደረ ትውስታ መመለስ
   const savedTheme = localStorage.getItem('theme')
   if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
     isDark.value = true
@@ -175,4 +214,3 @@ watch(() => route.path, () => {
   isOpen.value = false
 })
 </script>
-<!-- ምንም አይነት <style> ታግ አያስፈልግም! ፎንቱ በ Tailwind እና useHead ተሰርቷል -->

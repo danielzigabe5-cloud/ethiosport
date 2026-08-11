@@ -1,148 +1,184 @@
-<!-- app/layouts/partner.vue -->
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
+const route = useRoute()
 const router = useRouter()
-const isMobileMenuOpen = ref(false)
 
-const navItems = [
-  { name: 'Overview', path: '/partner', icon: '📊' },
-  { name: 'QR Ticket Verifier', path: '/partner/scan', icon: '📷' },
-  { name: 'My Venues', path: '/partner/venues', icon: '🏟️' },
-  { name: 'Time Slots & Pricing', path: '/partner/schedule', icon: '⏰' },
-  { name: 'Bookings', path: '/partner/bookings', icon: '📅' },
-  { name: 'Earnings & Payouts', path: '/partner/earnings', icon: '💰' },
-  { name: 'Settings', path: '/partner/settings', icon: '⚙️' }
+const currentLang = ref('አማ')
+const isDark = ref(false)
+
+// 1. Top Header Navigation Links (ምስሉ ላይ ያሉት)
+const topNavLinks = [
+  { name: 'Home', path: '/' },
+  { name: 'Games', path: '/games' },
+  { name: 'Venues', path: '/venues' },
+  { name: 'Events', path: '/events' },
+  { name: 'Blogs', path: '/blogs' },
+  { name: 'JustPlay', path: '/justplay' },
+  { name: 'Contact', path: '/contact' }
 ]
 
-const closeMobileMenu = () => {
-  isMobileMenuOpen.value = false
+// 2. Sidebar Navigation Links (የፓርትነር ዳሽቦርድ ብቻ)
+const partnerSidebarLinks = [
+  { name: 'ዳሽቦርድ', path: '/partner', icon: 'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z' },
+  { name: 'የቀጠሮ ሰሌዳ (Schedule)', path: '/partner/schedule', icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' },
+  { name: 'ሜዳዎቼ (My Venues)', path: '/partner/venues', icon: 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z' },
+  { name: 'ገቢ እና ክፍያዎች', path: '/partner/payouts', icon: 'M3 10h18M7 15h1m4 0h1m-7 4h12a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
+  { name: 'መቼቶች (Settings)', path: '/partner/settings', icon: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z' },
+  { name: 'ሪፖርት አድርግ (Support)', path: '/partner/support', icon: 'M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z' }
+]
+
+const toggleLanguage = () => {
+  currentLang.value = currentLang.value === 'አማ' ? 'EN' : 'አማ'
+}
+
+const toggleTheme = () => {
+  isDark.value = !isDark.value
 }
 
 const handleLogout = () => {
-  // Session / Token ፅዳት
-  // localStorage.clear()
-  
-  // ወደ Login Redirect ማድረጊያ
   router.push('/login')
 }
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#06090e] text-slate-100 flex flex-col font-sans">
+  <div class="min-h-screen w-full bg-[#070c14] text-white font-sans flex flex-col">
     
-    <!-- TOP NAVBAR (ለዴስክቶፕ እና ለሞባይል ሁልጊዜ ከላይ የሚታይ) -->
-    <header class="bg-[#0b111a] border-b border-[#1a2432] px-4 py-3 flex items-center justify-between sticky top-0 z-40">
-      <div class="flex items-center gap-3">
-        <!-- Mobile Menu Toggle -->
-        <button @click="isMobileMenuOpen = !isMobileMenuOpen" class="lg:hidden p-2 text-slate-300 bg-[#131c27] rounded-xl focus:outline-none">
-          {{ isMobileMenuOpen ? '✕' : '☰' }}
-        </button>
+    <!-- 1. MAIN TOP HEADER (ከላይ የሚቀመጠው ናቭባር) -->
+    <header class="h-16 bg-white border-b border-slate-100 px-6 flex items-center justify-between shrink-0 sticky top-0 z-50">
+      
+      <!-- Logo -->
+      <NuxtLink to="/" class="flex items-center gap-1 text-xl font-black tracking-tight shrink-0">
+        <span class="text-slate-900">ETHIO</span>
+        <span class="text-emerald-600">SPORT</span>
+      </NuxtLink>
+
+      <!-- Main Navigation Links (ምስሉ ላይ ያሉት) -->
+      <nav class="hidden lg:flex items-center gap-2">
+        <NuxtLink
+          v-for="link in topNavLinks"
+          :key="link.path"
+          :to="link.path"
+          class="text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
+          :class="[
+            route.path === link.path
+              ? 'bg-emerald-50 text-emerald-600 font-bold'
+              : 'text-slate-700 hover:text-emerald-600'
+          ]"
+        >
+          {{ link.name }}
+        </NuxtLink>
+      </nav>
+
+      <!-- Right Action Controls -->
+      <div class="flex items-center gap-3 shrink-0">
         
-        <div class="flex items-center gap-2">
-          <div class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center text-slate-950 font-black text-base">⚽</div>
-          <h2 class="font-black text-sm text-white hidden sm:block">EthioSport Partner</h2>
-        </div>
-      </div>
+        <!-- Language Switcher -->
+        <button 
+          @click="toggleLanguage"
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 transition cursor-pointer"
+        >
+          <svg class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 5h12M9 3v2m1 4h6m-3 0v11m0 0l-3-3m3 3l3-3M3 13h5m0 0l-2-2m2 2l-2 2" />
+          </svg>
+          <span>{{ currentLang }}</span>
+        </button>
 
-      <!-- TOP RIGHT ACTIONS: USER & LOGOUT BUTTON -->
-      <div class="flex items-center gap-3">
-        <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-[#131c27] rounded-xl border border-[#212e3e]">
-          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-          <span class="text-xs font-bold text-slate-200">ሳርቤት ፉትሳል</span>
-        </div>
+        <!-- Dark/Light Theme Toggle -->
+        <button 
+          @click="toggleTheme"
+          class="p-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 transition cursor-pointer"
+        >
+          <svg v-if="!isDark" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          </svg>
+          <svg v-else class="w-4 h-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+        </button>
 
-        <!-- TOP LOGOUT BUTTON (ሁልጊዜ ከላይ የሚታይ) -->
+        <div class="h-5 w-[1px] bg-slate-200 mx-1"></div>
+
+        <!-- Partner Badge / Button -->
+        <NuxtLink 
+          to="/partner"
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 text-xs font-bold"
+        >
+          <svg class="w-4 h-4 stroke-current" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0V12a1 1 0 011-1h2a1 1 0 011 1v9" />
+          </svg>
+          <span>Partner</span>
+        </NuxtLink>
+
+        <!-- Logout Button -->
         <button 
           @click="handleLogout"
-          class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-rose-400 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 transition-all cursor-pointer"
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-100 text-xs font-bold transition cursor-pointer"
         >
-          <span>🚪</span>
-          <span>Logout</span>
+          <svg class="w-4 h-4 stroke-current" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
+          <span>ውጣ</span>
         </button>
+
       </div>
+
     </header>
 
-    <!-- Main Wrapper (Sidebar + Content Area) -->
-    <div class="flex flex-1">
+    <!-- 2. BODY WRAPPER (SIDEBAR + MAIN CONTENT) -->
+    <div class="flex-1 flex w-full relative">
       
-      <!-- SIDEBAR -->
-      <aside 
-        class="bg-[#0b111a] border-r border-[#1a2432] w-64 p-5 flex flex-col justify-between shrink-0 h-[calc(100vh-57px)] sticky top-[57px] z-30 transition-all duration-300"
-        :class="[isMobileMenuOpen ? 'fixed inset-y-0 left-0 flex z-50 w-72 shadow-2xl top-0 h-full' : 'hidden lg:flex']"
-      >
-        <div class="space-y-6">
-          <div class="flex items-center gap-3 px-2">
-            <div class="w-9 h-9 bg-emerald-500 rounded-xl flex items-center justify-center text-slate-950 font-black text-lg shadow-lg shadow-emerald-500/20">⚽</div>
-            <div>
-              <h2 class="font-black text-sm text-white tracking-wide">EthioSport</h2>
-              <span class="text-[10px] text-emerald-400 font-bold uppercase tracking-wider block -mt-1">Partner Portal</span>
-            </div>
+      <!-- PARTNER SIDEBAR (የፓርትነር ብቻ የሆኑ ሊንኮች) -->
+      <aside class="w-64 min-w-[256px] min-h-[calc(100vh-64px)] bg-[#0d4026] border-r border-[#135936] p-4 flex flex-col justify-between shrink-0">
+        
+        <div class="space-y-4">
+          <div class="px-2 py-1 text-[11px] font-bold tracking-wider text-emerald-300 uppercase">
+            የፓርትነር መቆጣጠሪያ
           </div>
 
-          <!-- Navigation Links -->
-          <nav class="space-y-1 font-semibold text-xs">
-            <NuxtLink 
-              v-for="item in navItems" 
-              :key="item.path" 
+          <!-- Partner Unique Links -->
+          <nav class="space-y-1">
+            <NuxtLink
+              v-for="item in partnerSidebarLinks"
+              :key="item.path"
               :to="item.path"
-              @click="closeMobileMenu"
-              class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-[#131c27] transition-all"
-              active-class="bg-emerald-500/10 !text-emerald-400 border border-emerald-500/30 font-bold shadow-sm"
+              class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all"
+              :class="[
+                route.path === item.path
+                  ? 'bg-[#155a36] text-white font-bold border border-[#1f7347]'
+                  : 'text-emerald-100/70 hover:bg-[#10482c] hover:text-white'
+              ]"
             >
-              <span class="text-base">{{ item.icon }}</span>
-              <span>{{ item.name }}</span>
+              <svg class="w-4 h-4 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" :d="item.icon" />
+              </svg>
+              <span class="truncate">{{ item.name }}</span>
             </NuxtLink>
           </nav>
         </div>
 
-        <!-- SIDEBAR BOTTOM LOGOUT SECTION -->
-        <div class="pt-4 border-t border-[#1a2432] space-y-2">
-          <button 
-            @click="handleLogout"
-            class="w-full flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 transition-all shadow-md cursor-pointer"
-          >
-            <span>🚪</span>
-            <span>Logout Account</span>
-          </button>
-        </div>
       </aside>
 
-      <!-- Mobile Overlay -->
-      <div 
-        v-if="isMobileMenuOpen" 
-        @click="closeMobileMenu" 
-        class="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-sm"
-      ></div>
-
-      <!-- MAIN CONTENT AREA -->
-      <div class="flex-1 flex flex-col min-w-0 min-h-[calc(100vh-57px)]">
+      <!-- MAIN PAGE CONTENT -->
+      <div class="flex-1 flex flex-col min-w-0 bg-[#070c14]">
         
-        <main class="flex-1 p-4 md:p-8">
+        <main class="flex-1 p-6 overflow-x-hidden">
           <slot />
         </main>
 
         <!-- FOOTER -->
-        <footer class="bg-[#0b111a] border-t border-[#1a2432] p-6 text-slate-400 text-xs mt-auto">
-          <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div class="flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-              <p class="font-bold text-white">EthioSport Partner Portal</p>
-              <span class="text-slate-600">|</span>
-              <p class="text-slate-500 text-[11px]">© 2026 EthioSport</p>
-            </div>
-
-            <div class="flex items-center gap-6 text-[11px] font-semibold">
-              <NuxtLink to="/partner/settings" class="hover:text-emerald-400 transition">Settings</NuxtLink>
-              <button @click="handleLogout" class="text-rose-400 hover:underline cursor-pointer">Logout</button>
-              <a href="tel:+251911000000" class="text-emerald-400 hover:underline">Support</a>
-            </div>
+        <footer class="border-t border-[#1a2432] bg-[#070c14] py-4 px-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500 shrink-0">
+          <p>© 2026 EthioSport Portal. መብቱ በህግ የተጠበቀ ነው።</p>
+          <div class="flex gap-4">
+            <a href="#" class="hover:text-slate-300 transition">የግላዊነት ፖሊሲ</a>
+            <a href="#" class="hover:text-slate-300 transition">የአገልግሎት ውሎች</a>
           </div>
         </footer>
 
       </div>
 
     </div>
+
   </div>
 </template>

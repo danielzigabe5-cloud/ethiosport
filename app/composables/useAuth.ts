@@ -1,23 +1,42 @@
-export const useAuth = () => {
-  // ተጠቃሚው Login ማድረጉን በ Cookie ይይዛል (ከ Refresh በኋላ እንዳይጠፋ)
-  const isAuthenticated = useCookie<boolean>('auth_logged_in', { default: () => false })
-  const userRole = useCookie<string | null>('auth_role', { default: () => null })
+export interface User {
+  id: string
+  name: string
+  email: string
+  role: 'admin' | 'partner'
+  venueName?: string // ለPartner ብቻ
+}
 
-  const login = (role: string) => {
-    isAuthenticated.value = true
-    userRole.value = role
+export const useAuth = () => {
+  const user = useState<User | null>('auth_user', () => null)
+
+  const loginAsAdmin = () => {
+    user.value = {
+      id: 'usr-admin-1',
+      name: 'EthioSport System Admin',
+      email: 'admin@ethiosport.et',
+      role: 'admin'
+    }
+  }
+
+  const loginAsPartner = () => {
+    user.value = {
+      id: 'usr-[#0b111a]-partner',
+      name: 'ሳርቤት ፉትሳል',
+      email: 'sarbet@futsal.et',
+      role: 'partner',
+      venueName: 'ሳርቤት ፉትሳል ሜዳ'
+    }
   }
 
   const logout = async () => {
-    isAuthenticated.value = false
-    userRole.value = null
+    user.value = null
     await navigateTo('/login')
   }
 
   return {
-    isAuthenticated,
-    userRole,
-    login,
+    user,
+    loginAsAdmin,
+    loginAsPartner,
     logout
   }
 }

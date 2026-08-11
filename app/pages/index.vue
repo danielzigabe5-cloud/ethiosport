@@ -1,101 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-50 dark:bg-gray-950 font-sans selection:bg-green-200 selection:text-green-900 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-50 dark:[&::-webkit-scrollbar-track]:bg-gray-900 [&::-webkit-scrollbar-thumb]:bg-green-600 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-green-700">
     
-    <!-- HEADER & NAVBAR -->
-    <header 
-      :class="[
-        'fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b',
-        isScrolled ? 'bg-green-800/95 backdrop-blur-lg border-white/10 shadow-lg py-2' : 'bg-green-700/80 backdrop-blur-sm border-transparent py-4'
-      ]"
-    >
-      <div class="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-        <!-- Logo -->
-        <NuxtLink to="/" class="flex items-center gap-2">
-          <Icon name="lucide:trophy" class="w-8 h-8 text-yellow-400" />
-          <span class="text-2xl font-black text-white tracking-tight">ሜዳወች <span class="text-yellow-400">Ethiopia</span></span>
-        </NuxtLink>
-
-        <!-- Desktop Navigation Links -->
-        <nav class="hidden md:flex items-center gap-8 font-semibold text-white/90 text-sm tracking-wide">
-          <button type="button" @click="scrollToSection('hero')" class="hover:text-yellow-400 transition-colors">መነሻ</button>
-          <button type="button" @click="scrollToSection('sports-info')" class="hover:text-yellow-400 transition-colors">ስለ ስፖርቶች</button>
-          <button type="button" @click="scrollToSection('how-it-works')" class="hover:text-yellow-400 transition-colors">አሰራራችን</button>
-          <button type="button" @click="scrollToSection('venues')" class="hover:text-yellow-400 transition-colors">ሜዳዎች</button>
-          <NuxtLink to="/justplay" class="hover:text-yellow-400 transition-colors">ጨዋታዎች</NuxtLink>
-          <NuxtLink to="/contact" class="hover:text-yellow-400 transition-colors">አግኙን</NuxtLink>
-        </nav>
-
-        <!-- Right Side: Language & Auth -->
-        <div class="hidden md:flex items-center gap-5">
-          <!-- Language Selector -->
-          <div class="relative group">
-            <button type="button" class="flex items-center gap-2 px-2 py-1 text-white font-medium text-sm transition hover:text-yellow-400">
-              <Icon name="lucide:globe" class="w-4 h-4" />
-              <span>{{ currentLang.code }}</span>
-              <Icon name="lucide:chevron-down" class="w-3 h-3" />
-            </button>
-            <div class="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-900 rounded-xl shadow-xl border dark:border-gray-800 py-2 hidden group-hover:block transition-all z-50">
-              <button 
-                type="button"
-                v-for="lang in languages" 
-                :key="lang.code"
-                @click="changeLanguage(lang)"
-                class="w-full px-4 py-2 text-left flex items-center gap-3 text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-800 hover:text-green-600 transition"
-              >
-                <span>{{ lang.flag }}</span>
-                <span>{{ lang.name }}</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Auth Buttons -->
-          <div class="flex items-center gap-3">
-            <NuxtLink to="/login" class="text-white hover:text-yellow-400 font-semibold text-sm transition">
-              ግባ
-            </NuxtLink>
-            <NuxtLink to="/register" class="bg-yellow-500 hover:bg-yellow-400 text-green-950 font-bold px-5 py-2.5 rounded-xl transition shadow-md flex items-center gap-2 text-sm">
-              <Icon name="lucide:user-plus" class="w-4 h-4" />
-              ተመዝገብ
-            </NuxtLink>
-          </div>
-        </div>
-
-        <!-- Mobile Menu Toggle -->
-        <button type="button" @click="isMobileMenuOpen = !isMobileMenuOpen" class="md:hidden text-white p-2">
-          <Icon :name="isMobileMenuOpen ? 'lucide:x' : 'lucide:menu'" class="w-7 h-7" />
-        </button>
-      </div>
-
-      <!-- Mobile Dropdown Menu -->
-      <Transition 
-        enter-active-class="transition duration-300 ease-out"
-        enter-from-class="opacity-0 -translate-y-2"
-        enter-to-class="opacity-100 translate-y-0"
-        leave-active-class="transition duration-200 ease-in"
-        leave-from-class="opacity-100 translate-y-0"
-        leave-to-class="opacity-0 -translate-y-2"
-      >
-        <div v-if="isMobileMenuOpen" class="md:hidden bg-green-800 dark:bg-green-950 border-t border-white/10 px-4 pt-4 pb-6 space-y-4 shadow-xl">
-          <nav class="flex flex-col gap-2 font-semibold text-white text-sm">
-            <button type="button" @click="scrollToSection('hero', true)" class="text-left py-3 border-b border-white/10">መነሻ</button>
-            <button type="button" @click="scrollToSection('sports-info', true)" class="text-left py-3 border-b border-white/10">ስለ ስፖርቶች</button>
-            <button type="button" @click="scrollToSection('how-it-works', true)" class="text-left py-3 border-b border-white/10">አሰራራችን</button>
-            <button type="button" @click="scrollToSection('venues', true)" class="text-left py-3 border-b border-white/10">ሜዳዎች</button>
-            <NuxtLink to="/justplay" @click="isMobileMenuOpen = false" class="py-3 border-b border-white/10">ጨዋታዎች</NuxtLink>
-            <NuxtLink to="/contact" @click="isMobileMenuOpen = false" class="py-3 border-b border-white/10">አግኙን</NuxtLink>
-          </nav>
-          <div class="grid grid-cols-2 gap-3 pt-4">
-            <NuxtLink to="/login" @click="isMobileMenuOpen = false" class="bg-white/10 text-white border border-white/20 font-bold py-3 rounded-xl text-center text-sm">
-              ግባ
-            </NuxtLink>
-            <NuxtLink to="/register" @click="isMobileMenuOpen = false" class="bg-yellow-500 text-green-950 font-bold py-3 rounded-xl text-center text-sm">
-              ተመዝገብ
-            </NuxtLink>
-          </div>
-        </div>
-      </Transition>
-    </header>
-
     <!-- 1. HERO SECTION -->
     <section id="hero" class="relative min-h-[85vh] flex items-center bg-gradient-to-br from-green-800 via-green-700 to-green-900 text-white pt-24 pb-16 px-4 overflow-hidden">
       <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:30px_30px]"></div>
@@ -333,12 +238,6 @@
 </template>
 
 <script setup lang="ts">
-interface Language {
-  code: string
-  name: string
-  flag: string
-}
-
 interface Sport {
   id: string
   name: string
@@ -356,46 +255,19 @@ interface Venue {
   image: string
 }
 
-const isScrolled = ref(false)
-const isMobileMenuOpen = ref(false)
-
-const handleScroll = () => {
-  if (import.meta.client) {
-    isScrolled.value = window.scrollY > 50
-  }
-}
-
-onMounted(() => {
-  window.addEventListener('scroll', handleScroll, { passive: true })
-})
-
-onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll)
-})
-
-const scrollToSection = (id: string, closeMobileMenu = false) => {
-  if (closeMobileMenu) isMobileMenuOpen.value = false
-  
+const scrollToSection = (id: string) => {
   const element = document.getElementById(id)
   if (element) {
     const headerOffset = 70
     const elementPosition = element.getBoundingClientRect().top
     const offsetPosition = elementPosition + window.scrollY - headerOffset
-  
+
     window.scrollTo({
       top: offsetPosition,
       behavior: 'smooth'
     })
   }
 }
-
-// Languages
-const languages: Language[] = [
-  { code: 'AM', name: 'አማርኛ', flag: '🇪🇹' },
-  { code: 'EN', name: 'English', flag: '🇬🇧' }
-]
-const currentLang = ref<Language>(languages[0])
-const changeLanguage = (lang: Language) => { currentLang.value = lang }
 
 // Search State
 const searchQuery = ref('')
@@ -460,7 +332,7 @@ const sportsList: Sport[] = [
   { id: 'traditional', name: 'ባህላዊ ስፖርቶች (ትግል፣ ገበጣ)' }
 ]
 
-// Sports Info Section Data (Updated with standard Lucide icon identifiers)
+// Sports Info Section Data
 const sportsOverview = [
   {
     title: 'እግር ኳስ (Football)',
@@ -533,7 +405,7 @@ const filteredVenues = computed(() => {
     // 2. City Filter
     const matchesCity = selectedCity.value === 'all' || venue.city === selectedCity.value
 
-    // 3. Sub-City Filter (Only applied if Addis Ababa is selected)
+    // 3. Sub-City Filter
     const matchesSubCity = selectedCity.value !== 'አዲስ አበባ (Addis Ababa)' || 
                            selectedSubCity.value === 'all' || 
                            venue.subCity === selectedSubCity.value

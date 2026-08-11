@@ -5,7 +5,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
     return navigateTo('/login')
   }
 
-  if (user.value.role !== 'admin') {
-    return navigateTo('/partner') // Admin ካልሆነ ወደ Partner Dashboard ይመልሰዋል
+  if (user.value.role !== 'partner') {
+    return navigateTo('/admin') // Partner ካልሆነ ወደ Admin Dashboard ይመልሰዋል
   }
 })
