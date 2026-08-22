@@ -116,8 +116,9 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({
-  layout: 'admin'
+definePageMeta({ 
+  layout: 'admin',
+  middleware: 'auth' // ሎግ-ኢን ያላደረገ እንዳይገባ
 })
 
 const activeTab = ref('general')

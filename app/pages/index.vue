@@ -1,285 +1,143 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-950 font-sans selection:bg-green-200 selection:text-green-900 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-50 dark:[&::-webkit-scrollbar-track]:bg-gray-900 [&::-webkit-scrollbar-thumb]:bg-green-600 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-green-700">
+  <div class="min-h-screen bg-gray-100 dark:bg-gray-950 font-sans">
     
     <!-- 1. HERO SECTION -->
-    <section id="hero" class="relative min-h-[85vh] flex items-center bg-gradient-to-br from-green-800 via-green-700 to-green-900 text-white pt-24 pb-16 px-4 overflow-hidden">
-      <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:30px_30px]"></div>
-      
-      <div class="max-w-6xl mx-auto relative z-10">
-        <div class="grid lg:grid-cols-2 gap-8 items-center">
-          <div class="space-y-8 text-center lg:text-left">
-            <div class="inline-flex items-center gap-2 px-4 py-2 bg-green-900/50 backdrop-blur-md border border-green-500/30 rounded-full">
-              <span class="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></span>
-              <span class="text-xs font-bold text-yellow-400 uppercase tracking-wider">የኢትዮጵያ የስፖርት ሜዳዎች መፈለጊያ</span>
-            </div>
-            
-            <h1 class="text-5xl md:text-6xl lg:text-7xl font-black mb-4 leading-[1.1] tracking-tight">
-              የስፖርት ሜዳዎችን <br/> 
-              <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500">በዘመናዊ መንገድ</span> ያግኙ
-            </h1>
-            
-            <p class="text-lg md:text-xl text-green-50/90 leading-relaxed max-w-xl mx-auto lg:mx-0 font-medium">
-              በኢትዮጵያ ውስጥ ያሉ የራሳቸው ሜዳ እና መሰረተ ልማት ያላቸውን የስፖርት ቦታዎች ይፈልጉ፣ ቀጠሮ ይያዙ።
-            </p>
-            
-            <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-2">
-              <NuxtLink to="/download" class="bg-yellow-500 hover:bg-yellow-400 text-green-950 font-bold px-8 py-4 rounded-xl shadow-lg transition-transform transform hover:-translate-y-1 flex items-center justify-center gap-2">
-                <Icon name="lucide:download" class="w-5 h-5" />
-                መተግበሪያውን ያውርዱ
-              </NuxtLink>
-              
-              <NuxtLink to="/justplay" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold px-8 py-4 rounded-xl transition-all flex items-center justify-center gap-2 backdrop-blur-sm">
-                <Icon name="lucide:users" class="w-5 h-5" />
-                ተጫዋች ፈልግ
-              </NuxtLink>
-            </div>
-          </div>
-
-          <!-- Hero Illustration -->
-          <div class="hidden lg:block relative">
-            <div class="absolute inset-0 bg-gradient-to-tr from-green-400/30 to-yellow-500/20 rounded-3xl blur-3xl"></div>
-            <img src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=1000" alt="Football pitch" class="relative rounded-3xl shadow-2xl border border-white/10 object-cover h-[450px] w-full" />
-            
-            <div class="absolute -bottom-6 -left-6 bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-2xl border dark:border-gray-800 flex items-center gap-4 animate-bounce [animation-duration:4s]">
-              <div class="bg-green-100 dark:bg-green-900/50 p-4 rounded-full text-green-600 dark:text-green-400">
-                <Icon name="lucide:activity" class="w-8 h-8" />
-              </div>
-              <div>
-                <p class="text-3xl font-black text-gray-900 dark:text-white">100+</p>
-                <p class="text-sm font-semibold text-gray-500">ዕለታዊ ጨዋታዎች</p>
-              </div>
-            </div>
-          </div>
-        </div>
+    <section class="bg-green-800 text-white pt-20 pb-32 px-4 relative">
+      <div class="max-w-6xl mx-auto text-center">
+        <h1 class="text-4xl md:text-6xl font-black mb-4">የስፖርት ሜዳዎችን ያግኙ</h1>
+        <p class="text-green-100 text-lg">በመረጡት ከተማ እና የስፖርት አይነት ሜዳዎችን ይፈልጉ</p>
       </div>
     </section>
 
-    <!-- 2. SMART SEARCH BAR -->
-    <div class="max-w-6xl mx-auto px-4 -mt-12 relative z-30 mb-16">
-      <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-xl shadow-gray-200/50 dark:shadow-none border dark:border-gray-800 flex flex-col md:flex-row flex-wrap lg:flex-nowrap gap-3 items-center">
+    <!-- 2. SEARCH BAR SECTION (ሙሉ በሙሉ የተስተካከለ) -->
+    <div class="max-w-6xl mx-auto px-4 relative z-40 -mt-16">
+      <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800">
         
-        <!-- Text Search -->
-        <div class="w-full flex-1 relative group">
-          <Icon name="lucide:search" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-green-500 transition-colors" />
-          <input 
-            v-model="searchQuery"
-            type="text" 
-            placeholder="የሜዳ ስም ወይም ቦታ..." 
-            class="w-full pl-12 pr-4 py-3.5 bg-gray-50 dark:bg-gray-800/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 transition-all dark:text-white text-sm font-medium" 
-          />
-        </div>
+        <!-- Input Row -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+          
+         
+          
 
-        <!-- Dropdown: All Cities -->
-        <div class="w-full md:w-48 lg:w-56 relative group">
-          <Icon name="lucide:map-pin" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-green-500 transition-colors z-10" />
-          <select 
-            v-model="selectedCity"
-            @change="handleCityChange"
-            class="w-full pl-11 pr-8 py-3.5 bg-gray-50 dark:bg-gray-800/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 transition-all dark:text-white appearance-none cursor-pointer text-sm font-medium"
-          >
-            <option value="all">ሁሉም ከተሞች (All Cities)</option>
-            <option v-for="city in cities" :key="city" :value="city">{{ city }}</option>
-          </select>
-          <Icon name="lucide:chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none w-4 h-4" />
-        </div>
+          <!-- ከተማ መምረጫ -->
+          <div class="flex flex-col">
+            <label class="text-xs font-bold text-gray-500 mb-1 ml-1">ከተማ</label>
+            <select 
+              v-model="selectedCity"
+              @change="handleCityChange"
+              class="w-full p-3 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-green-500 outline-none text-black dark:text-white cursor-pointer"
+            >
+              <option value="all">ሁሉም ከተሞች</option>
+              <option v-for="city in cities" :key="city" :value="city">{{ city }}</option>
+            </select>
+          </div>
 
-        <!-- Dynamic Dropdown: Sub-Cities (Appears only if Addis Ababa is selected) -->
-        <div v-if="selectedCity === 'አዲስ አበባ (Addis Ababa)'" class="w-full md:w-48 lg:w-56 relative group">
-          <Icon name="lucide:building-2" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-green-500 transition-colors z-10" />
-          <select 
-            v-model="selectedSubCity"
-            class="w-full pl-11 pr-8 py-3.5 bg-gray-50 dark:bg-gray-800/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 transition-all dark:text-white appearance-none cursor-pointer text-sm font-medium"
-          >
-            <option value="all">ሁሉም ክፍለ ከተሞች</option>
-            <option v-for="subCity in subCities" :key="subCity" :value="subCity">{{ subCity }}</option>
-          </select>
-          <Icon name="lucide:chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none w-4 h-4" />
-        </div>
+          <!-- ክፍለ ከተማ (አዲስ አበባ ብቻ ሲመረጥ የሚመጣ) -->
+          <div v-if="selectedCity === 'Addis Ababa'" class="flex flex-col animate-in fade-in slide-in-from-top-2 duration-300">
+            <label class="text-xs font-bold text-green-600 mb-1 ml-1">ክፍለ ከተማ</label>
+            <select 
+              v-model="selectedSubCity"
+              class="w-full p-3 bg-green-50 dark:bg-gray-800 border border-green-300 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-green-500 outline-none text-black dark:text-white cursor-pointer"
+            >
+              <option value="all">ሁሉም ክፍለ ከተሞች</option>
+              <option v-for="subCity in subCities" :key="subCity" :value="subCity">{{ subCity }}</option>
+            </select>
+          </div>
 
-        <!-- Dropdown: All Sports -->
-        <div class="w-full md:w-48 lg:w-56 relative group">
-          <Icon name="lucide:trophy" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-green-500 transition-colors z-10" />
-          <select 
-            v-model="selectedSport"
-            class="w-full pl-11 pr-8 py-3.5 bg-gray-50 dark:bg-gray-800/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 transition-all dark:text-white appearance-none cursor-pointer text-sm font-medium"
-          >
-            <option value="all">ሁሉም ስፖርቶች (All Sports)</option>
-            <option v-for="sport in sportsList" :key="sport.id" :value="sport.id">{{ sport.name }}</option>
-          </select>
-          <Icon name="lucide:chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none w-4 h-4" />
-        </div>
-
-        <!-- Search Button -->
-        <button type="button" @click="executeSearch" class="w-full md:w-auto px-8 py-3.5 bg-green-600 hover:bg-green-700 active:scale-95 text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-sm whitespace-nowrap">
-          <Icon name="lucide:search" class="w-4 h-4" />
-          ፈልግ
+          <!-- ስፖርት አይነት -->
+          <div class="flex flex-col">
+            <label class="text-xs font-bold text-gray-500 mb-1 ml-1">የስፖርት አይነት</label>
+            <select 
+              v-model="selectedSport"
+              class="w-full p-3 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-green-500 outline-none text-black dark:text-white cursor-pointer"
+            >
+              <option value="all">ሁሉም ስፖርቶች</option>
+              <option value="football">እግር ኳስ</option>
+              <option value="basketball">ቅርጫት ኳስ</option>
+              <option value="athletics">አትሌቲክስ</option>
+            </select>
+          </div>
+           <!-- መፈለጊያ ቁልፍ -->
+          
+            
+          <button 
+          @click="executeSearch"
+          class="w-full p-3 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-xl focus:ring-2 focus:ring-green-500 hover:bg-green-00 text-black font-bold rounded-xl shadow-lg transition-all active:scale-95 "
+        >
+          ሜዳዎችን ፈልግ
         </button>
+      
+        </div>
 
+       
+        
       </div>
     </div>
 
-    <!-- 3. SPORTS OVERVIEW SECTION -->
-    <section id="sports-info" class="py-12 bg-white dark:bg-gray-900 border-b dark:border-gray-800">
-      <div class="max-w-6xl mx-auto px-4">
-        <div class="text-center max-w-3xl mx-auto mb-12">
-          <h2 class="text-3xl font-black dark:text-white mb-3">በኢትዮጵያ የራሳቸው ሜዳ ያላቸው የስፖርት ዓይነቶች</h2>
-          <p class="text-gray-500 dark:text-gray-400 text-sm md:text-base leading-relaxed">
-            በሀገራችን በስፋት የሚዘወተሩ፣ የራሳቸው መሰረተ ልማት እና የተዘጋጁ ሜዳዎች ያሏቸው ዋና ዋና የስፖርት ዓይነቶች እና የጨዋታ ቦታዎች መረጃ።
-          </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div v-for="sport in sportsOverview" :key="sport.title" class="p-5 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border dark:border-gray-800 hover:border-green-500/40 transition-all">
-            <div class="w-12 h-12 bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400 rounded-xl flex items-center justify-center mb-4">
-              <Icon :name="sport.icon" class="w-6 h-6" />
-            </div>
-            <h3 class="font-bold text-lg dark:text-white mb-2">{{ sport.title }}</h3>
-            <p class="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">{{ sport.description }}</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 4. HOW IT WORKS -->
-    <section id="how-it-works" class="py-20 bg-gray-50 dark:bg-gray-950">
-      <div class="max-w-6xl mx-auto px-4 text-center">
-        <h2 class="text-3xl md:text-4xl font-black dark:text-white mb-3 tracking-tight">አሰራራችን እጅግ ቀላል ነው</h2>
-        <p class="text-gray-500 mb-16 font-medium text-lg">በሶስት ቀላል ደረጃዎች የራስዎን ሜዳ ያግኙ</p>
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-          <div class="hidden md:block absolute top-12 left-[16%] right-[16%] h-[2px] bg-gradient-to-r from-gray-200 via-green-500 to-gray-200 dark:from-gray-800 dark:via-green-600 dark:to-gray-800 -z-0"></div>
-          
-          <div v-for="(step, i) in steps" :key="i" class="relative z-10 bg-white dark:bg-gray-900 p-8 rounded-3xl shadow-sm border dark:border-gray-800 flex flex-col items-center hover:-translate-y-2 transition-transform duration-300">
-            <div class="w-20 h-20 bg-green-50 dark:bg-green-900/30 text-green-600 rounded-2xl flex items-center justify-center mb-6 shadow-inner rotate-3">
-              <Icon :name="step.icon" class="w-10 h-10" />
-            </div>
-            <h3 class="text-xl font-bold dark:text-white mb-3">{{ step.title }}</h3>
-            <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">{{ step.desc }}</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 5. FEATURED VENUES -->
-    <section id="venues" class="py-24 bg-white dark:bg-gray-900">
-      <div class="max-w-6xl mx-auto px-4">
-        <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
-          <div>
-            <h2 class="text-3xl md:text-4xl font-black dark:text-white mb-3 tracking-tight">የተመዘገቡ ሜዳዎችና ስታዲየሞች</h2>
-            <p class="text-gray-500 font-medium">በመረጡት ቦታ እና የስፖርት አይነት የተለዩ ሜዳዎች</p>
-          </div>
-          <NuxtLink to="/venues" class="text-green-600 font-bold hover:text-green-700 flex items-center gap-1 group">
-            ሁሉንም ተመልከት <Icon name="lucide:arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </NuxtLink>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <div v-for="venue in filteredVenues" :key="venue.id" class="bg-gray-50 dark:bg-gray-800/40 rounded-[2rem] overflow-hidden border dark:border-gray-800 hover:shadow-2xl hover:shadow-gray-200 dark:hover:shadow-none hover:border-green-500/30 transition-all duration-300 flex flex-col group">
-            <div class="h-64 relative overflow-hidden">
-              <img :src="venue.image" class="w-full h-full object-cover group-hover:scale-110 transition duration-700" :alt="venue.name" loading="lazy" />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <div class="absolute top-4 right-4 px-3 py-1 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md rounded-lg text-xs font-bold text-gray-900 dark:text-white shadow-sm uppercase">
-                {{ venue.sportType }}
-              </div>
-            </div>
-            <div class="p-6 flex flex-col flex-grow">
-              <div class="flex justify-between items-start mb-4">
-                <div>
-                  <h3 class="text-xl font-bold dark:text-white mb-2 group-hover:text-green-600 transition-colors">{{ venue.name }}</h3>
-                  <p class="text-gray-500 text-sm flex items-center gap-1.5 font-medium">
-                    <Icon name="lucide:map-pin" class="w-4 h-4 text-gray-400" /> {{ venue.city }} <span v-if="venue.subCity">({{ venue.subCity }})</span>
-                  </p>
-                  <p class="text-xs text-gray-400 mt-1">{{ venue.address }}</p>
-                </div>
-                <div class="flex items-center gap-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-500 px-2.5 py-1.5 rounded-lg text-xs font-bold">
-                  <Icon name="lucide:star" class="w-3.5 h-3.5 fill-current" />
-                  {{ venue.rating }}
-                </div>
-              </div>
-              <div class="mt-auto pt-5 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
-                <div>
-                  <p class="text-xs text-gray-500 font-medium mb-0.5">ዋጋ በሰዓት</p>
-                  <p class="text-xl font-black text-green-600">{{ venue.price }} <span class="text-xs text-gray-500 font-medium">ብር</span></p>
-                </div>
-                <NuxtLink :to="`/venues/${venue.id}`" class="px-6 py-3 bg-gray-900 dark:bg-gray-700 hover:bg-green-600 dark:hover:bg-green-600 text-white rounded-xl font-semibold text-sm transition-colors shadow-sm">
-                  ዝርዝር እይ
-                </NuxtLink>
-              </div>
+    <!-- 3. VENUES DISPLAY -->
+    <section id="venues" class="max-w-6xl mx-auto px-4 py-20">
+      <div v-if="filteredVenues.length > 0" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div v-for="venue in filteredVenues" :key="venue.id" class="bg-white dark:bg-gray-900 rounded-3xl overflow-hidden shadow-md border border-gray-100 dark:border-gray-800">
+          <img :src="venue.image" class="w-full h-48 object-cover" />
+          <div class="p-6">
+            <div class="text-xs font-bold text-green-600 uppercase mb-2">{{ venue.sportType }}</div>
+            <h3 class="text-xl font-bold dark:text-white mb-2">{{ venue.name }}</h3>
+            <p class="text-gray-500 text-sm mb-4">{{ venue.city }} {{ venue.subCity ? '- ' + venue.subCity : '' }}</p>
+            <div class="flex justify-between items-center border-t pt-4">
+              <span class="text-lg font-black text-gray-900 dark:text-white">{{ venue.price }} ብር</span>
+              <button class="bg-gray-100 dark:bg-gray-800 p-2 px-4 rounded-lg font-bold dark:text-white">እይ</button>
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- Empty State -->
-        <div v-if="filteredVenues.length === 0" class="py-20 text-center bg-gray-50 dark:bg-gray-800/30 rounded-[2rem] border border-dashed dark:border-gray-700 mt-8">
-          <Icon name="lucide:search-x" class="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <h3 class="text-xl font-bold dark:text-white">ምንም ሜዳ አልተገኘም!</h3>
-          <p class="text-gray-500 text-sm mt-2">እባክዎን ሌላ ከተማ፣ ክፍለ ከተማ ወይም የስፖርት ዓይነት ይሞክሩ።</p>
-          <button type="button" @click="resetFilters" class="mt-4 text-green-600 font-semibold hover:underline">ፍለጋውን አጽዳ</button>
-        </div>
+      <!-- No Results -->
+      <div v-else class="text-center py-20">
+        <h3 class="text-2xl font-bold text-gray-400">ምንም ሜዳ አልተገኘም!</h3>
+        <button @click="resetFilters" class="text-green-600 underline mt-4">ሁሉንም አሳይ</button>
       </div>
     </section>
 
-    <!-- 6. CALL TO ACTION -->
-    <section class="py-16 bg-green-800 relative overflow-hidden">
-      <div class="absolute -right-20 -top-20 w-96 h-96 bg-green-600 rounded-full blur-3xl opacity-50"></div>
-      
-      <div class="max-w-6xl mx-auto px-4 relative z-10 text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-8">
-        <div class="max-w-2xl">
-          <h2 class="text-3xl md:text-4xl font-black text-white mb-3">የራስዎ የስፖርት ሜዳ አለዎት?</h2>
-          <p class="text-green-100 font-medium text-lg leading-relaxed">በሜዳወች መተግበሪያ ላይ በመመዝገብ ደንበኞችዎን በቀላሉ ያስተዳድሩ፣ ገቢዎን ያሳድጉ። የዘመናዊው አሰራር አካል ይሁኑ።</p>
-        </div>
-        <NuxtLink to="/business/register" class="whitespace-nowrap bg-yellow-500 text-green-950 hover:bg-yellow-400 font-bold px-10 py-5 rounded-2xl shadow-xl transition-all hover:scale-105 flex items-center gap-2">
-          <Icon name="lucide:building" class="w-5 h-5" />
-          ሜዳዎን ያስመዝግቡ
-        </NuxtLink>
-      </div>
-    </section>
   </div>
 </template>
 
 <script setup lang="ts">
-interface Sport {
-  id: string
-  name: string
-}
+import { ref, computed } from 'vue'
 
-interface Venue {
-  id: number
-  name: string
-  city: string
-  subCity: string
-  address: string
-  sportType: string
-  price: string
-  rating: string
-  image: string
-}
-
-const scrollToSection = (id: string) => {
-  const element = document.getElementById(id)
-  if (element) {
-    const headerOffset = 70
-    const elementPosition = element.getBoundingClientRect().top
-    const offsetPosition = elementPosition + window.scrollY - headerOffset
-
-    window.scrollTo({
-      top: offsetPosition,
-      behavior: 'smooth'
-    })
-  }
-}
-
-// Search State
+// የፍለጋ ተለዋዋጮች
 const searchQuery = ref('')
 const selectedCity = ref('all')
 const selectedSubCity = ref('all')
 const selectedSport = ref('all')
 
+// ዳታዎች
+const cities = ['Addis Ababa', 'Bahir Dar', 'Hawassa', 'Mekelle', 'Dire Dawa']
+const subCities = ['Bole', 'Kirkos', 'Arada', 'Yeka', 'Lideta', 'Nifas Silk']
+
+const venues = ref([
+  { id: 1, name: 'ይድነቃቸው ተሰማ ስታዲየም', city: 'Addis Ababa', subCity: 'Kirkos', sportType: 'football', price: '2500', image: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=500' },
+  { id: 2, name: 'አበበ ቢቂላ ስታዲየም', city: 'Addis Ababa', subCity: 'Arada', sportType: 'athletics', price: '1800', image: 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=500' },
+  { id: 3, name: 'ባህር ዳር ስታዲየም', city: 'Bahir Dar', subCity: '', sportType: 'football', price: '2000', image: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=500' },
+  { id: 4, name: 'ቦሌ አትላስ ሜዳ', city: 'Addis Ababa', subCity: 'Bole', sportType: 'basketball', price: '1000', image: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=500' }
+])
+
+// ከተማ ሲቀየር
 const handleCityChange = () => {
-  if (selectedCity.value !== 'አዲስ አበባ (Addis Ababa)') {
-    selectedSubCity.value = 'all'
-  }
+  selectedSubCity.value = 'all'
 }
+
+// ፊልተር ሎጂክ
+const filteredVenues = computed(() => {
+  return venues.value.filter(v => {
+    const s = searchQuery.value.toLowerCase()
+    const matchesName = v.name.toLowerCase().includes(s)
+    const matchesCity = selectedCity.value === 'all' || v.city === selectedCity.value
+    const matchesSub = selectedCity.value !== 'Addis Ababa' || selectedSubCity.value === 'all' || v.subCity === selectedSubCity.value
+    const matchesSport = selectedSport.value === 'all' || v.sportType === selectedSport.value
+    
+    return matchesName && matchesCity && matchesSub && matchesSport
+  })
+})
 
 const resetFilters = () => {
   searchQuery.value = ''
@@ -289,131 +147,6 @@ const resetFilters = () => {
 }
 
 const executeSearch = () => {
-  scrollToSection('venues')
+  document.getElementById('venues')?.scrollIntoView({ behavior: 'smooth' })
 }
-
-// Cities and Sub-Cities Data
-const cities = [
-  'አዲስ አበባ (Addis Ababa)',
-  'ባህር ዳር (Bahir Dar)',
-  'ሀዋሳ (Hawassa)',
-  'መቀሌ (Mekelle)',
-  'ድሬዳዋ (Dire Dawa)',
-  'ነቀምቴ (Nekemte)',
-  'ወልዲያ (Woldia)',
-  'ሆሳዕና (Hosaena)',
-  'አርባ ምንጭ (Arba Minch)',
-  'ሐረር (Harar)',
-  'ሱሉልታ (Sululta)'
-]
-
-const subCities = [
-  'ቦሌ (Bole)',
-  'አራዳ (Arada)',
-  'አዲስ ከተማ (Addis Ketema)',
-  'ልደታ (Lideta)',
-  'ቂርቆስ / ካዛንችስ / ሜክሲኮ',
-  'የካ (Yeka)',
-  'ጉለሌ (Gullele)',
-  'አቃቂ ቃሊቲ (Akaki Kality)',
-  'ኮልፌ ቀራኒዮ (Kolfe Keraniyo)',
-  'ንፋስ ስልክ ላፍቶ (Nifas Silk Lafto)'
-]
-
-// All Sports List
-const sportsList: Sport[] = [
-  { id: 'football', name: 'እግር ኳስ (Football / Futsal)' },
-  { id: 'athletics', name: 'አትሌቲክስ (Athletics)' },
-  { id: 'basketball', name: 'ቅርጫት ኳስ / ቮሊቦል / ሃንድቦል' },
-  { id: 'tennis', name: 'ቴኒስ (Tennis)' },
-  { id: 'golf', name: 'ጎልፍ (Golf)' },
-  { id: 'equestrian', name: 'የፈረስ ጉልበት / ሽርጥ' },
-  { id: 'swimming', name: 'ዋና (Swimming)' },
-  { id: 'traditional', name: 'ባህላዊ ስፖርቶች (ትግል፣ ገበጣ)' }
-]
-
-// Sports Info Section Data
-const sportsOverview = [
-  {
-    title: 'እግር ኳስ (Football)',
-    icon: 'lucide:trophy',
-    description: 'በኢትዮጵያ ከፍተኛ ቁጥር ያለው የስፖርት ሜዳና ስታዲየም የተዘጋጀለት የስፖርት ዓይነት ነው።'
-  },
-  {
-    title: 'አትሌቲክስ (Athletics)',
-    icon: 'lucide:activity',
-    description: 'አብዛኛዎቹ ዋና ዋና ስታዲየሞች የሩጫ ታርታን አላቸው። እንደ ሱሉልታ ያሉ ልዩ ማሰልጠኛዎች ይገኛሉ።'
-  },
-  {
-    title: 'ሜዳ ኳሶች (Courts)',
-    icon: 'lucide:target',
-    description: 'ቅርጫት ኳስ፣ ቮሊቦልና ሃንድቦል በወጣቶች ማዕከላትና ሜክሲኮ በሚገኘው የቅርጫት ኳስ ሜዳ ይከናወናሉ።'
-  },
-  {
-    title: 'ቴኒስ እና ጎልፍ',
-    icon: 'lucide:flag',
-    description: 'አዲስ አበባ ቴኒስ ክለብ፣ ሆቴሎች እና የአዲስ አበባ ጎልፍ ክለብ (ሜክሲኮ) የተዘጋጁ ሜዳዎች አሏቸው።'
-  },
-  {
-    title: 'ፈረስ ጉልበት (Equestrian)',
-    icon: 'lucide:shield',
-    description: 'የኢትዮጵያ ፈረስ ጉልበት ማህበር በጃንሜዳ አካባቢ የተዘጋጀ የራሱ የፈረስ ግልቢያ ሜዳ አለው።'
-  },
-  {
-    title: 'ዋና (Swimming)',
-    icon: 'lucide:waves',
-    description: 'በብሔራዊ ሆቴሎች፣ በወጣቶች ማዕከላት እና አዲስ ስፖርት ፓርክ ባሉ ቦታዎች የዋና ገንዳዎች አሉ።'
-  },
-  {
-    title: 'ባህላዊ ስፖርቶች',
-    icon: 'lucide:swords',
-    description: 'ትግል፣ ገበጣ እና ቅርጫ በበዓላት ወቅት በጃንሜዳ እና በክልል ባህል ማዕከላት ይካሄዳሉ።'
-  },
-  {
-    title: 'ባህር ዳርና ክልል ስታዲየሞች',
-    icon: 'lucide:map-pin',
-    description: 'በሀዋሳ፣ መቀሌ፣ ድሬዳዋ፣ ወለጋ፣ ወልዲያና ሆሳዕና የሚገኙ ብሔራዊ ደረጃ ያላቸው ስታዲየሞች።'
-  }
-]
-
-const steps = [
-  { icon: 'lucide:search', title: '1. ሜዳ ይፈልጉ', desc: 'በአቅራቢያዎ የሚገኙትን ምርጥ የስፖርት ሜዳዎች በቀላሉ በድረ-ገጻችን ያግኙ።' },
-  { icon: 'lucide:calendar-clock', title: '2. ሰዓት ይምረጡ', desc: 'ለእርስዎ የሚመችዎትን ሰዓት እና ቀን በመምረጥ ክፍያዎን ይፈጽሙ።' },
-  { icon: 'lucide:check-circle-2', title: '3. ይጫወቱ', desc: 'ቦታው ተይዞሎታል! ከጓደኞችዎ ጋር በመሄድ ጨዋታዎን በደስታ ያካሂዱ።' }
-]
-
-// Mock Venues Data
-const venues: Venue[] = [
-  { id: 1, name: 'ይድነቃቸው ተሰማ ስታዲየም', city: 'አዲስ አበባ (Addis Ababa)', subCity: 'ቂርቆስ / ካዛንችስ / ሜክሲኮ', address: 'ለገሃር / መስቀል አደባባይ', sportType: 'football', price: '2500', rating: '4.8', image: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=800' },
-  { id: 2, name: 'አበበ ቢቂላ ስታዲየም', city: 'አዲስ አበባ (Addis Ababa)', subCity: 'አዲስ ከተማ (Addis Ketema)', address: 'ካሳንችስ / አዲስ ከተማ', sportType: 'athletics', price: '1800', rating: '4.6', image: 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?q=80&w=800' },
-  { id: 3, name: 'ጃንሜዳ ስፖርት ማዕከል', city: 'አዲስ አበባ (Addis Ababa)', subCity: 'አራዳ (Arada)', address: 'አራት ኪሎ / 6 ኪሎ', sportType: 'equestrian', price: '1000', rating: '4.7', image: 'https://images.unsplash.com/photo-1551958219-acbc608c6377?q=80&w=800' },
-  { id: 4, name: 'አዲስ አበባ ጎልፍ ክለብ', city: 'አዲስ አበባ (Addis Ababa)', subCity: 'ቂርቆስ / ካዛንችስ / ሜክሲኮ', address: 'ሜክሲኮ / ለገሃር', sportType: 'golf', price: '3000', rating: '4.9', image: 'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?q=80&w=800' },
-  { id: 5, name: 'አዲስ ስፖርት ፓርክ', city: 'አዲስ አበባ (Addis Ababa)', subCity: 'ቦሌ (Bole)', address: 'ቦሌ / አዲስ አበባ', sportType: 'swimming', price: '1200', rating: '4.8', image: 'https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?q=80&w=800' },
-  { id: 6, name: 'ባህር ዳር ዓለም አቀፍ ስታዲየም', city: 'ባህር ዳር (Bahir Dar)', subCity: '', address: 'ባህር ዳር ከተማ', sportType: 'football', price: '2000', rating: '4.9', image: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=800' },
-  { id: 7, name: 'ሱሉልታ አትሌቲክስ ማዕከል', city: 'ሱሉልታ (Sululta)', subCity: '', address: 'ሱሉልታ', sportType: 'athletics', price: '1500', rating: '4.7', image: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=800' }
-]
-
-// Filter Logic
-const filteredVenues = computed(() => {
-  return venues.filter(venue => {
-    // 1. Text Search
-    const query = searchQuery.value.trim().toLowerCase()
-    const matchesSearch = query === '' || 
-      venue.name.toLowerCase().includes(query) || 
-      venue.address.toLowerCase().includes(query)
-
-    // 2. City Filter
-    const matchesCity = selectedCity.value === 'all' || venue.city === selectedCity.value
-
-    // 3. Sub-City Filter
-    const matchesSubCity = selectedCity.value !== 'አዲስ አበባ (Addis Ababa)' || 
-                           selectedSubCity.value === 'all' || 
-                           venue.subCity === selectedSubCity.value
-
-    // 4. Sport Filter
-    const matchesSport = selectedSport.value === 'all' || venue.sportType === selectedSport.value
-
-    return matchesSearch && matchesCity && matchesSubCity && matchesSport
-  })
-})
 </script>

@@ -1,11 +1,14 @@
 export default defineNuxtRouteMiddleware((to, from) => {
-  const { user } = useAuth()
+  const { isAuthenticated, userRole } = useAuth()
 
-  if (!user.value) {
-    return navigateTo('/login')
-  }
+  // 1. መጀመሪያ Login ማድረጉን አረጋግጥ። ካላደረገ auth.ts ስራውን ይስራ፣ እዚህ ጋር ይቁም
+  if (!isAuthenticated.value) return 
 
-  if (user.value.role !== 'admin') {
-    return navigateTo('/partner') // Admin ካልሆነ ወደ Partner Dashboard ይመልሰዋል
+  // 2. አሁን ያለንበት ገጽ Home (/) ከሆነ እዚህ ጋር ይቁም
+  if (to.path === '/') return
+
+  // 3. Admin ካልሆነ ወደ Home (/) መልሰው
+  if (userRole.value !== 'admin') {
+    return navigateTo('/')
   }
 })

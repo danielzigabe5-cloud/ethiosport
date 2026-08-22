@@ -1,11 +1,14 @@
 export default defineNuxtRouteMiddleware((to, from) => {
-  const { user } = useAuth()
+  const { isAuthenticated, userRole } = useAuth()
 
-  if (!user.value) {
-    return navigateTo('/login')
+  // 1. Login ካላደረገ ወደ /auth ይሂድ
+  if (!isAuthenticated.value) {
+    return navigateTo('/auth')
   }
 
-  if (user.value.role !== 'partner') {
-    return navigateTo('/admin') // Partner ካልሆነ ወደ Admin Dashboard ይመልሰዋል
+  // 2. Partner ካልሆነ ወደ ዋናው ገጽ (Home) ይመለስ
+  if (userRole.value !== 'partner') {
+    if (to.path === '/') return
+    return navigateTo('/')
   }
 })

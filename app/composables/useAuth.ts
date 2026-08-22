@@ -1,42 +1,22 @@
-export interface User {
-  id: string
-  name: string
-  email: string
-  role: 'admin' | 'partner'
-  venueName?: string // ለPartner ብቻ
-}
+// composables/useAuth.ts
+import { useAuthStore } from '@/stores/auth'
+import { storeToRefs } from 'pinia'
 
 export const useAuth = () => {
-  const user = useState<User | null>('auth_user', () => null)
-
-  const loginAsAdmin = () => {
-    user.value = {
-      id: 'usr-admin-1',
-      name: 'EthioSport System Admin',
-      email: 'admin@ethiosport.et',
-      role: 'admin'
-    }
-  }
-
-  const loginAsPartner = () => {
-    user.value = {
-      id: 'usr-[#0b111a]-partner',
-      name: 'ሳርቤት ፉትሳል',
-      email: 'sarbet@futsal.et',
-      role: 'partner',
-      venueName: 'ሳርቤት ፉትሳል ሜዳ'
-    }
-  }
-
-  const logout = async () => {
-    user.value = null
-    await navigateTo('/login')
-  }
+  const authStore = useAuthStore()
+  const { user, token } = storeToRefs(authStore)
 
   return {
     user,
-    loginAsAdmin,
-    loginAsPartner,
-    logout
+    token,
+    isAuthenticated: computed(() => !!token.value),
+    userRole: computed(() => user.value?.role),
+    // ለ Real Backend ብቻ የሚሰሩ ዘዴዎች
+    login: authStore.login,
+    logout: authStore.logout,
+    init: authStore.init,
+    sendOTP: authStore.sendOTP,
+    verifyOTP: authStore.verifyOTP,
+    completeProfile: authStore.completeProfile
   }
 }

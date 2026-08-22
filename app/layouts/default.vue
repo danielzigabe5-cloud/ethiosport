@@ -1,14 +1,17 @@
+<!-- app/layouts/default.vue -->
 <template>
-  <div class="min-h-screen flex flex-col bg-[#0b111a] text-white">
-    <!-- Navbar component -->
+  <div class="min-h-screen flex flex-col bg-[#0b111a] text-white font-sans">
+
+    <!-- Navbar -->
     <Navbar />
 
-    <!-- የገጾች ይዘት (በሁሉም Page የሚቀያየረው) -->
-    <main class="flex-grow pt-20">
+    <!-- Main page content -->
+    <main class="flex-grow px-4 md:px-8">
       <slot />
     </main>
 
-    <!-- Footer component -->
+    <!-- Footer -->
     <Footer />
+
   </div>
 </template>

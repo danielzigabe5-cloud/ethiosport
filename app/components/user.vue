@@ -28,11 +28,9 @@ const userProfile = ref({
     <div class="flex items-center gap-3">
       <!-- ተጠቃሚው Login ካላደረገ የሚታይ -->
       <template v-if="!isLoggedIn">
-        <NuxtLink to="/login" class="text-xs font-semibold text-slate-300 hover:text-white px-3 py-2">
-          Login
-        </NuxtLink>
-        <NuxtLink to="/signup" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold rounded-xl transition">
-          Sign Up
+    
+        <NuxtLink to="/auth" class="text-xs font-semibold text-white bg-emerald-500 px-3 py-2 rounded-lg hover:bg-emerald-600 transition">
+          login
         </NuxtLink>
       </template>
 

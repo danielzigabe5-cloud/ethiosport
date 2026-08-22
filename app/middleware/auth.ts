@@ -1,17 +1,12 @@
+// app/middleware/auth.ts
 export default defineNuxtRouteMiddleware((to, from) => {
-  const { isAuthenticated, userRole } = useAuth()
+  const { isAuthenticated } = useAuth()
 
-  // 1. ተጠቃሚው Login ካላደረገ ወደ /login ይመልሰው
+  // 1. መዳረሻችን /auth ከሆነ እዚህ ጋር ይቁም (Loop እንዳይፈጠር)
+  if (to.path === '/auth') return
+
+  // 2. Login ካላደረገ ብቻ ወደ /auth ይላክ
   if (!isAuthenticated.value) {
-    return navigateTo('/login')
-  }
-
-  // 2. Role-based Access Control (የተሳሳተ Role ያለው ቦታ እንዳይገባ ማገድ)
-  if (to.path.startsWith('/admin') && userRole.value !== 'admin') {
-    return navigateTo('/login')
-  }
-
-  if (to.path.startsWith('/partner') && userRole.value !== 'partner') {
-    return navigateTo('/login')
+    return navigateTo('/auth')
   }
 })
