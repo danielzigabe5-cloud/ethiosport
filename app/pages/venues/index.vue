@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-slate-50 dark:bg-[#070b10] pb-20">
     
-    <!-- ✅ POPUP NOTIFICATION - በገፁ ላይ የሚታይ -->
+    <!-- Notification Popup -->
     <div
       v-if="notification"
       class="fixed top-4 right-4 z-50 max-w-md w-full p-4 rounded-xl shadow-lg transition-all duration-300"
@@ -22,9 +22,9 @@
       </div>
     </div>
 
-    <!-- SEARCH HERO -->
+    <!-- Search Hero Section -->
     <section class="bg-slate-900 dark:bg-[#0b111a] text-white py-8 px-4 sm:px-6 lg:px-8 border-b border-slate-800 dark:border-[#212e3e]">
-      <div class="max-w-7xl mx-auto space-y-6">
+      <div class="max-w-7xl mx-auto space-y-6 mt-20">
         <div>
           <h1 class="text-2xl sm:text-3xl font-black tracking-tight">
             Find Sports Venues
@@ -34,11 +34,11 @@
           </p>
         </div>
 
-        <!-- ✅ SEARCH BAR & FILTERS -->
+        <!-- Search Form -->
         <div class="bg-slate-800/80 dark:bg-[#131c27] p-4 rounded-2xl border border-slate-700/60 dark:border-[#212e3e] shadow-xl">
           <div class="grid gap-3" :class="selectedCity === 'Addis Ababa' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-6' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-5'">
             
-            <!-- ✅ Search Bar -->
+            <!-- Search Input -->
             <div class="relative">
               <input
                 v-model="searchQuery"
@@ -85,252 +85,104 @@
               <span class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">▼</span>
             </div>
 
-            <!-- Reset Button -->
+            <!-- Search Button -->
             <button
-              @click="resetFilters"
+              @click="executeSearch"
               type="button"
               class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm py-3 rounded-xl shadow-md transition-transform active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
             >
-              <span>⟳</span>
-              <span>Reset</span>
+              <span>🔍</span>
+              <span>Search</span>
             </button>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- MAIN CONTENT -->
+    <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       
-      <!-- ADMIN: Approved & Pending Venues Section -->
+      <!-- Admin Section -->
       <div v-if="user?.role === 'admin' && (approvedVenues.length > 0 || pendingVenues.length > 0)" class="mb-8">
-        
-        <!-- Tabs for Switching -->
         <div class="flex items-center gap-2 mb-4 border-b border-slate-200 dark:border-[#212e3e] pb-2">
-          <button
-            @click="activeTab = 'approved'"
-            class="px-4 py-2 text-sm font-bold rounded-xl transition"
-            :class="activeTab === 'approved' 
-              ? 'bg-emerald-500 text-slate-950' 
-              : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'"
-          >
+          <button @click="activeTab = 'approved'" class="px-4 py-2 text-sm font-bold rounded-xl transition"
+            :class="activeTab === 'approved' ? 'bg-emerald-500 text-slate-950' : 'text-slate-500 dark:text-slate-400'">
             ✅ Approved ({{ approvedVenues.length }})
           </button>
-          <button
-            @click="activeTab = 'pending'"
-            class="px-4 py-2 text-sm font-bold rounded-xl transition"
-            :class="activeTab === 'pending' 
-              ? 'bg-amber-500 text-white' 
-              : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'"
-          >
+          <button @click="activeTab = 'pending'" class="px-4 py-2 text-sm font-bold rounded-xl transition"
+            :class="activeTab === 'pending' ? 'bg-amber-500 text-white' : 'text-slate-500 dark:text-slate-400'">
             ⏳ Pending ({{ pendingVenues.length }})
           </button>
         </div>
 
-        <!-- APPROVED VENUES TAB -->
-        <div v-if="activeTab === 'approved'">
-          <div v-if="approvedVenues.length === 0" class="text-center py-8">
-            <p class="text-slate-500 dark:text-slate-400">No approved venues found</p>
-          </div>
-          <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div
-              v-for="venue in approvedVenues"
-              :key="venue.id"
-              class="bg-emerald-50 dark:bg-emerald-950/20 border-2 border-emerald-200 dark:border-emerald-800 rounded-2xl overflow-hidden"
-            >
-              <div class="relative h-40 bg-slate-200 dark:bg-slate-800">
-                <img
-                  :src="venue.image_url || venue.image || 'https://via.placeholder.com/400x300?text=Approved'"
-                  :alt="venue.name"
-                  class="w-full h-full object-cover"
-                  loading="lazy"
-                />
-                <span class="absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500 text-white">
-                  ✅ Approved
-                </span>
-                <span class="absolute bottom-3 left-3 px-3 py-1 rounded-full text-xs font-bold bg-slate-950/70 text-white">
-                  {{ venue.city }}
-                </span>
-              </div>
-
-              <div class="p-4">
-                <h3 class="text-lg font-bold text-slate-900 dark:text-white">{{ venue.name }}</h3>
-                <p class="text-sm text-slate-500 dark:text-slate-400">{{ venue.location }}</p>
-                <p class="text-xs text-slate-400 mt-1">
-                  Owner: {{ venue.user?.name || venue.owner?.name || 'Unknown' }}
-                </p>
-                <div class="flex items-center gap-4 mt-3 text-sm">
-                  <span>👥 {{ venue.capacity }}</span>
-                  <span class="text-emerald-500 font-bold">{{ venue.price_per_hour }} ETB/hr</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- PENDING VENUES TAB -->
-        <div v-if="activeTab === 'pending'">
-          <div v-if="pendingVenues.length === 0" class="text-center py-8">
-            <p class="text-slate-500 dark:text-slate-400">No pending venues found</p>
-          </div>
-          <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div
-              v-for="venue in pendingVenues"
-              :key="venue.id"
-              class="bg-amber-50 dark:bg-amber-950/20 border-2 border-amber-200 dark:border-amber-800 rounded-2xl overflow-hidden"
-            >
-              <div class="relative h-40 bg-slate-200 dark:bg-slate-800">
-                <img
-                  :src="venue.image_url || venue.image || 'https://via.placeholder.com/400x300?text=Pending'"
-                  :alt="venue.name"
-                  class="w-full h-full object-cover"
-                  loading="lazy"
-                />
-                <span class="absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-bold bg-amber-500 text-white">
-                  ⏳ Pending
-                </span>
-                <span class="absolute bottom-3 left-3 px-3 py-1 rounded-full text-xs font-bold bg-slate-950/70 text-white">
-                  {{ venue.city }}
-                </span>
-              </div>
-
-              <div class="p-4">
-                <h3 class="text-lg font-bold text-slate-900 dark:text-white">{{ venue.name }}</h3>
-                <p class="text-sm text-slate-500 dark:text-slate-400">{{ venue.location }}</p>
-                <p class="text-xs text-slate-400 mt-1">
-                  Owner: {{ venue.user?.name || venue.owner?.name || 'Unknown' }}
-                </p>
-                <div class="flex items-center gap-4 mt-3 text-sm">
-                  <span>👥 {{ venue.capacity }}</span>
-                  <span class="text-amber-500 font-bold">{{ venue.price_per_hour }} ETB/hr</span>
-                </div>
-                
-                <!-- Admin Actions -->
-                <div class="flex gap-2 mt-4 pt-4 border-t border-amber-200 dark:border-amber-800">
-                  <button
-                    @click="approveVenue(venue.id)"
-                    class="flex-1 px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-sm font-bold rounded-xl transition"
-                  >
-                    ✅ Approve
-                  </button>
-                  <button
-                    @click="rejectVenue(venue.id)"
-                    class="flex-1 px-4 py-2 bg-red-500 hover:bg-red-400 text-white text-sm font-bold rounded-xl transition"
-                  >
-                    ❌ Reject
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Results Header -->
-      <div class="flex justify-between items-center mb-6">
-        <p class="text-sm text-slate-500 dark:text-slate-400">
-          <span class="font-bold text-slate-900 dark:text-white">{{ venues.length }}</span>
-          venues found
-        </p>
-      </div>
-
-      <!-- Loading -->
-      <div v-if="isLoading" class="text-center py-16">
-        <div class="animate-spin text-4xl">⏳</div>
-        <p class="text-slate-500 dark:text-slate-400 mt-4">Loading venues...</p>
-      </div>
-
-      <!-- Error -->
-      <div v-else-if="error" class="text-center py-16 bg-white dark:bg-[#131c27] rounded-2xl border border-slate-200 dark:border-[#212e3e]">
-        <div class="text-4xl mb-4">❌</div>
-        <p class="text-red-500">{{ error }}</p>
-        <button
-          @click="fetchVenues"
-          class="mt-4 px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl"
-        >
-          Try Again
-        </button>
-      </div>
-
-      <!-- Empty State -->
-      <div v-else-if="venues.length === 0" class="text-center py-16 bg-white dark:bg-[#131c27] rounded-2xl border border-slate-200 dark:border-[#212e3e]">
-        <div class="text-6xl mb-4">🏟️</div>
-        <h3 class="text-xl font-bold text-slate-900 dark:text-white">No venues found</h3>
-        <p class="text-slate-500 dark:text-slate-400 mt-2">
-          Please adjust your filter criteria and try again
-        </p>
-        <button
-          @click="resetFilters"
-          class="mt-6 px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl transition"
-        >
-          Reset Filters
-        </button>
-      </div>
-
-      <!-- ✅ Venues Grid -->
-      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div
-          v-for="venue in venues"
-          :key="venue.id"
-          class="bg-white dark:bg-[#131c27] rounded-2xl overflow-hidden border border-slate-200 dark:border-[#212e3e] hover:shadow-xl transition flex flex-col group relative"
-        >
-          <!-- Image -->
-          <div class="relative h-48 sm:h-52 md:h-56 bg-slate-200 dark:bg-slate-800 overflow-hidden">
-    <img
-      :src="getVenueImage(venue)"
-      :alt="venue.name"
-      class="w-full h-full object-cover transition duration-300"
-      loading="lazy"
-      @error="(e) => {
-        // ምስል ካልተጫነ ነባሪ ምስል ያሳይ
-        e.target.src = 'https://via.placeholder.com/400x300?text=No+Image'
-      }"
-    />
-    
-           <!-- Rating -->
-    <span class="absolute top-3 right-3 bg-slate-950/80 backdrop-blur-md px-2.5 py-1 rounded-full text-xs font-bold text-amber-400 border border-amber-500/20 flex items-center gap-1">
-      ⭐ {{ venue.rating || '4.5' }}
-    </span>
-  </div>
-
-          <!-- Info -->
-          <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
-            <div>
-              <!-- Sport Type Badge -->
-              <span class="text-[11px] font-bold text-emerald-500 uppercase tracking-wide bg-emerald-500/10 px-2 py-0.5 rounded-md">
-                {{ Array.isArray(venue.sport_types) ? venue.sport_types[0] : 'Sports' }}
+        <!-- Admin Venues Display -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div v-for="venue in (activeTab === 'approved' ? approvedVenues : pendingVenues)" :key="venue.id"
+            class="bg-white dark:bg-[#131c27] border rounded-2xl overflow-hidden shadow-sm"
+            :class="activeTab === 'approved' ? 'border-emerald-200 dark:border-emerald-800' : 'border-amber-200 dark:border-amber-800'">
+            <div class="relative h-40">
+              <img :src="getVenueImage(venue)" class="w-full h-full object-cover" />
+              <span class="absolute top-2 right-2 px-2 py-1 rounded text-[10px] font-bold text-white"
+                :class="activeTab === 'approved' ? 'bg-emerald-500' : 'bg-amber-500'">
+                {{ activeTab === 'approved' ? 'Approved' : 'Pending' }}
               </span>
-              
-              <h2 class="text-lg font-bold text-slate-900 dark:text-white mt-2">
-                {{ venue.name }}
-              </h2>
-              
-              <p class="text-slate-500 dark:text-slate-400 text-xs mt-1 flex items-center gap-1">
-                📍 {{ venue.location }}
-              </p>
-              
-              <p class="text-slate-500 dark:text-slate-400 text-xs flex items-center gap-1">
-                🏙️ {{ venue.city }} {{ venue.sub_city ? `- ${venue.sub_city}` : '' }}
-              </p>
             </div>
-
-            <!-- Bottom -->
-            <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-[#212e3e]">
-              <div>
-                <span class="text-xs text-slate-400 block">Base Price</span>
-                <span class="text-base font-extrabold text-slate-900 dark:text-white">
-                  {{ venue.price_per_hour }} ETB
-                </span>
-                <span class="text-[10px] text-slate-500 dark:text-slate-400">/hour</span>
+            <div class="p-4">
+              <h3 class="font-bold text-slate-900 dark:text-white">{{ venue.name }}</h3>
+              <p class="text-xs text-slate-500">{{ venue.location }} - {{ venue.city }}</p>
+              
+              <div v-if="activeTab === 'pending'" class="flex gap-2 mt-4">
+                <button @click="approveVenue(venue.id)" class="flex-1 py-2 bg-emerald-500 text-xs font-bold rounded-lg">Approve</button>
+                <button @click="rejectVenue(venue.id)" class="flex-1 py-2 bg-red-500 text-white text-xs font-bold rounded-lg">Reject</button>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-              <button
-                @click="handleBooking(venue.id)"
-                class="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold rounded-xl shadow-md transition flex items-center gap-1 cursor-pointer"
-              >
-                <span>Book Now</span>
-                <span>→</span>
-              </button>
+      <!-- User Results Header -->
+      <div class="flex justify-between items-center mb-6">
+        <p class="text-sm text-slate-500">
+          <span class="font-bold text-slate-900 dark:text-white">{{ venues.length }}</span> venues found
+        </p>
+      </div>
+
+      <!-- Loading / Error / Empty States -->
+      <div v-if="isLoading" class="text-center py-20 animate-pulse text-slate-400">Loading Venues...</div>
+      <div v-else-if="error" class="text-center py-20 text-red-500">{{ error }}</div>
+      <div v-else-if="venues.length === 0" class="text-center py-20">
+        <div class="text-5xl mb-4">🏟️</div>
+        <h3 class="text-lg font-bold dark:text-white">No Specific Venues Found</h3>
+        <p class="text-slate-500 text-sm">Try adjusting your filters.</p>
+        <button @click="resetFilters" class="mt-4 text-emerald-500 font-bold">Reset All Filters</button>
+      </div>
+
+      <!-- Venues Grid -->
+      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div v-for="venue in venues" :key="venue.id" class="bg-white dark:bg-[#131c27] rounded-2xl overflow-hidden border border-slate-200 dark:border-[#212e3e] group">
+          <div class="relative h-52 overflow-hidden">
+            <img :src="getVenueImage(venue)" class="w-full h-full object-cover transition-transform group-hover:scale-105" @error="handleImageError" />
+            <div class="absolute top-3 right-3 bg-black/50 backdrop-blur-sm px-2 py-1 rounded-lg text-xs text-amber-400 font-bold">
+              ⭐ {{ venue.rating || '4.8' }}
+            </div>
+          </div>
+          <div class="p-5">
+            <div class="flex flex-wrap gap-1 mb-2">
+              <!-- ✅ Displaying Sport Types correctly from the array -->
+              <span v-for="s in formatSportArray(venue.sport_types)" :key="s" 
+                class="text-[10px] bg-emerald-500/10 text-emerald-500 px-2 py-0.5 rounded font-bold uppercase">
+                {{ s }}
+              </span>
+            </div>
+            <h2 class="text-lg font-bold text-slate-900 dark:text-white">{{ venue.name }}</h2>
+            <p class="text-xs text-slate-500 mt-1">📍 {{ venue.location }}, {{ venue.city }}</p>
+            
+            <div class="mt-4 flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
+              <div>
+                <span class="text-lg font-black dark:text-white text-black">{{ venue.price_per_hour }} ETB</span>
+                <span class="text-[10px] text-slate-500">/hr</span>
+              </div>
+              <button @click="handleBooking(venue.id)" class="px-4 py-2 bg-emerald-500 text-slate-950 text-xs font-bold rounded-xl">Book Now</button>
             </div>
           </div>
         </div>
@@ -340,74 +192,61 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, onMounted } from 'vue'
 
-const route = useRoute()
 const userToken = useCookie('auth_token')
 const user = useState('user')
 
-// ============================================
-// STATE
-// ============================================
+// State
 const venues = ref([])
 const approvedVenues = ref([])
 const pendingVenues = ref([])
-const isLoading = ref(true)
+const isLoading = ref(false)
 const error = ref(null)
 const searchQuery = ref('')
 const selectedCity = ref('All')
 const selectedSubCity = ref('All')
 const selectedSport = ref('All')
-const maxPrice = ref(2000)
-const sortBy = ref('rating')
 const activeTab = ref('approved')
-
-// ✅ Notification
 const notification = ref(null)
 
+// Constants
+const cities = ['Addis Ababa', 'Bahir Dar', 'Hawassa', 'Mekelle', 'Dire Dawa', 'Nekemte', 'Woldiya', 'Hosaena', 'Arba Minch', 'Wonji', 'Harar', 'Sululta']
+const subCities = ['Bole', 'Yeka', 'Kirkos', 'Arada', 'Lideta', 'Nifas Silk-Lafto', 'Kolfe Keraniyo', 'Gullele', 'Akaky Kaliti', 'Lemi Kura']
+const sportTypes = ['Football', 'Athletics', 'Basketball', 'Volleyball', 'Handball', 'Tennis', 'Golf', 'Equestrian', 'Swimming', 'Traditional Sports']
+
+// Helpers
 const showNotification = (message, type = 'info') => {
   notification.value = { message, type }
-  setTimeout(() => {
-    notification.value = null
-  }, 5000)
+  setTimeout(() => { notification.value = null }, 5000)
 }
 
-// ============================================
-// FILTER OPTIONS
-// ============================================
-const cities = [
-  'Addis Ababa', 'Bahir Dar', 'Hawassa', 'Mekelle',
-  'Dire Dawa', 'Nekemte', 'Woldiya', 'Hosaena',
-  'Arba Minch', 'Wonji', 'Harar', 'Sululta'
-]
-
-const subCities = [
-  'Bole', 'Yeka', 'Kirkos', 'Arada', 'Lideta',
-  'Nifas Silk-Lafto', 'Kolfe Keraniyo', 'Gullele',
-  'Akaky Kaliti', 'Lemi Kura'
-]
-
-const sportTypes = [
-  'Football', 'Athletics', 'Basketball', 'Volleyball',
-  'Handball', 'Tennis', 'Golf', 'Equestrian',
-  'Swimming', 'Traditional Sports'
-]
-
-// ============================================
-// READ QUERY PARAMS
-// ============================================
-const initializeFiltersFromQuery = () => {
-  const query = route.query
-  
-  if (query.city) selectedCity.value = query.city
-  if (query.sport) selectedSport.value = query.sport
-  if (query.search) searchQuery.value = query.search
+const getVenueImage = (venue) => {
+  if (!venue) return '/placeholder.png'
+  const img = venue.image_full_url || venue.image_url || venue.image
+  if (!img) return 'data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22400%22%20height%3D%22300%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20400%20300%22%3E%3Crect%20width%3D%22400%22%20height%3D%22300%22%20fill%3D%22%23eeeeee%22%3E%3C%2Frect%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20fill%3D%22%23999999%22%3ENo%20Image%3C/text%3E%3C/svg%3E'
+  return img.startsWith('http') ? img : `http://127.0.0.1:8000/storage/${img}`
 }
 
-// ============================================
-// FETCH VENUES
-// ============================================
+// ✅ አዲስ የተጨመረ Helper: በምዝገባ ወቅት የተላከውን JSON Array በትክክል እንዲያነብ
+const formatSportArray = (data) => {
+  if (!data) return []
+  if (Array.isArray(data)) return data
+  try {
+    const parsed = JSON.parse(data)
+    return Array.isArray(parsed) ? parsed : [parsed]
+  } catch (e) {
+    return [data]
+  }
+}
+
+// ✅ Search Function
+const executeSearch = () => {
+  venues.value = []
+  fetchVenues()
+}
+
+// ✅ Fetch Venues Logic (Strict Specific Filter)
 const fetchVenues = async () => {
   isLoading.value = true
   error.value = null
@@ -417,183 +256,79 @@ const fetchVenues = async () => {
     const API_BASE = config.public.apiBase || 'http://127.0.0.1:8000/api'
     
     const params = new URLSearchParams()
-    
-    if (selectedCity.value !== 'All' && selectedCity.value) {
-      params.append('city', selectedCity.value)
-    }
-    
-    if (selectedCity.value === 'Addis Ababa' && selectedSubCity.value !== 'All' && selectedSubCity.value) {
-      params.append('sub_city', selectedSubCity.value)
-    }
-    
-    if (selectedSport.value !== 'All' && selectedSport.value) {
-      params.append('sport', selectedSport.value)
-    }
-    
-    if (maxPrice.value > 0) {
-      params.append('max_price', maxPrice.value.toString())
-    }
-    
-    if (searchQuery.value && searchQuery.value.trim()) {
-      params.append('search', searchQuery.value.trim())
-    }
-    
-    if (sortBy.value) {
-      params.append('sort_by', sortBy.value)
-    }
-    
+    if (searchQuery.value?.trim()) params.append('search', searchQuery.value.trim())
+    if (selectedCity.value !== 'All') params.append('city', selectedCity.value)
+    if (selectedCity.value === 'Addis Ababa' && selectedSubCity.value !== 'All') params.append('sub_city', selectedSubCity.value)
+    if (selectedSport.value !== 'All') params.append('sport', selectedSport.value)
+
+    console.log('📡 Requesting:', params.toString())
     const response = await $fetch(`${API_BASE}/venues?${params.toString()}`)
     
-    let allVenues = []
+    let rawData = []
+    if (response.success && Array.isArray(response.data)) rawData = response.data
+    else if (Array.isArray(response)) rawData = response
+    else if (response.data) rawData = response.data
+
+    // 🔍 STRICTOR FRONTEND FILTER (Specifically for JSON sport_types)
+    const filtered = rawData.filter(v => {
+      // 1. Status Check
+      const isApproved = v.status === 'approved' || v.is_active == 1;
+
+      // 2. Sport Matching (Handles Array stored in DB)
+      let matchesSport = true
+      if (selectedSport.value !== 'All') {
+        const target = selectedSport.value.toLowerCase()
+        const vSports = formatSportArray(v.sport_types || v.sport_type).map(s => String(s).toLowerCase())
+        matchesSport = vSports.some(s => s === target || s.includes(target))
+      }
+
+      // 3. City Matching
+      let matchesCity = true
+      if (selectedCity.value !== 'All') {
+        matchesCity = String(v.city).toLowerCase() === selectedCity.value.toLowerCase()
+      }
+
+      return isApproved && matchesSport && matchesCity
+    })
+
+    venues.value = filtered
     
-    if (response.success && Array.isArray(response.data)) {
-      allVenues = response.data
-    }
-    
-    // ✅ Only approved venues
-    venues.value = allVenues.filter(venue => 
-      venue.is_active === true && venue.status === 'approved'
-    )
-    
-    // ✅ Admin - separate approved and pending
     if (user.value?.role === 'admin') {
-      approvedVenues.value = allVenues.filter(venue => 
-        venue.is_active === true && venue.status === 'approved'
-      )
-      pendingVenues.value = allVenues.filter(venue => 
-        venue.status === 'pending' || venue.is_active === false
-      )
+      approvedVenues.value = filtered
+      pendingVenues.value = rawData.filter(v => v.status !== 'approved' && v.is_active != 1)
     }
-    
+
   } catch (err) {
-    console.error('Error fetching venues:', err)
-    error.value = err.message || 'Failed to load venues'
-    venues.value = []
+    console.error('❌ Error:', err)
+    error.value = 'Failed to load venues.'
   } finally {
     isLoading.value = false
   }
 }
-const getVenueImage = (venue) => {
-  if (!venue) {
-    return 'https://via.placeholder.com/400x300?text=No+Image'
-  }
-  
-  // ✅ በመጀመሪያ ከBackend የመጣውን ሙሉ URL ይፈትሹ
-  if (venue.image_full_url) {
-    return venue.image_full_url
-  }
-  
-  // ✅ ወይም የBackend አቀራረብ የመጣውን image_url
-  if (venue.image_url) {
-    return venue.image_url
-  }
-  
-  // ✅ ወይም የተከማቸ ምስል ከሆነ
-  if (venue.image) {
-    // ሙሉ URL ከሆነ
-    if (venue.image.startsWith('http')) {
-      return venue.image
-    }
-    // የተከማቸ ምስል ከሆነ - Backend አድራሻ ይጠቀሙ
-    const apiBase = useRuntimeConfig().public.apiBase || 'http://127.0.0.1:8000/api'
-    const baseUrl = apiBase.replace('/api', '')
-    return `${baseUrl}/storage/${venue.image}`
-  }
-  
-  // ምንም ከሌለ ነባሪ
-  return 'https://via.placeholder.com/400x300?text=No+Image'
-}
 
-
-// ============================================
-// ADMIN - APPROVE VENUE
-// ============================================
+// Admin Actions
 const approveVenue = async (id) => {
-  if (!confirm('Approve this venue?')) return
-  
+  if (!confirm('Approve?')) return
   try {
-    const config = useRuntimeConfig()
-    const API_BASE = config.public.apiBase || 'http://127.0.0.1:8000/api'
-    
-    const response = await $fetch(`${API_BASE}/admin/approvals/${id}/approve`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${userToken.value}`
-      }
+    const res = await $fetch(`${useRuntimeConfig().public.apiBase}/admin/approvals/${id}/approve`, {
+      method: 'POST', headers: { 'Authorization': `Bearer ${userToken.value}` }
     })
-    
-    if (response.success) {
-      await fetchVenues()
-      showNotification('Venue approved successfully!', 'success')
-    }
-  } catch (err) {
-    console.error('Approval error:', err)
-    showNotification('Failed to approve venue', 'error')
-  }
+    if (res.success) { fetchVenues(); showNotification('Approved!', 'success') }
+  } catch (err) { showNotification('Error', 'error') }
 }
 
-// ============================================
-// ADMIN - REJECT VENUE
-// ============================================
 const rejectVenue = async (id) => {
-  if (!confirm('Reject this venue?')) return
-  
+  if (!confirm('Reject?')) return
   try {
-    const config = useRuntimeConfig()
-    const API_BASE = config.public.apiBase || 'http://127.0.0.1:8000/api'
-    
-    const response = await $fetch(`${API_BASE}/admin/approvals/${id}/reject`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${userToken.value}`
-      }
+    const res = await $fetch(`${useRuntimeConfig().public.apiBase}/admin/approvals/${id}/reject`, {
+      method: 'POST', headers: { 'Authorization': `Bearer ${userToken.value}` }
     })
-    
-    if (response.success) {
-      await fetchVenues()
-      showNotification('Venue rejected', 'info')
-    }
-  } catch (err) {
-    console.error('Reject error:', err)
-    showNotification('Failed to reject venue', 'error')
-  }
+    if (res.success) { fetchVenues(); showNotification('Rejected', 'info') }
+  } catch (err) { showNotification('Error', 'error') }
 }
 
-// ============================================
-// BOOKING NAVIGATION
-// ============================================
-const handleBooking = (venueId) => {
-  if (!userToken.value) {
-    return navigateTo(`/auth?redirect=/venues/${venueId}`)
-  }
-  return navigateTo(`/venues/${venueId}`)
-}
+const handleBooking = (id) => navigateTo(userToken.value ? `/venues/${id}` : `/auth?redirect=/venues/${id}`)
+const resetFilters = () => { searchQuery.value = ''; selectedCity.value = 'All'; selectedSport.value = 'All'; fetchVenues(); }
 
-// ============================================
-// RESET FILTERS
-// ============================================
-const resetFilters = () => {
-  searchQuery.value = ''
-  selectedCity.value = 'All'
-  selectedSubCity.value = 'All'
-  selectedSport.value = 'All'
-  maxPrice.value = 2000
-  sortBy.value = 'rating'
-  fetchVenues()
-}
-
-// ============================================
-// WATCHERS - Search bar updates automatically
-// ============================================
-watch([selectedCity, selectedSubCity, selectedSport, maxPrice, sortBy, searchQuery], () => {
-  fetchVenues()
-})
-
-// ============================================
-// LIFECYCLE
-// ============================================
-onMounted(() => {
-  initializeFiltersFromQuery()
-  fetchVenues()
-})
+onMounted(fetchVenues)
 </script>

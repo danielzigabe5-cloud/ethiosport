@@ -43,7 +43,7 @@
             class="hidden md:flex items-center gap-2 bg-[#94FF2B] hover:bg-[#82e026] text-black px-6 py-2.5 rounded-full font-black text-[13px] transition-all shadow-lg active:scale-95"
           >
             <Icon name="lucide:plus-circle" class="w-4 h-4" />
-            {{ currentLang === 'am' ? 'ሜዳ ጨምር' : 'Add Venue' }}
+            {{ currentLang === 'am' ? 'Add Venue' : 'Add Venue' }}
           </NuxtLink>
 
           <!-- AUTH SECTION -->
@@ -74,7 +74,7 @@
 
             <!-- B. IF GUEST -->
             <NuxtLink v-else to="/auth" class="bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-8 py-3 rounded-xl font-black text-sm hover:opacity-90 transition-all active:scale-95">
-              {{ currentLang === 'am' ? 'ይግቡ' : 'Sign In' }}
+              {{ currentLang === 'am' ? 'Sign In' : 'Sign In' }}
             </NuxtLink>
           </div>
 
@@ -129,9 +129,9 @@ const dashboardLink = computed(() => {
 })
 
 const staticNavItems = [
-  { path: '/', am: 'መነሻ', en: 'Home', icon: 'lucide:home' },
-  { path: '/games', am: 'ጨዋታዎች', en: 'Games', icon: 'lucide:gamepad-2' },
-  { path: '/venues', am: 'ሜዳዎች', en: 'Venues', icon: 'lucide:stadium' }
+  { path: '/', am: 'Home', en: 'Home', icon: 'lucide:home' },
+  { path: '/games', am: 'Games', en: 'Games', icon: 'lucide:gamepad-2' },
+  { path: '/venues', am: 'Venues', en: 'Venues', icon: 'lucide:stadium' }
 ]
 
 const navItems = computed(() => {
@@ -159,10 +159,10 @@ const navItems = computed(() => {
   }
 
   items.push(
-    { path: '/events', am: 'ክስተቶች', en: 'Events', icon: 'lucide:calendar' },
-    { path: '/blogs', am: 'ብሎጎች', en: 'Blogs', icon: 'lucide:newspaper' },
-    { path: '/justplay', am: 'ፈጣን ጨዋታ', en: 'JustPlay', icon: 'lucide:play-circle' },
-    { path: '/contact', am: 'አግኙን', en: 'Contact', icon: 'lucide:phone' }
+    { path: '/events', am: 'Events', en: 'Events', icon: 'lucide:calendar' },
+    { path: '/blogs', am: 'Blogs', en: 'Blogs', icon: 'lucide:newspaper' },
+    { path: '/justplay', am: 'Justplay', en: 'JustPlay', icon: 'lucide:play-circle' },
+    { path: '/contact', am: 'Contact', en: 'Contact', icon: 'lucide:phone' }
   )
   return items
 })
