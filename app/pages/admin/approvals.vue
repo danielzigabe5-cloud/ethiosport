@@ -74,7 +74,7 @@
         <div class="relative h-40 bg-slate-200 dark:bg-slate-800">
           <img
             v-if="venue.image"
-            :src="venue.image" 
+            :src="getVenueImage(venue)"
             :alt="venue.name"
             class="w-full h-full object-cover"
           />
@@ -155,7 +155,7 @@ onMounted(async () => {
   }
   await fetchAllVenues()
 })
-
+definePageMeta({ layout: 'admin' })
 // ============================================
 // FETCH ALL VENUES (Both Approved & Pending)
 // ============================================
@@ -251,5 +251,11 @@ const rejectVenue = async (id) => {
     console.error('Error rejecting venue:', error)
     errorMessage.value = 'Failed to reject venue. Please try again.'
   }
+}
+const getVenueImage = (venue) => {
+  if (!venue) return '/placeholder.png'
+  const img = venue.image_full_url || venue.image_url || venue.image
+  if (!img) return 'data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22400%22%20height%3D%22300%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20400%20300%22%3E%3Crect%20width%3D%22400%22%20height%3D%22300%22%20fill%3D%22%23eeeeee%22%3E%3C%2Frect%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20fill%3D%22%23999999%22%3ENo%20Image%3C/text%3E%3C/svg%3E'
+  return img.startsWith('http') ? img : `http://127.0.0.1:8000/storage/${img}`
 }
 </script>

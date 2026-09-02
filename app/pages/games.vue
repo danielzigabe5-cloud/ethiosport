@@ -1,9 +1,10 @@
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 
-// SEO Page Title
+// SEO Page Title (Nuxt 3 composable)
 useHead({ title: 'Search Sports & Games - EthioSport' })
 
+// UI Modal & Tab States
 const isModalOpen = ref(false)
 const selectedSportCategory = ref('All')
 
@@ -41,7 +42,7 @@ const addisSubCitiesWithVenues = [
 // Sports Options
 const sportsOptions = ['Football', 'Basketball', 'Tennis', 'Volleyball']
 
-// Sample Games Mock Data
+// Sample Games Mock Data (Realistic Ethiopian Datasets)
 const games = ref([
   {
     id: 1,
@@ -51,8 +52,8 @@ const games = ref([
     city: 'Addis Ababa',
     subCity: 'Nifas Silk-Lafto',
     sport: 'Football',
-    time: '2026-08-10 05:00 PM',
-    date: '2026-08-10',
+    time: '2026-09-02 05:00 PM',
+    date: '2026-09-02',
     joinedPlayers: 7,
     totalPlayers: 10,
     pricePerPerson: 80,
@@ -60,14 +61,14 @@ const games = ref([
   },
   {
     id: 2,
-    hostName: 'ኬቨን ዴብሩይነ',
+    hostName: 'ዮናስ ታደሰ',
     hostAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop',
-    venue: 'ቦሌ አሬና ቴኒስ',
+    venue: 'ቦሌ አሬና ቴኒስ ክለብ',
     city: 'Addis Ababa',
     subCity: 'Bole',
     sport: 'Tennis',
-    time: '2026-08-11 04:00 PM',
-    date: '2026-08-11',
+    time: '2026-09-03 04:00 PM',
+    date: '2026-09-03',
     joinedPlayers: 4,
     totalPlayers: 4,
     pricePerPerson: 300,
@@ -75,14 +76,14 @@ const games = ref([
   },
   {
     id: 3,
-    hostName: 'ዮናስ ታደሰ',
+    hostName: 'ዳዊት ከበደ',
     hostAvatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop',
     venue: 'ሲኤምሲ ቅርጫት ኳስ ሜዳ',
     city: 'Addis Ababa',
     subCity: 'Yeka',
     sport: 'Basketball',
-    time: '2026-08-10 07:00 PM',
-    date: '2026-08-10',
+    time: '2026-09-02 07:00 PM',
+    date: '2026-09-02',
     joinedPlayers: 5,
     totalPlayers: 8,
     pricePerPerson: 70,
@@ -97,53 +98,68 @@ watch(selectedCity, (newCity) => {
   }
 })
 
-// Form input state
-const newGame = ref({
+// Form input state for creating a game
+const getInitialFormState = () => ({
   venue: '',
   city: 'Addis Ababa',
   subCity: 'Bole',
   sport: 'Football',
-  time: '',
   date: new Date().toISOString().split('T')[0],
+  startTime: '17:00',
   totalPlayers: 10,
   pricePerPerson: 100
 })
 
-// Create game logic
+const newGame = ref(getInitialFormState())
+
+// Reset subcity when city changes inside form modal
+watch(() => newGame.value.city, (newCity) => {
+  if (newCity !== 'Addis Ababa') {
+    newGame.value.subCity = ''
+  } else {
+    newGame.value.subCity = addisSubCitiesWithVenues[0]
+  }
+})
+
+// Format time utility (e.g., 17:00 -> 05:00 PM)
+const formatTimeLabel = (dateStr, timeStr) => {
+  if (!dateStr || !timeStr) return ''
+  const [hours, minutes] = timeStr.split(':')
+  const h = parseInt(hours, 10)
+  const ampm = h >= 12 ? 'PM' : 'AM'
+  const formattedHour = h % 12 || 12
+  const padHour = formattedHour < 10 ? `0${formattedHour}` : formattedHour
+  return `${dateStr} ${padHour}:${minutes} ${ampm}`
+}
+
+// Create Game Logic
 const createGame = () => {
-  if (!newGame.value.venue || !newGame.value.time) return
+  if (!newGame.value.venue.trim() || !newGame.value.startTime) return
+
+  const formattedDateTime = formatTimeLabel(newGame.value.date, newGame.value.startTime)
 
   games.value.unshift({
     id: Date.now(),
     hostName: 'እርስዎ (You)',
     hostAvatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop',
-    venue: newGame.value.venue,
+    venue: newGame.value.venue.trim(),
     city: newGame.value.city,
     subCity: newGame.value.city === 'Addis Ababa' ? newGame.value.subCity : '',
     sport: newGame.value.sport,
-    time: newGame.value.time,
+    time: formattedDateTime,
     date: newGame.value.date,
     joinedPlayers: 1,
-    totalPlayers: newGame.value.totalPlayers,
-    pricePerPerson: newGame.value.pricePerPerson,
+    totalPlayers: Math.max(2, newGame.value.totalPlayers),
+    pricePerPerson: Math.max(0, newGame.value.pricePerPerson),
     isJoined: true
   })
 
-  // Reset Form
-  newGame.value = {
-    venue: '',
-    city: 'Addis Ababa',
-    subCity: 'Bole',
-    sport: 'Football',
-    time: '',
-    date: new Date().toISOString().split('T')[0],
-    totalPlayers: 10,
-    pricePerPerson: 100
-  }
+  // Reset Form & Close Modal
+  newGame.value = getInitialFormState()
   isModalOpen.value = false
 }
 
-// Join Game Logic
+// Join / Leave Game Toggle Logic
 const toggleJoinGame = (game) => {
   if (game.isJoined) {
     game.joinedPlayers--
@@ -182,7 +198,18 @@ const resetSearch = () => {
   selectedSubCity.value = 'All'
   selectedSport.value = 'All'
   selectedDate.value = ''
+  selectedSportCategory.value = 'All'
 }
+
+// Close Modal on Escape Key
+const handleKeyDown = (e) => {
+  if (e.key === 'Escape' && isModalOpen.value) {
+    isModalOpen.value = false
+  }
+}
+
+onMounted(() => window.addEventListener('keydown', handleKeyDown))
+onUnmounted(() => window.removeEventListener('keydown', handleKeyDown))
 </script>
 
 <template>
@@ -191,29 +218,36 @@ const resetSearch = () => {
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
       
       <!-- Top Section Banner & Action Button -->
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-[#131c27] p-6 rounded-2xl border border-slate-200 dark:border-[#212e3e]">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-[#131c27] p-6 rounded-2xl border border-slate-200 dark:border-[#212e3e] shadow-sm">
         <div>
           <h1 class="text-2xl font-black text-slate-900 dark:text-white">የጨዋታ ጥሪዎች (Join Games)</h1>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">ተጫዋች የሚጎድላቸውን ጨዋታዎች ይቀላቀሉ ወይም አዲስ ጥሪ ይክፈቱ</p>
+          <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">ተጫዋች የሚጎድላቸውን ጨዋታዎች ይቀላቀሉ ወይም አዲስ የጨዋታ ጥሪ ይክፈቱ</p>
         </div>
         <button 
           @click="isModalOpen = true"
-          class="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm rounded-xl shadow-md transition cursor-pointer"
+          class="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm rounded-xl shadow-md transition cursor-pointer flex items-center gap-1.5"
         >
-          + Create Game (አዲስ ጥሪ)
+          <span>+</span> አዲስ ጥሪ ክፈት (Create Game)
         </button>
       </div>
 
       <!-- MAIN SEARCH BAR & DYNAMIC FILTERS -->
-      <div class="bg-[#242628] p-4 sm:p-5 rounded-2xl shadow-xl space-y-3">
+      <div class="bg-[#1a232e] p-4 sm:p-5 rounded-2xl shadow-xl space-y-3 border border-[#263445]">
         <!-- Text Input Search Bar -->
-        <div>
+        <div class="relative">
           <input 
             v-model="searchQuery"
             type="text" 
-            placeholder="Search by game name, venue, or host..."
-            class="w-full bg-[#1b1c1e] text-slate-200 placeholder-slate-400 text-sm px-4 py-3.5 rounded-xl border border-transparent focus:border-[#a3ff12] focus:outline-none transition"
+            placeholder="በሜዳ ስም፣ በአዘጋጅ ወይም በስፖርት ዓይነት ይፈልጉ..."
+            class="w-full bg-[#0d141d] text-slate-200 placeholder-slate-400 text-sm px-4 py-3.5 rounded-xl border border-[#212e3e] focus:border-emerald-400 focus:outline-none transition"
           />
+          <button 
+            v-if="searchQuery" 
+            @click="searchQuery = ''" 
+            class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs"
+          >
+            ✕
+          </button>
         </div>
 
         <!-- Dynamic Filter Controls -->
@@ -225,9 +259,9 @@ const resetSearch = () => {
           <div class="relative">
             <select 
               v-model="selectedCity"
-              class="w-full bg-[#1b1c1e] text-slate-200 text-sm font-medium px-4 py-3 rounded-xl border border-transparent focus:border-[#a3ff12] focus:outline-none appearance-none cursor-pointer"
+              class="w-full bg-[#0d141d] text-slate-200 text-xs sm:text-sm font-medium px-4 py-3 rounded-xl border border-[#212e3e] focus:border-emerald-400 focus:outline-none appearance-none cursor-pointer"
             >
-              <option value="All">All Cities</option>
+              <option value="All">ሁሉም ከተሞች (All Cities)</option>
               <option v-for="c in cities" :key="c" :value="c">{{ c }}</option>
             </select>
             <span class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs">▼</span>
@@ -237,9 +271,9 @@ const resetSearch = () => {
           <div v-if="selectedCity === 'Addis Ababa'" class="relative">
             <select 
               v-model="selectedSubCity"
-              class="w-full bg-[#1b1c1e] text-slate-200 text-sm font-medium px-4 py-3 rounded-xl border border-transparent focus:border-[#a3ff12] focus:outline-none appearance-none cursor-pointer"
+              class="w-full bg-[#0d141d] text-slate-200 text-xs sm:text-sm font-medium px-4 py-3 rounded-xl border border-[#212e3e] focus:border-emerald-400 focus:outline-none appearance-none cursor-pointer"
             >
-              <option value="All">All Sub-Cities (ክፍለ ከተማ)</option>
+              <option value="All">ሁሉም ክፍለ ከተሞች (All Sub-Cities)</option>
               <option v-for="sc in addisSubCitiesWithVenues" :key="sc" :value="sc">{{ sc }}</option>
             </select>
             <span class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs">▼</span>
@@ -249,9 +283,9 @@ const resetSearch = () => {
           <div class="relative">
             <select 
               v-model="selectedSport"
-              class="w-full bg-[#1b1c1e] text-slate-200 text-sm font-medium px-4 py-3 rounded-xl border border-transparent focus:border-[#a3ff12] focus:outline-none appearance-none cursor-pointer"
+              class="w-full bg-[#0d141d] text-slate-200 text-xs sm:text-sm font-medium px-4 py-3 rounded-xl border border-[#212e3e] focus:border-emerald-400 focus:outline-none appearance-none cursor-pointer"
             >
-              <option value="All">All Sports</option>
+              <option value="All">ሁሉም ስፖርቶች (All Sports)</option>
               <option v-for="s in sportsOptions" :key="s" :value="s">{{ s }}</option>
             </select>
             <span class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs">▼</span>
@@ -262,43 +296,46 @@ const resetSearch = () => {
             <input 
               v-model="selectedDate"
               type="date" 
-              class="w-full bg-[#1b1c1e] text-slate-200 text-sm font-medium px-4 py-3 rounded-xl border border-transparent focus:border-[#a3ff12] focus:outline-none appearance-none cursor-pointer"
+              class="w-full bg-[#0d141d] text-slate-200 text-xs sm:text-sm font-medium px-4 py-3 rounded-xl border border-[#212e3e] focus:border-emerald-400 focus:outline-none appearance-none cursor-pointer"
             />
           </div>
 
-          <!-- Search Button -->
+          <!-- Reset Search Button -->
           <button 
             type="button" 
-            class="w-full bg-[#a3ff12] hover:bg-[#8ee600] text-black font-extrabold text-sm py-3 rounded-xl shadow-md transition-transform active:scale-95 flex items-center justify-center cursor-pointer"
+            @click="resetSearch"
+            class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs sm:text-sm py-3 rounded-xl border border-slate-700 transition cursor-pointer"
           >
-            Search
+            ፍለጋውን አጽዳ (Reset)
           </button>
         </div>
       </div>
 
       <!-- Category Filter Tabs -->
-      <div class="flex items-center gap-2 overflow-x-auto pb-2">
+      <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
         <button 
-          v-for="cat in ['All', 'Football', 'Basketball', 'Tennis']" 
+          v-for="cat in ['All', 'Football', 'Basketball', 'Tennis', 'Volleyball']" 
           :key="cat"
           @click="selectedSportCategory = cat"
           :class="[
-            'px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer',
+            'px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer border',
             selectedSportCategory === cat 
-              ? 'bg-slate-900 dark:bg-emerald-500 text-white dark:text-slate-950 shadow-md' 
-              : 'bg-white dark:bg-[#131c27] border border-slate-200 dark:border-[#212e3e] text-slate-600 dark:text-slate-300'
+              ? 'bg-emerald-500 border-emerald-500 text-slate-950 shadow-md' 
+              : 'bg-white dark:bg-[#131c27] border-slate-200 dark:border-[#212e3e] text-slate-600 dark:text-slate-300 hover:border-emerald-500/50'
           ]"
         >
-          {{ cat === 'All' ? 'ሁሉም ጨዋታዎች' : cat }}
+          {{ cat === 'All' ? '⚽ ሁሉም ጨዋታዎች' : cat }}
         </button>
       </div>
 
       <!-- Empty State -->
       <div v-if="filteredGames.length === 0" class="text-center py-16 bg-white dark:bg-[#131c27] rounded-2xl border border-slate-200 dark:border-[#212e3e]">
         <span class="text-4xl">⚽</span>
-        <h3 class="text-lg font-bold mt-2">ምንም ጨዋታ አልተገኘም</h3>
+        <h3 class="text-lg font-bold mt-2 text-slate-900 dark:text-white">ምንም ጨዋታ አልተገኘም</h3>
         <p class="text-slate-500 text-xs mt-1">በዚህ ፍለጋ የተከፈተ የጨዋታ ጥሪ የለም። እርሶ አዲስ ጥሪ መክፈት ይችላሉ!</p>
-        <button @click="resetSearch" class="mt-4 text-xs font-bold text-emerald-500 hover:underline">ፍለጋውን አጽዳ</button>
+        <button @click="resetSearch" class="mt-4 text-xs font-bold text-emerald-500 hover:underline cursor-pointer">
+          ፍለጋውን አጽዳ
+        </button>
       </div>
 
       <!-- Game Cards Grid -->
@@ -306,7 +343,7 @@ const resetSearch = () => {
         <div 
           v-for="game in filteredGames" 
           :key="game.id" 
-          class="bg-white dark:bg-[#131c27] p-6 rounded-2xl border border-slate-200 dark:border-[#212e3e] space-y-5 flex flex-col justify-between hover:shadow-lg transition"
+          class="bg-white dark:bg-[#131c27] p-6 rounded-2xl border border-slate-200 dark:border-[#212e3e] space-y-5 flex flex-col justify-between hover:shadow-lg transition relative overflow-hidden"
         >
           <div class="space-y-4">
             <!-- Host Info -->
@@ -315,36 +352,38 @@ const resetSearch = () => {
                 <img :src="game.hostAvatar" :alt="game.hostName" class="w-10 h-10 rounded-full object-cover border border-emerald-500/30" />
                 <div>
                   <h4 class="font-bold text-sm text-slate-900 dark:text-white">{{ game.hostName }}</h4>
-                  <span class="text-[10px] text-emerald-500 font-semibold bg-emerald-500/10 px-2 py-0.5 rounded-md">Host</span>
+                  <span class="text-[10px] text-emerald-500 font-semibold bg-emerald-500/10 px-2 py-0.5 rounded-md">አዘጋጅ (Host)</span>
                 </div>
               </div>
-              <span class="text-[11px] font-bold text-slate-400 bg-slate-100 dark:bg-[#0b111a] px-2.5 py-1 rounded-md">
+              <span class="text-[11px] font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-[#0b111a] px-2.5 py-1 rounded-md border border-slate-200 dark:border-[#212e3e]">
                 {{ game.sport }}
               </span>
             </div>
 
             <!-- Game Details -->
-            <div class="space-y-1.5 text-xs text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-[#0b111a] p-3 rounded-xl border border-slate-100 dark:border-[#212e3e]">
-              <p class="flex items-center gap-1.5">
-                <span>📍</span> 
-                <strong class="text-slate-900 dark:text-white">
-                  {{ game.venue }} ({{ game.city }}<span v-if="game.subCity">, {{ game.subCity }}</span>)
+            <div class="space-y-2 text-xs text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-[#0b111a] p-3.5 rounded-xl border border-slate-100 dark:border-[#212e3e]">
+              <p class="flex items-start gap-2">
+                <span class="shrink-0">📍</span> 
+                <strong class="text-slate-900 dark:text-white font-semibold">
+                  {{ game.venue }} <span class="text-slate-400">({{ game.city }}<span v-if="game.subCity">, {{ game.subCity }}</span>)</span>
                 </strong>
               </p>
-              <p class="flex items-center gap-1.5">
-                <span>⏰</span> {{ game.time }}
+              <p class="flex items-center gap-2">
+                <span class="shrink-0">⏰</span> 
+                <span>{{ game.time }}</span>
               </p>
-              <p class="flex items-center gap-1.5">
-                <span>💰</span> <span class="font-bold text-emerald-500">{{ game.pricePerPerson }} ETB</span> / ሰው
+              <p class="flex items-center gap-2">
+                <span class="shrink-0">💰</span> 
+                <span>የሰው ድርሻ: <strong class="text-emerald-500 font-bold">{{ game.pricePerPerson }} ETB</strong></span>
               </p>
             </div>
 
             <!-- Progress Bar Indicator -->
             <div class="space-y-1.5">
               <div class="flex justify-between text-xs font-bold">
-                <span class="text-slate-500">ተጫዋቾች</span>
+                <span class="text-slate-500 dark:text-slate-400">ተጫዋቾች</span>
                 <span :class="game.joinedPlayers === game.totalPlayers ? 'text-rose-500' : 'text-emerald-500'">
-                  {{ game.joinedPlayers }}/{{ game.totalPlayers }} Joined
+                  {{ game.joinedPlayers }}/{{ game.totalPlayers }} {{ game.joinedPlayers === game.totalPlayers ? 'ተሞልቷል' : 'ተቀላቅለዋል' }}
                 </span>
               </div>
               <div class="w-full h-2 bg-slate-100 dark:bg-[#0b111a] rounded-full overflow-hidden">
@@ -364,15 +403,15 @@ const resetSearch = () => {
             :class="[
               'w-full py-2.5 font-bold text-xs rounded-xl transition cursor-pointer',
               game.isJoined 
-                ? 'bg-amber-500 hover:bg-amber-400 text-slate-950' 
+                ? 'bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-md' 
                 : game.joinedPlayers >= game.totalPlayers 
                   ? 'bg-slate-200 dark:bg-slate-800 text-slate-400 cursor-not-allowed' 
                   : 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-md'
             ]"
           >
-            <template v-if="game.isJoined">Leave Game (ውጣ)</template>
-            <template v-else-if="game.joinedPlayers >= game.totalPlayers">Full (ተሞልቷል)</template>
-            <template v-else>Join Game &rarr;</template>
+            <template v-if="game.isJoined">ውጣ (Leave Game)</template>
+            <template v-else-if="game.joinedPlayers >= game.totalPlayers">ተሞልቷል (Full)</template>
+            <template v-else>ተቀላቀል (Join Game) &rarr;</template>
           </button>
 
         </div>
@@ -408,7 +447,6 @@ const resetSearch = () => {
           </div>
           
           <div class="flex flex-wrap items-center gap-3">
-            <!-- Google Play Button -->
             <a 
               href="https://play.google.com" 
               target="_blank" 
@@ -423,7 +461,6 @@ const resetSearch = () => {
               </div>
             </a>
 
-            <!-- App Store Button -->
             <a 
               href="https://apple.com/app-store" 
               target="_blank" 
@@ -441,12 +478,16 @@ const resetSearch = () => {
         </div>
       </div>
 
-      <!-- Create Game Modal (Pop-up Window) -->
-      <div v-if="isModalOpen" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-[#131c27] max-w-md w-full p-6 rounded-2xl border border-slate-200 dark:border-[#212e3e] space-y-6 shadow-2xl">
+      <!-- Create Game Modal (Pop-up Window with Backdrop Click Close) -->
+      <div 
+        v-if="isModalOpen" 
+        @click.self="isModalOpen = false"
+        class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto"
+      >
+        <div class="bg-white dark:bg-[#131c27] max-w-md w-full p-6 rounded-2xl border border-slate-200 dark:border-[#212e3e] space-y-5 shadow-2xl my-8">
           <div class="flex justify-between items-center pb-3 border-b border-slate-100 dark:border-[#212e3e]">
-            <h3 class="font-black text-lg text-slate-900 dark:text-white">አዲስ ጨዋታ ይክፈቱ</h3>
-            <button @click="isModalOpen = false" class="text-slate-400 hover:text-white text-lg">✕</button>
+            <h3 class="font-black text-base sm:text-lg text-slate-900 dark:text-white">አዲስ ጨዋታ ይክፈቱ</h3>
+            <button @click="isModalOpen = false" class="text-slate-400 hover:text-white text-lg font-bold p-1 cursor-pointer">✕</button>
           </div>
 
           <form @submit.prevent="createGame" class="space-y-4 text-xs font-semibold">
@@ -461,24 +502,26 @@ const resetSearch = () => {
               />
             </div>
 
-            <div>
-              <label class="block mb-1 text-slate-700 dark:text-slate-300">ከተማ</label>
-              <select 
-                v-model="newGame.city"
-                class="w-full p-3 rounded-xl bg-slate-50 dark:bg-[#0b111a] border border-slate-200 dark:border-[#212e3e] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              >
-                <option v-for="c in cities" :key="c" :value="c">{{ c }}</option>
-              </select>
-            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block mb-1 text-slate-700 dark:text-slate-300">ከተማ</label>
+                <select 
+                  v-model="newGame.city"
+                  class="w-full p-3 rounded-xl bg-slate-50 dark:bg-[#0b111a] border border-slate-200 dark:border-[#212e3e] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                >
+                  <option v-for="c in cities" :key="c" :value="c">{{ c }}</option>
+                </select>
+              </div>
 
-            <div v-if="newGame.city === 'Addis Ababa'">
-              <label class="block mb-1 text-slate-700 dark:text-slate-300">ክፍለ ከተማ</label>
-              <select 
-                v-model="newGame.subCity"
-                class="w-full p-3 rounded-xl bg-slate-50 dark:bg-[#0b111a] border border-slate-200 dark:border-[#212e3e] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              >
-                <option v-for="sc in addisSubCitiesWithVenues" :key="sc" :value="sc">{{ sc }}</option>
-              </select>
+              <div v-if="newGame.city === 'Addis Ababa'">
+                <label class="block mb-1 text-slate-700 dark:text-slate-300">ክፍለ ከተማ</label>
+                <select 
+                  v-model="newGame.subCity"
+                  class="w-full p-3 rounded-xl bg-slate-50 dark:bg-[#0b111a] border border-slate-200 dark:border-[#212e3e] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                >
+                  <option v-for="sc in addisSubCitiesWithVenues" :key="sc" :value="sc">{{ sc }}</option>
+                </select>
+              </div>
             </div>
 
             <div>
@@ -490,21 +533,32 @@ const resetSearch = () => {
                 <option value="Football">⚽ Football (ፉትሳል)</option>
                 <option value="Basketball">🏀 Basketball (ቅርጫት ኳስ)</option>
                 <option value="Tennis">🎾 Tennis (ቴኒስ)</option>
+                <option value="Volleyball">🏐 Volleyball (ቮሊቦል)</option>
               </select>
             </div>
 
-            <div>
-              <label class="block mb-1 text-slate-700 dark:text-slate-300">ቀን እና ሰዓት</label>
-              <input 
-                v-model="newGame.time" 
-                type="text" 
-                required
-                placeholder="ለምሳሌ: 2026-08-10 05:00 PM" 
-                class="w-full p-3 rounded-xl bg-slate-50 dark:bg-[#0b111a] border border-slate-200 dark:border-[#212e3e] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500" 
-              />
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block mb-1 text-slate-700 dark:text-slate-300">ቀን</label>
+                <input 
+                  v-model="newGame.date" 
+                  type="date" 
+                  required
+                  class="w-full p-3 rounded-xl bg-slate-50 dark:bg-[#0b111a] border border-slate-200 dark:border-[#212e3e] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500" 
+                />
+              </div>
+              <div>
+                <label class="block mb-1 text-slate-700 dark:text-slate-300">ሰዓት</label>
+                <input 
+                  v-model="newGame.startTime" 
+                  type="time" 
+                  required
+                  class="w-full p-3 rounded-xl bg-slate-50 dark:bg-[#0b111a] border border-slate-200 dark:border-[#212e3e] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500" 
+                />
+              </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-2 gap-3">
               <div>
                 <label class="block mb-1 text-slate-700 dark:text-slate-300">የሚያስፈልጉ ተጫዋቾች</label>
                 <input 
@@ -532,13 +586,13 @@ const resetSearch = () => {
               <button 
                 type="button" 
                 @click="isModalOpen = false"
-                class="px-4 py-2.5 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl font-bold"
+                class="px-4 py-2.5 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl font-bold cursor-pointer"
               >
                 ሰርዝ
               </button>
               <button 
                 type="submit" 
-                class="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm rounded-xl shadow-md cursor-pointer"
+                class="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm rounded-xl shadow-md cursor-pointer"
               >
                 ጥሪውን ይለጥፉ (Publish)
               </button>
