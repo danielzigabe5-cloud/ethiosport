@@ -103,8 +103,8 @@ const validateForm = () => {
 const handleImageUpload = (event) => {
   const file = event.target.files[0]
   if (file) {
-    if (file.size > 2 * 1024 * 1024) {
-      formError.value = 'Image size must be less than 2MB'
+    if (file.size > 10 * 1024 * 1024) {
+      formError.value = 'Image size must be less than 10MB'
       return
     }
     if (!['image/jpeg', 'image/png', 'image/jpg'].includes(file.type)) {

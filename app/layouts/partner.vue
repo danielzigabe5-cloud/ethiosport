@@ -13,7 +13,7 @@ const isDark = ref(false)
 const topNavLinks = [
   { name: 'Home', path: '/' },
   { name: 'Games', path: '/games' },
-  { name: 'Venues', path: '/addvenue' },
+  { name: 'Venues', path: '/venues' },
   { name: 'Events', path: '/events' },
   { name: 'Blogs', path: '/blogs' },
   { name: 'JustPlay', path: '/justplay' },
@@ -123,7 +123,7 @@ const handleLogout = () => {
 
       </div>
 
-    </header>
+    
 
     <!-- 2. BODY WRAPPER (SIDEBAR + MAIN CONTENT) -->
     <div class="flex-1 flex w-full relative">

@@ -257,7 +257,7 @@ const newVenue = ref({
 })
 
 // LAZY & ASYNC DATA FETCHING FOR INSTANT NAVIGATION
-const { data: venuesData, pending, error, refresh: refreshVenues } = useLazyFetch<Venue[]>('/api/admin/venues', {
+const { data: venuesData, pending, error, refresh: refreshVenues } = useLazyFetch<Venue[]>('/admin/venues', {
   baseURL: config.public.apiBase || 'http://localhost:8000',
   headers: {
     Authorization: token.value ? `Bearer ${token.value}` : '',
@@ -286,7 +286,7 @@ const toggleStatus = async (venue: Venue) => {
   const newStatus = venue.status === 'active' ? 'pending' : 'active'
   
   try {
-    await $fetch(`/api/admin/venues/${venue.id}/status`, {
+    await $fetch(`/admin/venues/${venue.id}/status`, {
       baseURL: config.public.apiBase || 'http://localhost:8000',
       method: 'PATCH',
       headers: {
@@ -307,7 +307,7 @@ const toggleStatus = async (venue: Venue) => {
 const handleAddVenue = async () => {
   isSubmitting.value = true
   try {
-    await $fetch<Venue>('/api/admin/venues', {
+    await $fetch<Venue>('/admin/venues', {
       baseURL: config.public.apiBase || 'http://localhost:8000',
       method: 'POST',
       headers: {
