@@ -13,14 +13,14 @@
         </NuxtLink>
 
         <!-- 2. NAVIGATION LINKS (Desktop) -->
-        <div class="hidden lg:flex items-center gap-1 xl:gap-2 flex-1 justify-center">
+        <div class="hidden lg:flex items-center gap-0.5 xl:gap-1 flex-1 justify-center">
           <NuxtLink 
             v-for="item in navItems" 
             :key="item.path" 
             :to="item.path" 
-            class="px-2 xl:px-4 py-2 rounded-xl text-sm xl:text-[15px] font-bold transition-all duration-200 whitespace-nowrap"
+            class="px-1.5 xl:px-2.5 py-1.5 rounded-xl text-xs xl:text-sm font-bold transition-all duration-200 whitespace-nowrap"
             :class="[
-              route.path === item.path 
+              route?.path === item.path 
                 ? 'text-green-600 bg-green-50/50 dark:bg-green-900/10' 
                 : 'text-gray-600 dark:text-gray-400 hover:text-green-600 hover:bg-gray-50 dark:hover:bg-gray-800',
               item.isDashboard ? 'text-blue-600 bg-blue-50/50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800' : ''
@@ -35,7 +35,7 @@
           
           <!-- ADD VENUE BUTTON -->
           <NuxtLink 
-            :to="authStore.token ? '/venues/create' : '/auth?redirect=/venues/create'" 
+            :to="authStore?.token ? '/venues/create' : '/auth?redirect=/venues/create'" 
             class="hidden md:flex items-center gap-2 bg-[#94FF2B] hover:bg-[#82e026] text-black px-4 xl:px-6 py-2.5 rounded-full font-black text-xs xl:text-[13px] transition-all shadow-lg active:scale-95"
           >
             <Icon name="lucide:plus-circle" class="w-4 h-4" />
@@ -45,7 +45,7 @@
           <!-- AUTH SECTION -->
           <div class="flex items-center">
             <!-- LOGGED IN -->
-            <div v-if="authStore.token" class="flex items-center gap-2 xl:gap-3 pl-2 sm:pl-4 border-l dark:border-gray-700">
+            <div v-if="authStore?.token" class="flex items-center gap-2 xl:gap-3 pl-2 sm:pl-4 border-l dark:border-gray-700">
               <NuxtLink :to="dashboardLink" class="flex items-center gap-3 group cursor-pointer">
                 <div class="hidden sm:block text-right">
                   <p class="text-[13px] font-black text-gray-900 dark:text-white leading-none truncate max-w-[100px] group-hover:text-green-600 transition-colors">
@@ -80,15 +80,15 @@
           </div>
 
           <!-- MOBILE TOGGLE -->
-         <button 
-  @click="isOpen = !isOpen" 
-  class="lg:hidden p-4 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all border border-gray-200 dark:border-gray-700 hover:scale-105" 
->
-  <Icon 
-    :name="isOpen ? 'lucide:x' : 'lucide:menu'" 
-    class="w-6 h-6 text-gray-700 dark:text-white" 
-  /> 
-</button>
+          <button 
+            @click="isOpen = !isOpen" 
+            class="lg:hidden p-4 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all border border-gray-200 dark:border-gray-700 hover:scale-105" 
+          >
+            <Icon 
+              :name="isOpen ? 'lucide:x' : 'lucide:menu'" 
+              class="w-6 h-6 text-gray-700 dark:text-white" 
+            /> 
+          </button>
         </div>
       </div>
     </div>
@@ -99,7 +99,7 @@
       class="lg:hidden fixed top-20 left-0 w-full bg-white dark:bg-gray-900 border-t dark:border-gray-800 shadow-2xl p-6 z-[90] flex flex-col gap-4 overflow-y-auto max-h-[calc(100vh-80px)]"
     >
       <NuxtLink 
-        :to="authStore.token ? '/venues/create' : '/auth?redirect=/venues/create'" 
+        :to="authStore?.token ? '/venues/create' : '/auth?redirect=/venues/create'" 
         @click="isOpen = false" 
         class="flex items-center justify-center gap-2 bg-[#94FF2B] text-black py-4 rounded-2xl font-black"
       >
@@ -107,7 +107,7 @@
         Add Venue
       </NuxtLink>
       
-      <div v-if="authStore.token" class="grid grid-cols-2 gap-3 mb-4">
+      <div v-if="authStore?.token" class="grid grid-cols-2 gap-3 mb-4">
         <NuxtLink 
           :to="dashboardLink" 
           @click="isOpen = false" 
@@ -129,7 +129,7 @@
         :to="item.path" 
         @click="isOpen = false"
         class="flex items-center gap-4 p-4 rounded-2xl font-black"
-        :class="route.path === item.path ? 'bg-green-50 text-green-600' : 'text-gray-700 dark:text-gray-200'"
+        :class="route?.path === item.path ? 'bg-green-50 text-green-600' : 'text-gray-700 dark:text-gray-200'"
       >
         <Icon :name="item.icon || 'lucide:link'" class="w-6 h-6" />
         {{ item.label }}
@@ -151,7 +151,7 @@ const isOpen = ref(false)
 
 // Dashboard route resolver
 const dashboardLink = computed(() => {
-  if (!authStore.token) return '/auth'
+  if (!authStore?.token) return '/auth'
   const role = authStore.user?.role?.toLowerCase()
   
   if (role === 'admin') return '/admin'
@@ -159,7 +159,7 @@ const dashboardLink = computed(() => {
   return '/'
 })
 
-// Static English navigation items (About Us included)
+// Static English navigation items
 const staticNavItems = [
   { path: '/', label: 'Home', icon: 'lucide:home' },
   { path: '/about', label: 'About Us', icon: 'lucide:info' },
@@ -171,7 +171,7 @@ const staticNavItems = [
 const navItems = computed(() => {
   const items = [...staticNavItems]
   
-  if (authStore.token) {
+  if (authStore?.token) {
     const role = authStore.user?.role?.toLowerCase()
     
     if (role === 'admin' || role === 'partner') {
@@ -210,7 +210,7 @@ onMounted(() => {
   authStore.init()
 })
 
-watch(() => route.path, () => { 
+watch(() => route?.path, () => { 
   isOpen.value = false 
 })
 </script>
