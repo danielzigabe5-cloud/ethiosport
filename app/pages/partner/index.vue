@@ -5,8 +5,7 @@ import { useRoute, useRouter } from 'vue-router'
 const route = useRoute()
 const router = useRouter()
 
-const currentLang = ref('አማ')
-const isDark = ref(false)
+
 
 // 1. Top Header Navigation Links
 const topNavLinks = [

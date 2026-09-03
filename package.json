@@ -1,34 +1,37 @@
 {
   "name": "ethiosport",
-  "type": "module",
+  "version": "1.0.0",
   "private": true,
+  "type": "module",
+  "description": "Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.",
   "scripts": {
     "build": "nuxt build",
-    "dev": "nuxt dev --open",
+    "dev": "NODE_OPTIONS=--max-old-space-size=4096 nuxt dev --open",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },
-  "dev": "NODE_OPTIONS=--max-old-space-size=4096 nuxt dev",
   "dependencies": {
     "@nuxt/ui": "^4.10.0",
     "@pinia/nuxt": "^1.0.2",
     "html5-qrcode": "^2.3.8",
     "lucide-vue-next": "^1.0.0",
     "nuxt": "^4.5.0",
-    "pinia": "^4.0.3",
-    "vue": "^3.5.40",
-    "vue-router": "^5.2.0"
+    "pinia": "^4.0.3"
   },
   "devDependencies": {
     "@nuxt/icon": "^2.5.0",
     "@nuxt/image": "^2.1.0",
     "@nuxtjs/tailwindcss": "^6.14.0",
-    "@tailwindcss/postcss": "^4.3.3",
-    "@tailwindcss/vite": "^4.3.3",
-    "@types/node": "^26.2.0",
-    "autoprefixer": "^10.5.4",
-    "postcss": "^8.5.25",
-    "tailwindcss": "^3.4.19"
-  }
+    "@types/node": "^26.2.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danielzigabe5-cloud/ethiosport.git"
+  },
+  "bugs": {
+    "url": "https://github.com/danielzigabe5-cloud/ethiosport/issues"
+  },
+  "homepage": "https://github.com/danielzigabe5-cloud/ethiosport#readme",
+  "license": "ISC"
 }
