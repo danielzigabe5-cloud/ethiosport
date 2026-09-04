@@ -6,8 +6,8 @@
         <!-- Column 1: About -->
         <div class="flex flex-col space-y-5">
           <div class="flex items-center space-x-2">
-            <span class="text-3xl font-black text-green-500 italic">ETHIO</span>
-            <span class="text-3xl font-black text-white italic">SPORT</span>
+            <span class="text-3xl font-black text-green-500 italic">COMBO</span>
+            <span class="text-3xl font-black text-white italic">LOJO</span>
           </div>
           <p class="text-slate-400 text-sm leading-relaxed">
             Your premier destination for the latest Ethiopian sports news, transfer updates, and live match results.

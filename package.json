@@ -17,6 +17,7 @@
     "html5-qrcode": "^2.3.8",
     "lucide-vue-next": "^1.0.0",
     "nuxt": "^4.5.0",
+    "nuxt-icon": "^1.0.0-beta.7",
     "pinia": "^4.0.3"
   },
   "devDependencies": {

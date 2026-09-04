@@ -82,7 +82,7 @@
           <!-- MOBILE TOGGLE -->
           <button 
             @click="isOpen = !isOpen" 
-            class="lg:hidden p-2 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow transition-all border border-gray-200 dark:border-gray-700" 
+            class="lg:hidden p-1 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow transition-all border border-gray-200 dark:border-gray-700" 
           >
             <Icon 
               :name="isOpen ? 'lucide:x' : 'lucide:menu'" 

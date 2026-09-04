@@ -146,7 +146,7 @@ onMounted(() => {
     <!-- PAGE HEADER -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
       <div>
-        <h1 class="text-2xl font-black text-white tracking-tight">System Overview</h1>
+        <h1 class="text-2xl font-black  tracking-tight text-blue ">System Overview</h1>
         <p class="text-xs text-slate-400 mt-1">Real-time stats across all active modules</p>
       </div>
 
