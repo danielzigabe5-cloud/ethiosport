@@ -10,6 +10,21 @@ const isLogin = ref(true)
 const loading = ref(false)
 const showPassword = ref(false)
 
+// ለAlert መልዕክት የሚሆኑ
+const feedback = reactive({
+  show: false,
+  message: '',
+  type: 'success' as 'success' | 'error'
+})
+
+const showAlert = (msg: string, type: 'success' | 'error' = 'success') => {
+  feedback.message = msg
+  feedback.type = type
+  feedback.show = true
+  // ከ 5 ሰከንድ በኋላ በራሱ እንዲጠፋ
+  setTimeout(() => { feedback.show = false }, 5000)
+}
+
 const form = reactive({
   email: '',
   phone: '',
@@ -84,18 +99,16 @@ const toggleMode = () => {
   form.password = ''
   errors.password = ''
   errors.phone = ''
+  feedback.show = false // mode ሲቀየር alert እንዲጠፋ
 }
 
-// ይህን ኮድ ይቀይሩ! የ User ሚናን ጨምረዋል
 const dashboardLink = computed(() => {
   const role = authStore.user?.role?.toLowerCase()
-  
   if (role === 'admin') return '/admin'
   if (role === 'partner') return '/partner'
-  return '/' // User ለሆነ ወደ መነሻ ይሂድ
+  return '/' 
 })
 
-// ገጹ ሲከፈት ተጠቃሚው Login ካደረገ በራሱ ወደ ዳሽቦርድ እንዲሄድ (Redirect)
 onMounted(() => {
   authStore.init()
   if (authStore.token) {
@@ -103,38 +116,30 @@ onMounted(() => {
     router.push(redirectTo)
   }
 })
-
 const handleSubmit = async () => {
   if (!validateAll()) return
   loading.value = true
+  feedback.show = false 
+
   try {
     if (isLogin.value) {
       const res = await authStore.login({ email: form.email, password: form.password })
       if (res.success) {
-        // Login ሲያደርግ በቀጥታ ወደ ሚፈለገው ገጽ ይላካል
-        const redirectTo = route.query.redirect as string || dashboardLink.value
-        router.push(redirectTo)
-      } else {
-        alert(res.message)
+        showAlert('Login successful!', 'success')
+        setTimeout(() => { router.push(dashboardLink.value) }, 1500)
       }
-    } else{
-      // REGISTER & SEND OTP
-      const res = await authStore.sendOTP({
-        email: form.email,
-        phone: form.phone
-      })
-
+    } else {
+      const res = await authStore.sendOTP({ email: form.email, phone: form.phone })
       if (res.success) {
-        router.push({
-          path: '/auth/otp',
-          query: { email: form.email }
-        })
-      } else {
-        alert(res.message || 'Failed to send OTP')
+        showAlert('OTP sent!', 'success')
+        router.push({ path: '/auth/otp', query: { email: form.email } })
       }
     }
-  } catch (error) {
-    console.error(error)
+  } catch (error: any) {
+    // 👈 እዚህ ጋር ትክክለኛውን የቤክኤንድ መልዕክት ያሳያል
+    const msg = error.message || 'Connection error. Check if backend is running.'
+     showAlert(error.message, 'error')
+    console.error("Login Error Details:", error)
   } finally {
     loading.value = false
   }
@@ -146,7 +151,7 @@ const handleSubmit = async () => {
     <div class="w-full max-w-md bg-white rounded-3xl shadow-sm p-8">
 
       <!-- Header -->
-      <div class="flex flex-col items-center mb-8">
+      <div class="flex flex-col items-center mb-6">
         <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-4">
           <span class="text-blue-600 text-4xl">🛍️</span>
         </div>
@@ -158,6 +163,16 @@ const handleSubmit = async () => {
         <p class="text-gray-500 text-center mt-2">
           {{ isLogin ? 'Sign in to your account' : 'Enter details to receive OTP' }}
         </p>
+      </div>
+
+      <!-- Alert Messages (Success/Error) -->
+      <div v-if="feedback.show" 
+           :class="[
+             'mb-6 p-4 rounded-xl text-sm font-medium flex items-center gap-3 animate-pulse',
+             feedback.type === 'success' ? 'bg-green-50 text-green-700 border border-green-100' : 'bg-red-50 text-red-700 border border-red-100'
+           ]">
+        <span>{{ feedback.type === 'success' ? '✅' : '⚠️' }}</span>
+        <p>{{ feedback.message }}</p>
       </div>
 
       <!-- Form -->
@@ -227,10 +242,13 @@ const handleSubmit = async () => {
         <button
           type="submit"
           :disabled="loading || !isFormValid"
-          class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 transition disabled:bg-blue-300 disabled:cursor-not-allowed"
+          class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 transition disabled:bg-blue-300 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
-          <span v-if="loading">Loading...</span>
-          <span v-else>{{ isLogin ? 'LOGIN' : 'REGISTER & GET OTP' }}</span>
+          <svg v-if="loading" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span>{{ loading ? 'PROCESSING...' : (isLogin ? 'LOGIN' : 'REGISTER & GET OTP') }}</span>
         </button>
 
       </form>

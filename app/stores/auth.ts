@@ -7,58 +7,69 @@ export const useAuthStore = defineStore('auth', {
     tempEmail: '',
     tempPhone: '',
   }),
-
+  
   actions: {
-    // ባክኤንድ አድራሻውን ከ config ለማንበብ
     getApiUrl(path: string) {
       const config = useRuntimeConfig()
-      return `${config.public.apiBase}${path}`
+      // መጨረሻው ላይ /api መኖሩን ያረጋግጣል
+      const base = config.public.apiBase.endsWith('/') 
+        ? config.public.apiBase.slice(0, -1) 
+        : config.public.apiBase
+      return `${base}${path}`
     },
 
     async login(payload: { email: string; password: string }) {
       try {
         const res: any = await $fetch(this.getApiUrl('/auth/login'), {
           method: 'POST',
-          body: payload
+          body: payload,
+          timeout: 30000, // 30 ሰከንድ እንዲጠብቅ (መዘግየት ቢኖር እንኳ እንዳይቋረጥ)
+          headers: {
+            'Accept': 'application/json',
+          }
         })
 
         if (res.success) {
           this.token = res.data?.token || res.token
           this.user = res.data?.user || res.user
           
-          if (this.token) {
-            localStorage.setItem('auth_token', this.token)
-          }
+          if (this.token) localStorage.setItem('auth_token', this.token)
           if (this.user) {
-            // 👈 ይህ አስፈላጊ ነው! user.role ን ከ Backend እናገኛለን
             localStorage.setItem('auth_user', JSON.stringify(this.user))
             localStorage.setItem('userRole', this.user.role || 'user')
-            
-            // Navbar እንዲቀየር
             const roleState = useState('userRole')
             roleState.value = this.user.role || 'user'
           }
         }
         return res
       } catch (error: any) {
-        throw error.data || error
-      }
+    // 👈 እዚህ ጋር ነው ስህተቱን የምንቀይረው
+    if (error.status === 404) {
+      // ሰርቨሩ 404 ካለ፣ ወይ አድራሻው ተሳስቷል ወይም ኢሜይሉ የለም
+      throw { message: 'user not found ፤ please first register' }
+    }
+    if (error.status === 401) {
+       throw { message: 'invalid credintial' }
+    }
+    // ሌላ ማንኛውም ስህተት ሲመጣ
+    throw error.data || { message: 'server error!' }
+  }
     },
 
     async sendOTP(payload: { email: string; phone: string }) {
       try {
         const res: any = await $fetch(this.getApiUrl('/auth/send-otp'), {
           method: 'POST',
-          body: payload
+          body: payload,
+          timeout: 600000
         })
         this.tempEmail = payload.email
         this.tempPhone = payload.phone
         return res
       } catch (error: any) {
-        throw error.data || error
+        throw error.data || { message: 'Failed to send OTP' }
       }
     },
-
     async verifyOTP(email: string, otp: string) {
       try {
         const res: any = await $fetch(this.getApiUrl('/auth/verify-otp'), {
@@ -125,10 +136,8 @@ export const useAuthStore = defineStore('auth', {
         const token = localStorage.getItem('auth_token')
         const user = localStorage.getItem('auth_user')
         const role = localStorage.getItem('userRole')
-        
         if (token) this.token = token
         if (user) this.user = JSON.parse(user)
-        
         if (role) {
           const roleState = useState('userRole')
           roleState.value = role
@@ -142,9 +151,9 @@ export const useAuthStore = defineStore('auth', {
       localStorage.removeItem('auth_token')
       localStorage.removeItem('auth_user')
       localStorage.removeItem('userRole')
-      
       const roleState = useState('userRole')
       roleState.value = null
     }
   }
+  
 })
