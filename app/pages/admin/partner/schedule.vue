@@ -25,7 +25,7 @@ const toggleBlock = (index: number) => {
 <template>
   <div class="space-y-6 max-w-6xl mx-auto font-sans">
     <div>
-      <h1 class="text-xl font-black text-white">📅 የቀጠሮ ሰሌዳ (Schedule)</h1>
+      <h1 class="text-xl font-black text-white">📅 Schedule</h1>
       <p class="text-xs text-slate-400">የሜዳዎን ክፍት እና የተያዙ ሰዓቶች ያስተዳድሩ።</p>
     </div>
 

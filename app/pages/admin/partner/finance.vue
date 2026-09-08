@@ -16,7 +16,7 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
         <div class="flex justify-between items-center mb-4">
-          <span class="text-gray-500 font-bold text-sm">አጠቃላይ የተሰራ (Total Earnings)</span>
+          <span class="text-gray-500 font-bold text-sm">Total Earnings</span>
           <div class="w-10 h-10 bg-green-50 text-green-600 rounded-full flex items-center justify-center">
             <Icon name="lucide:coins" class="w-5 h-5" />
           </div>
@@ -26,7 +26,7 @@
 
       <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
         <div class="flex justify-between items-center mb-4">
-          <span class="text-gray-500 font-bold text-sm">ያልወጣ ቀሪ ሂሳብ (Pending)</span>
+          <span class="text-gray-500 font-bold text-sm">Pending</span>
           <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center">
             <Icon name="lucide:wallet" class="w-5 h-5" />
           </div>
@@ -36,7 +36,7 @@
 
       <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
         <div class="flex justify-between items-center mb-4">
-          <span class="text-gray-500 font-bold text-sm">ወጪ የተደረገ (Withdrawn)</span>
+          <span class="text-gray-500 font-bold text-sm">Withdrawn</span>
           <div class="w-10 h-10 bg-gray-50 text-gray-600 rounded-full flex items-center justify-center">
             <Icon name="lucide:check-circle" class="w-5 h-5" />
           </div>

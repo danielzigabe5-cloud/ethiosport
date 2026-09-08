@@ -7,7 +7,7 @@
         <div>
           <h1 class="text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
             <Icon name="lucide:clipboard-check" class="text-emerald-500" />
-            የክፍያ ማረጋገጫ (Approvals)
+            Approvals
           </h1>
           <p class="text-slate-400 font-medium mt-1">የስታዲየም ቦታ ማስያዣዎችን እዚህ ያረጋግጡ ወይም ይሰርዙ።</p>
         </div>

@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="flex items-center justify-between">
       <div>
-        <h1 class="text-2xl font-black text-gray-900 dark:text-white">የሜዳ ማረጋገጫ (Approvals)</h1>
+        <h1 class="text-2xl font-black text-gray-900 dark:text-white">Approvals</h1>
         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">ሁሉንም ሜዳዎች ይመልከቱ እና ያስተዳድሩ</p>
       </div>
       <div class="text-xs font-bold text-amber-600 bg-amber-50 dark:bg-amber-900/20 px-3 py-1.5 rounded-lg border border-amber-200 dark:border-amber-800">

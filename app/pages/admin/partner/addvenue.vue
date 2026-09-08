@@ -15,7 +15,7 @@ const venues = ref([
   <div class="space-y-6 max-w-6xl mx-auto font-sans">
     <div class="flex justify-between items-center">
       <div>
-        <h1 class="text-xl font-black text-white">🏟️ ሜዳዎቼ (My Venues)</h1>
+        <h1 class="text-xl font-black text-white">🏟️ My Venues</h1>
         <p class="text-xs text-slate-400">የሚያስተዳድሯቸውን ሜዳዎች ዝርዝር እና ዋጋ ያስተካክሉ።</p>
       </div>
       <button class="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs transition cursor-pointer">

@@ -87,7 +87,7 @@ const upcomingBookings = ref([
     <!-- Table Section -->
     <div class="bg-[#0b111a] border border-[#1a2432] rounded-xl p-5 space-y-4">
       <div class="flex items-center justify-between">
-        <h2 class="text-xs font-bold text-white">የዛሬ ተራኛ ተጫዋቾች (Upcoming)</h2>
+        <h2 class="text-xs font-bold text-white">Upcoming</h2>
         <button class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg transition cursor-pointer">
           ሰዓት ዝጋ (Block Time)
         </button>

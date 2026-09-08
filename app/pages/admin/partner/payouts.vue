@@ -13,7 +13,7 @@ const transactions = [
 <template>
   <div class="space-y-6 max-w-6xl mx-auto font-sans">
     <div>
-      <h1 class="text-xl font-black text-white">💰 ገቢ እና ክፍያዎች (Earnings & Payouts)</h1>
+      <h1 class="text-xl font-black text-white">💰 Earnings & Payouts</h1>
       <p class="text-xs text-slate-400">የተሰበሰበውን ገቢ እና የባንክ ወጪዎችን ይከታተሉ።</p>
     </div>
 

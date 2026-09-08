@@ -20,7 +20,7 @@ const handleSubmit = () => {
 <template>
   <div class="space-y-6 max-w-3xl mx-auto font-sans">
     <div>
-      <h1 class="text-xl font-black text-white">📣 ሪፖርት አድርግ (Support)</h1>
+      <h1 class="text-xl font-black text-white">📣 Support</h1>
       <p class="text-xs text-slate-400">ያጋጠመዎትን ችግር ወይም አስተያየት ለአድሚኑ ያድርሱ።</p>
     </div>
 
