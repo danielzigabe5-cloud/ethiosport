@@ -272,6 +272,6 @@ const executeSearch = () => {
 }
 
 .drop-shadow-md {
-  filter: drop-shadow(0 4px 3px rgba(0, 0, 0, 0.2));
+  filter: drop-shadow
 }
 </style>

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { ref, computed } from 'vue'
 
 // SEO & Page Title
 useHead({ 
@@ -24,7 +24,13 @@ const selectedDate = ref('')
 const cities = ['Addis Ababa', 'Bahir Dar', 'Hawassa', 'Adama', 'Dire Dawa']
 const subCities = ['Bole', 'Yeka', 'Kirkos', 'Arada', 'Lideta', 'Nifas Silk', 'Kolfe', 'Gullele', 'Akaky', 'Lemi Kura']
 const levels = ['Casual (Recreational)', 'Intermediate', 'Competitive']
-const sportsOptions = ['Football', 'Basketball', 'Tennis', 'Volleyball', 'Padel']
+const sportsOptions = [
+  { name: 'Football', icon: '⚽' },
+  { name: 'Basketball', icon: '🏀' },
+  { name: 'Tennis', icon: '🎾' },
+  { name: 'Volleyball', icon: '🏐' },
+  { name: 'Padel', icon: '🏓' }
+]
 
 // Realistic Ethiopian Match Data
 const games = ref([
@@ -38,7 +44,7 @@ const games = ref([
     sport: 'Football',
     level: 'Intermediate',
     time: '05:30 PM',
-    date: new Date().toISOString().split('T')[0], // Today
+    date: new Date().toISOString().split('T')[0],
     joinedPlayers: 9,
     totalPlayers: 10,
     price: 120,
@@ -55,7 +61,7 @@ const games = ref([
     sport: 'Tennis',
     level: 'Competitive',
     time: '04:00 PM',
-    date: '2026-09-10',
+    date: '2026-09-25',
     joinedPlayers: 2,
     totalPlayers: 4,
     price: 250,
@@ -81,7 +87,7 @@ const games = ref([
   }
 ])
 
-// Logic: Filter Games
+// Filter Logic
 const filteredGames = computed(() => {
   return games.value.filter(game => {
     const matchesTab = selectedSportCategory.value === 'All' || game.sport === selectedSportCategory.value
@@ -95,7 +101,7 @@ const filteredGames = computed(() => {
   })
 })
 
-// Logic: Create Game
+// New Game State
 const newMatch = ref({
   venue: '', city: 'Addis Ababa', subCity: 'Bole', sport: 'Football',
   level: 'Intermediate', date: '', time: '', players: 10, price: 100
@@ -118,7 +124,8 @@ const handleCreateGame = () => {
       joinedPlayers: 1,
       totalPlayers: newMatch.value.players,
       price: newMatch.value.price,
-      isJoined: true
+      isJoined: true,
+      isUrgent: false
     })
     isModalOpen.value = false
     isLoading.value = false
@@ -134,141 +141,187 @@ const toggleJoin = (game) => {
     game.isJoined = true
   }
 }
+
+const getSportIcon = (sportName) => {
+  const found = sportsOptions.find(s => s.name === sportName)
+  return found ? found.icon : '🎮'
+}
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#f8fafc] dark:bg-[#0f172a] text-slate-900 dark:text-slate-100 font-sans pb-20">
+  <div class="min-h-screen bg-slate-50 dark:bg-[#070b10] text-slate-800 dark:text-slate-100 font-sans pb-24 relative overflow-hidden selection:bg-emerald-500 selection:text-white">
     
-    <!-- Hero Header -->
-    <header class="bg-white dark:bg-[#1e293b] border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30 shadow-sm">
-      <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <div class="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-white font-black shadow-lg shadow-emerald-500/20">ES</div>
-          <h1 class="text-xl font-black tracking-tight hidden sm:block">ETHIO<span class="text-emerald-500">SPORT</span></h1>
+    <!-- Ambient Background Glows -->
+    <div class="absolute top-0 left-1/4 w-[500px] h-[300px] bg-emerald-500/10 blur-[130px] pointer-events-none rounded-full"></div>
+    <div class="absolute top-1/3 right-10 w-[400px] h-[400px] bg-teal-500/10 blur-[150px] pointer-events-none rounded-full"></div>
+
+    <!-- Header / Navbar -->
+    <header class="bg-white/80 dark:bg-[#0f172a]/80 backdrop-blur-xl border-b border-slate-200/80 dark:border-slate-800/80 sticky top-0 z-40 shadow-xs">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 h-18 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-gradient-to-tr from-emerald-600 to-teal-400 rounded-xl flex items-center justify-center text-white font-black text-lg shadow-md shadow-emerald-500/20">
+            ES
+          </div>
+          <div>
+            <h1 class="text-xl font-black tracking-tight leading-none text-slate-900 dark:text-white">
+              ETHIO<span class="text-emerald-500">SPORT</span>
+            </h1>
+            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Community Hub</span>
+          </div>
         </div>
+        
         <button 
           @click="isModalOpen = true"
-          class="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-lg shadow-emerald-500/25 active:scale-95"
+          class="bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all duration-200 flex items-center gap-2 shadow-lg shadow-emerald-500/25 cursor-pointer"
         >
-          <span class="text-lg">+</span> Create New Game
+          <span class="text-lg leading-none">+</span> Host a Match
         </button>
       </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8 relative z-10">
       
-      <!-- Search & Filters Section -->
-      <section class="bg-white dark:bg-[#1e293b] p-6 rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-800 space-y-6">
+      <!-- Search & Filters Container -->
+      <section class="bg-white dark:bg-[#131c27] p-6 sm:p-8 rounded-3xl border border-slate-200/80 dark:border-[#212e3e] shadow-xl shadow-slate-200/40 dark:shadow-none space-y-6">
+        
+        <!-- Search Input -->
         <div class="relative">
-          <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl">🔍</span>
+          <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg">🔍</span>
           <input 
             v-model="searchQuery"
             type="text" 
-            placeholder="Search by venue or host name..."
-            class="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-[#0f172a] rounded-2xl border-none focus:ring-2 focus:ring-emerald-500 transition-all outline-none text-lg"
+            placeholder="Search by venue name, sub-city, or host..."
+            class="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-[#0b111a] text-slate-900 dark:text-slate-100 rounded-2xl border border-slate-200 dark:border-[#212e3e] focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none text-sm sm:text-base font-medium placeholder:text-slate-400"
           />
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Filter Selects Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div class="space-y-1.5">
-            <label class="text-[11px] font-bold uppercase text-slate-400 ml-1">City</label>
-            <select v-model="selectedCity" class="w-full p-3 bg-slate-50 dark:bg-[#0f172a] rounded-xl border-none focus:ring-2 focus:ring-emerald-500 text-sm font-medium">
+            <label class="text-[11px] font-bold uppercase tracking-wider text-slate-400 ml-1">City</label>
+            <select v-model="selectedCity" class="w-full p-3 bg-slate-50 dark:bg-[#0b111a] text-slate-800 dark:text-slate-200 rounded-xl border border-slate-200 dark:border-[#212e3e] focus:border-emerald-500 text-xs sm:text-sm font-semibold outline-none">
               <option value="All">All Cities</option>
               <option v-for="c in cities" :key="c" :value="c">{{ c }}</option>
             </select>
           </div>
+
           <div class="space-y-1.5">
-            <label class="text-[11px] font-bold uppercase text-slate-400 ml-1">Sub-city</label>
-            <select v-model="selectedSubCity" class="w-full p-3 bg-slate-50 dark:bg-[#0f172a] rounded-xl border-none focus:ring-2 focus:ring-emerald-500 text-sm font-medium">
+            <label class="text-[11px] font-bold uppercase tracking-wider text-slate-400 ml-1">Sub-City</label>
+            <select v-model="selectedSubCity" class="w-full p-3 bg-slate-50 dark:bg-[#0b111a] text-slate-800 dark:text-slate-200 rounded-xl border border-slate-200 dark:border-[#212e3e] focus:border-emerald-500 text-xs sm:text-sm font-semibold outline-none">
               <option value="All">All Sub-cities</option>
               <option v-for="sc in subCities" :key="sc" :value="sc">{{ sc }}</option>
             </select>
           </div>
+
           <div class="space-y-1.5">
-            <label class="text-[11px] font-bold uppercase text-slate-400 ml-1">Skill Level</label>
-            <select v-model="selectedLevel" class="w-full p-3 bg-slate-50 dark:bg-[#0f172a] rounded-xl border-none focus:ring-2 focus:ring-emerald-500 text-sm font-medium">
-              <option value="All">All Levels</option>
+            <label class="text-[11px] font-bold uppercase tracking-wider text-slate-400 ml-1">Skill Level</label>
+            <select v-model="selectedLevel" class="w-full p-3 bg-slate-50 dark:bg-[#0b111a] text-slate-800 dark:text-slate-200 rounded-xl border border-slate-200 dark:border-[#212e3e] focus:border-emerald-500 text-xs sm:text-sm font-semibold outline-none">
+              <option value="All">All Skill Levels</option>
               <option v-for="l in levels" :key="l" :value="l">{{ l }}</option>
             </select>
           </div>
+
           <div class="space-y-1.5">
-            <label class="text-[11px] font-bold uppercase text-slate-400 ml-1">Date</label>
-            <input type="date" v-model="selectedDate" class="w-full p-3 bg-slate-50 dark:bg-[#0f172a] rounded-xl border-none focus:ring-2 focus:ring-emerald-500 text-sm font-medium" />
+            <label class="text-[11px] font-bold uppercase tracking-wider text-slate-400 ml-1">Date</label>
+            <input type="date" v-model="selectedDate" class="w-full p-3 bg-slate-50 dark:bg-[#0b111a] text-slate-800 dark:text-slate-200 rounded-xl border border-slate-200 dark:border-[#212e3e] focus:border-emerald-500 text-xs sm:text-sm font-semibold outline-none" />
           </div>
         </div>
       </section>
 
-      <!-- Category Tabs -->
-      <div class="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide">
+      <!-- Category Filter Pills -->
+      <div class="flex items-center gap-2.5 overflow-x-auto pb-2 scrollbar-hide">
         <button 
-          v-for="cat in ['All', ...sportsOptions]" 
-          :key="cat"
-          @click="selectedSportCategory = cat"
+          @click="selectedSportCategory = 'All'"
           :class="[
-            'px-6 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap border-2',
-            selectedSportCategory === cat 
-              ? 'bg-emerald-500 border-emerald-500 text-white shadow-lg shadow-emerald-500/20' 
-              : 'bg-white dark:bg-[#1e293b] border-transparent text-slate-500 dark:text-slate-400 hover:border-slate-200'
+            'px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 whitespace-nowrap cursor-pointer',
+            selectedSportCategory === 'All' 
+              ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20' 
+              : 'bg-white dark:bg-[#131c27] text-slate-600 dark:text-slate-400 border border-slate-200/80 dark:border-[#212e3e] hover:border-emerald-500/50'
           ]"
         >
-          {{ cat === 'All' ? '🎯 All Games' : cat }}
+          🎯 All Matches
+        </button>
+        <button 
+          v-for="sport in sportsOptions" 
+          :key="sport.name"
+          @click="selectedSportCategory = sport.name"
+          :class="[
+            'px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 whitespace-nowrap flex items-center gap-2 cursor-pointer',
+            selectedSportCategory === sport.name 
+              ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20' 
+              : 'bg-white dark:bg-[#131c27] text-slate-600 dark:text-slate-400 border border-slate-200/80 dark:border-[#212e3e] hover:border-emerald-500/50'
+          ]"
+        >
+          <span>{{ sport.icon }}</span> {{ sport.name }}
         </button>
       </div>
 
-      <!-- Games Grid -->
+      <!-- Games Cards Grid -->
       <div v-if="filteredGames.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div 
           v-for="game in filteredGames" 
           :key="game.id" 
-          class="group bg-white dark:bg-[#1e293b] rounded-[2rem] border border-slate-100 dark:border-slate-800 overflow-hidden hover:shadow-2xl hover:shadow-emerald-500/10 transition-all duration-300 flex flex-col"
+          class="group bg-white dark:bg-[#131c27] rounded-3xl border border-slate-200/80 dark:border-[#212e3e] hover:border-emerald-500/50 shadow-sm hover:shadow-xl hover:shadow-emerald-500/5 transition-all duration-300 flex flex-col justify-between overflow-hidden relative"
         >
-          <!-- Top Info -->
-          <div class="p-6 flex-1 space-y-4">
+          <!-- Top Card Banner & Host Info -->
+          <div class="p-6 space-y-5">
             <div class="flex justify-between items-start">
               <div class="flex items-center gap-3">
-                <img :src="game.hostAvatar" class="w-12 h-12 rounded-2xl object-cover ring-2 ring-emerald-500/20" />
+                <img :src="game.hostAvatar" class="w-11 h-11 rounded-xl object-cover ring-2 ring-emerald-500/30" />
                 <div>
-                  <h4 class="font-bold text-slate-900 dark:text-white">{{ game.hostName }}</h4>
-                  <span class="text-[10px] text-emerald-500 font-bold bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 rounded-lg">VERIFIED HOST</span>
+                  <h4 class="font-bold text-sm text-slate-900 dark:text-white leading-tight">{{ game.hostName }}</h4>
+                  <span class="text-[10px] text-emerald-500 font-extrabold tracking-wide uppercase">Verified Host</span>
                 </div>
               </div>
-              <div v-if="game.isUrgent" class="animate-pulse bg-rose-500 text-white text-[10px] font-black px-2 py-1 rounded-lg">URGENT</div>
-            </div>
-
-            <div class="space-y-3">
-              <h3 class="text-lg font-black leading-tight text-slate-800 dark:text-slate-100">
-                {{ game.venue }}
-              </h3>
-              <div class="grid grid-cols-2 gap-2 text-[11px] font-bold">
-                <div class="flex items-center gap-2 text-slate-500 bg-slate-50 dark:bg-[#0f172a] p-2 rounded-xl">
-                  <span>📍</span> {{ game.subCity }}
-                </div>
-                <div class="flex items-center gap-2 text-slate-500 bg-slate-50 dark:bg-[#0f172a] p-2 rounded-xl">
-                  <span>🏆</span> {{ game.level.split(' ')[0] }}
-                </div>
-                <div class="flex items-center gap-2 text-slate-500 bg-slate-50 dark:bg-[#0f172a] p-2 rounded-xl">
-                  <span>⏰</span> {{ game.time }}
-                </div>
-                <div class="flex items-center gap-2 text-emerald-600 bg-emerald-50 dark:bg-emerald-500/10 p-2 rounded-xl">
-                  <span>💰</span> {{ game.price }} ETB
-                </div>
-              </div>
-            </div>
-
-            <!-- Progress Bar -->
-            <div class="pt-2 space-y-2">
-              <div class="flex justify-between text-[11px] font-bold">
-                <span class="text-slate-400">Player Capacity</span>
-                <span :class="game.joinedPlayers === game.totalPlayers ? 'text-rose-500' : 'text-emerald-500'">
-                  {{ game.joinedPlayers }} / {{ game.totalPlayers }} 
-                  {{ game.joinedPlayers === game.totalPlayers ? '(Full)' : '(' + (game.totalPlayers - game.joinedPlayers) + ' left)' }}
+              
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs bg-slate-100 dark:bg-[#0b111a] px-2.5 py-1 rounded-lg border border-slate-200 dark:border-[#212e3e] font-semibold">
+                  {{ getSportIcon(game.sport) }} {{ game.sport }}
+                </span>
+                <span v-if="game.isUrgent" class="animate-pulse bg-rose-500/10 text-rose-500 border border-rose-500/20 text-[10px] font-black px-2 py-1 rounded-lg">
+                  URGENT
                 </span>
               </div>
-              <div class="h-2.5 bg-slate-100 dark:bg-[#0f172a] rounded-full overflow-hidden">
+            </div>
+
+            <!-- Venue & Time Details -->
+            <div class="space-y-3">
+              <h3 class="text-xl font-black text-slate-900 dark:text-white leading-snug group-hover:text-emerald-500 transition-colors">
+                {{ game.venue }}
+              </h3>
+
+              <div class="grid grid-cols-2 gap-2 text-xs font-semibold">
+                <div class="flex items-center gap-2 text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-[#0b111a] p-2.5 rounded-xl border border-slate-100 dark:border-[#212e3e]">
+                  <span>📍</span> {{ game.subCity }}
+                </div>
+                <div class="flex items-center gap-2 text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-[#0b111a] p-2.5 rounded-xl border border-slate-100 dark:border-[#212e3e]">
+                  <span>⏰</span> {{ game.time }}
+                </div>
+                <div class="flex items-center gap-2 text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-[#0b111a] p-2.5 rounded-xl border border-slate-100 dark:border-[#212e3e]">
+                  <span>🏆</span> {{ game.level.split(' ')[0] }}
+                </div>
+                <div class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 p-2.5 rounded-xl border border-emerald-500/20 font-extrabold">
+                  <span>💵</span> {{ game.price }} ETB / spot
+                </div>
+              </div>
+            </div>
+
+            <!-- Capacity Progress Bar -->
+            <div class="pt-2 space-y-2">
+              <div class="flex justify-between items-center text-xs font-bold">
+                <span class="text-slate-400">Roster Status</span>
+                <span :class="game.joinedPlayers === game.totalPlayers ? 'text-rose-500' : 'text-emerald-500'">
+                  {{ game.joinedPlayers }} / {{ game.totalPlayers }} Players
+                  <span class="text-[10px] font-medium text-slate-400">
+                    ({{ game.joinedPlayers === game.totalPlayers ? 'Full' : (game.totalPlayers - game.joinedPlayers) + ' left' }})
+                  </span>
+                </span>
+              </div>
+              <div class="h-2 bg-slate-100 dark:bg-[#0b111a] rounded-full overflow-hidden p-0.5">
                 <div 
-                  class="h-full bg-emerald-500 transition-all duration-500"
+                  class="h-full rounded-full transition-all duration-500"
                   :style="{ width: `${(game.joinedPlayers / game.totalPlayers) * 100}%` }"
-                  :class="{ 'bg-rose-500': game.joinedPlayers === game.totalPlayers }"
+                  :class="game.joinedPlayers === game.totalPlayers ? 'bg-rose-500' : 'bg-emerald-500'"
                 ></div>
               </div>
             </div>
@@ -279,83 +332,103 @@ const toggleJoin = (game) => {
             @click="toggleJoin(game)"
             :disabled="game.joinedPlayers >= game.totalPlayers && !game.isJoined"
             :class="[
-              'w-full py-5 font-black text-sm transition-all',
+              'w-full py-4 font-black text-xs sm:text-sm tracking-wide transition-all uppercase cursor-pointer border-t border-slate-100 dark:border-[#212e3e]',
               game.isJoined 
-                ? 'bg-amber-400 text-amber-950 hover:bg-amber-300' 
+                ? 'bg-amber-500 hover:bg-amber-600 text-white' 
                 : game.joinedPlayers >= game.totalPlayers 
-                  ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed' 
-                  : 'bg-emerald-500 text-white hover:bg-emerald-600'
+                  ? 'bg-slate-100 dark:bg-[#0b111a] text-slate-400 cursor-not-allowed' 
+                  : 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-md shadow-emerald-500/10'
             ]"
           >
-            {{ game.isJoined ? 'LEAVE MATCH' : (game.joinedPlayers >= game.totalPlayers ? 'MATCH FULL' : 'JOIN MATCH') }}
+            {{ game.isJoined ? 'Leave Match' : (game.joinedPlayers >= game.totalPlayers ? 'Match Full' : 'Join Match Spot') }}
           </button>
         </div>
       </div>
 
       <!-- Empty State -->
-      <div v-else class="text-center py-20 bg-white dark:bg-[#1e293b] rounded-[3rem] border-2 border-dashed border-slate-200 dark:border-slate-800">
-        <div class="text-6xl mb-4">⚽</div>
-        <h3 class="text-2xl font-black dark:text-white">No Games Found</h3>
-        <p class="text-slate-500 mt-2 max-w-xs mx-auto">We couldn't find any games matching your criteria. Try adjusting your filters or create a new game.</p>
-        <button @click="searchQuery = ''; selectedSportCategory = 'All'" class="mt-6 text-emerald-500 font-bold hover:underline">Show All Games</button>
+      <div v-else class="text-center py-20 bg-white dark:bg-[#131c27] rounded-3xl border border-dashed border-slate-200 dark:border-[#212e3e] space-y-4">
+        <div class="text-5xl">⚽</div>
+        <div class="space-y-1">
+          <h3 class="text-xl font-bold text-slate-900 dark:text-white">No Matches Found</h3>
+          <p class="text-xs sm:text-sm text-slate-400 max-w-sm mx-auto">There are no matches fitting your filter criteria right now. Be the first to host one!</p>
+        </div>
+        <button 
+          @click="searchQuery = ''; selectedSportCategory = 'All'; selectedCity = 'All'; selectedSubCity = 'All'" 
+          class="text-xs font-bold text-emerald-500 hover:underline cursor-pointer"
+        >
+          Reset All Filters
+        </button>
       </div>
 
     </main>
 
     <!-- Create Game Modal -->
-    <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-md">
-      <div class="bg-white dark:bg-[#1e293b] w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
-        <div class="p-8 space-y-6">
+    <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+      <div class="bg-white dark:bg-[#131c27] border border-slate-200 dark:border-[#212e3e] w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+        <div class="p-6 sm:p-8 space-y-6">
+          
           <div class="flex justify-between items-center">
-            <h2 class="text-2xl font-black text-slate-900 dark:text-white">Create New Game 🏟️</h2>
-            <button @click="isModalOpen = false" class="text-slate-400 hover:text-slate-600 text-2xl">✕</button>
+            <div>
+              <h2 class="text-xl font-black text-slate-900 dark:text-white">Host a Match 🏟️</h2>
+              <p class="text-xs text-slate-400">Fill in details to open up roster spots.</p>
+            </div>
+            <button @click="isModalOpen = false" class="text-slate-400 hover:text-slate-600 text-xl font-bold cursor-pointer">✕</button>
           </div>
 
           <form @submit.prevent="handleCreateGame" class="space-y-4">
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-2 gap-3.5">
+              
               <div class="col-span-2">
-                <label class="text-xs font-bold text-slate-400 mb-1 block">Venue Name</label>
-                <input v-model="newMatch.venue" required type="text" placeholder="e.g. Sarbet Futsal Field" class="w-full p-3.5 bg-slate-50 dark:bg-[#0f172a] rounded-2xl border-none focus:ring-2 focus:ring-emerald-500 outline-none" />
+                <label class="text-[11px] font-bold uppercase text-slate-400 mb-1 block">Venue Name</label>
+                <input v-model="newMatch.venue" required type="text" placeholder="e.g. Sarbet Futsal Arena" class="w-full p-3 bg-slate-50 dark:bg-[#0b111a] rounded-xl border border-slate-200 dark:border-[#212e3e] focus:border-emerald-500 text-xs sm:text-sm outline-none" />
               </div>
+
               <div>
-                <label class="text-xs font-bold text-slate-400 mb-1 block">Sport Type</label>
-                <select v-model="newMatch.sport" class="w-full p-3.5 bg-slate-50 dark:bg-[#0f172a] rounded-2xl border-none focus:ring-2 focus:ring-emerald-500 outline-none font-medium">
-                  <option v-for="s in sportsOptions" :key="s" :value="s">{{ s }}</option>
+                <label class="text-[11px] font-bold uppercase text-slate-400 mb-1 block">Sport Type</label>
+                <select v-model="newMatch.sport" class="w-full p-3 bg-slate-50 dark:bg-[#0b111a] text-slate-800 dark:text-slate-200 rounded-xl border border-slate-200 dark:border-[#212e3e] focus:border-emerald-500 text-xs sm:text-sm font-semibold outline-none">
+                  <option v-for="s in sportsOptions" :key="s.name" :value="s.name">{{ s.name }}</option>
                 </select>
               </div>
+
               <div>
-                <label class="text-xs font-bold text-slate-400 mb-1 block">Level</label>
-                <select v-model="newMatch.level" class="w-full p-3.5 bg-slate-50 dark:bg-[#0f172a] rounded-2xl border-none focus:ring-2 focus:ring-emerald-500 outline-none font-medium">
-                  <option v-for="l in levels" :key="l" :value="l">{{ l.split(' ')[0] }}</option>
+                <label class="text-[11px] font-bold uppercase text-slate-400 mb-1 block">Sub-city</label>
+                <select v-model="newMatch.subCity" class="w-full p-3 bg-slate-50 dark:bg-[#0b111a] text-slate-800 dark:text-slate-200 rounded-xl border border-slate-200 dark:border-[#212e3e] focus:border-emerald-500 text-xs sm:text-sm font-semibold outline-none">
+                  <option v-for="sc in subCities" :key="sc" :value="sc">{{ sc }}</option>
                 </select>
               </div>
+
               <div>
-                <label class="text-xs font-bold text-slate-400 mb-1 block">Date</label>
-                <input v-model="newMatch.date" required type="date" class="w-full p-3.5 bg-slate-50 dark:bg-[#0f172a] rounded-2xl border-none focus:ring-2 focus:ring-emerald-500 outline-none" />
+                <label class="text-[11px] font-bold uppercase text-slate-400 mb-1 block">Date</label>
+                <input v-model="newMatch.date" required type="date" class="w-full p-3 bg-slate-50 dark:bg-[#0b111a] rounded-xl border border-slate-200 dark:border-[#212e3e] focus:border-emerald-500 text-xs sm:text-sm outline-none" />
               </div>
+
               <div>
-                <label class="text-xs font-bold text-slate-400 mb-1 block">Start Time</label>
-                <input v-model="newMatch.time" required type="time" class="w-full p-3.5 bg-slate-50 dark:bg-[#0f172a] rounded-2xl border-none focus:ring-2 focus:ring-emerald-500 outline-none" />
+                <label class="text-[11px] font-bold uppercase text-slate-400 mb-1 block">Start Time</label>
+                <input v-model="newMatch.time" required type="time" class="w-full p-3 bg-slate-50 dark:bg-[#0b111a] rounded-xl border border-slate-200 dark:border-[#212e3e] focus:border-emerald-500 text-xs sm:text-sm outline-none" />
               </div>
+
               <div>
-                <label class="text-xs font-bold text-slate-400 mb-1 block">Total Players</label>
-                <input v-model.number="newMatch.players" type="number" class="w-full p-3.5 bg-slate-50 dark:bg-[#0f172a] rounded-2xl border-none focus:ring-2 focus:ring-emerald-500 outline-none font-medium" />
+                <label class="text-[11px] font-bold uppercase text-slate-400 mb-1 block">Total Players</label>
+                <input v-model.number="newMatch.players" type="number" class="w-full p-3 bg-slate-50 dark:bg-[#0b111a] rounded-xl border border-slate-200 dark:border-[#212e3e] focus:border-emerald-500 text-xs sm:text-sm font-semibold outline-none" />
               </div>
+
               <div>
-                <label class="text-xs font-bold text-slate-400 mb-1 block">Price per Person (ETB)</label>
-                <input v-model.number="newMatch.price" type="number" class="w-full p-3.5 bg-slate-50 dark:bg-[#0f172a] rounded-2xl border-none focus:ring-2 focus:ring-emerald-500 outline-none font-medium" />
+                <label class="text-[11px] font-bold uppercase text-slate-400 mb-1 block">Price / Person (ETB)</label>
+                <input v-model.number="newMatch.price" type="number" class="w-full p-3 bg-slate-50 dark:bg-[#0b111a] rounded-xl border border-slate-200 dark:border-[#212e3e] focus:border-emerald-500 text-xs sm:text-sm font-semibold outline-none" />
               </div>
+
             </div>
 
             <button 
               type="submit" 
               :disabled="isLoading"
-              class="w-full py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-black rounded-2xl shadow-xl shadow-emerald-500/30 transition-all flex items-center justify-center gap-2"
+              class="w-full py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs sm:text-sm rounded-xl shadow-lg shadow-emerald-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer mt-2"
             >
-              <span v-if="isLoading" class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-              {{ isLoading ? 'Publishing...' : 'Publish Game' }}
+              <span v-if="isLoading" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+              {{ isLoading ? 'Publishing Match...' : 'Publish Match' }}
             </button>
           </form>
+
         </div>
       </div>
     </div>
@@ -366,12 +439,4 @@ const toggleJoin = (game) => {
 <style scoped>
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-
-@keyframes slideIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.grid > div {
-  animation: slideIn 0.4s ease-out forwards;
-}
 </style>

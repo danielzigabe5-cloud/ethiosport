@@ -3,12 +3,12 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
-        <h1 class="text-2xl font-black text-white">Partners & Venues</h1>
-        <p class="text-xs text-slate-400 mt-1">Manage registered venues and status approvals</p>
+        <h1 class="text-2xl font-black text-slate-900">Partners & Venues</h1>
+        <p class="text-xs text-slate-500 mt-1">Manage registered venues and status approvals</p>
       </div>
       <NuxtLink 
         to="/venues/create" 
-        class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-xs font-bold transition text-center"
+        class="bg-[#10B981] hover:bg-emerald-600 active:scale-95 text-white px-4 py-2 rounded-xl text-xs font-bold transition text-center shadow-xs"
       >
         + Add New Venue
       </NuxtLink>
@@ -20,12 +20,12 @@
         v-model="searchQuery"
         type="text" 
         placeholder="Search venue or owner..." 
-        class="bg-[#0b1320] border border-slate-800 text-slate-200 text-xs rounded-xl px-4 py-2.5 focus:outline-none focus:border-emerald-500 w-full sm:w-64"
+        class="bg-white border border-slate-200 text-slate-800 text-xs rounded-xl px-4 py-2.5 focus:outline-none focus:border-emerald-500 w-full sm:w-64 shadow-xs"
       />
       
       <select 
         v-model="selectedStatus" 
-        class="bg-[#0b1320] border border-slate-800 text-slate-300 text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:border-emerald-500"
+        class="bg-white border border-slate-200 text-slate-700 text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:border-emerald-500 shadow-xs"
       >
         <option value="all">All Status</option>
         <option value="active">Approved</option>
@@ -34,9 +34,9 @@
     </div>
 
     <!-- Data Table -->
-    <div class="bg-[#0b1320] border border-slate-800 rounded-2xl overflow-x-auto">
-      <table class="w-full text-left text-xs text-slate-300">
-        <thead class="bg-[#070c14] border-b border-slate-800 text-slate-400 uppercase font-bold">
+    <div class="bg-white border border-slate-200 rounded-2xl overflow-x-auto shadow-xs">
+      <table class="w-full text-left text-xs text-slate-600">
+        <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase font-bold">
           <tr>
             <th class="p-4">Venue Name</th>
             <th class="p-4">Owner</th>
@@ -45,17 +45,17 @@
             <th class="p-4 text-right">Actions</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-slate-800/60">
-          <tr v-for="p in filteredPartners" :key="p.id" class="hover:bg-slate-800/30 transition">
-            <td class="p-4 font-bold text-white">{{ p.name }}</td>
+        <tbody class="divide-y divide-slate-100">
+          <tr v-for="p in filteredPartners" :key="p.id" class="hover:bg-slate-50 transition">
+            <td class="p-4 font-bold text-slate-900">{{ p.name }}</td>
             <td class="p-4">{{ p.owner }}</td>
             <td class="p-4">{{ p.location }}</td>
             <td class="p-4">
               <span 
                 class="px-2.5 py-1 rounded-full text-[10px] font-bold border inline-block"
                 :class="p.active 
-                  ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' 
-                  : 'bg-amber-500/10 text-amber-400 border-amber-500/30'"
+                  ? 'bg-emerald-50 text-emerald-600 border-emerald-200' 
+                  : 'bg-amber-50 text-amber-600 border-amber-200'"
               >
                 {{ p.active ? 'Approved' : 'Pending Review' }}
               </span>
@@ -64,8 +64,8 @@
               <!-- Approve / Disable Button -->
               <button 
                 @click="toggleStatus(p.id)" 
-                class="font-semibold transition"
-                :class="p.active ? 'text-amber-400 hover:text-amber-300' : 'text-emerald-400 hover:text-emerald-300'"
+                class="font-semibold transition cursor-pointer"
+                :class="p.active ? 'text-amber-600 hover:text-amber-700' : 'text-emerald-600 hover:text-emerald-700'"
               >
                 {{ p.active ? 'Disable' : 'Approve' }}
               </button>
@@ -73,7 +73,7 @@
               <!-- Edit Button -->
               <NuxtLink 
                 :to="`/venues/edit/${p.id}`" 
-                class="text-blue-400 hover:text-blue-300 font-semibold transition"
+                class="text-blue-600 hover:text-blue-700 font-semibold transition"
               >
                 Edit
               </NuxtLink>
@@ -81,7 +81,7 @@
               <!-- Delete Button -->
               <button 
                 @click="deletePartner(p.id)" 
-                class="text-rose-500 hover:text-rose-400 font-semibold transition"
+                class="text-rose-600 hover:text-rose-700 font-semibold transition cursor-pointer"
               >
                 Delete
               </button>
@@ -89,7 +89,7 @@
           </tr>
 
           <tr v-if="filteredPartners.length === 0">
-            <td colspan="5" class="p-8 text-center text-slate-500">
+            <td colspan="5" class="p-8 text-center text-slate-400">
               No partners or venues found.
             </td>
           </tr>

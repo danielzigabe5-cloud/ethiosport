@@ -35,7 +35,7 @@
           
           <!-- ADD VENUE BUTTON -->
           <NuxtLink 
-            :to="authStore?.token ? '/venues/create' : '/auth?redirect=/venues/create'" 
+            :to="isLoggedIn ? '/venues/create' : '/auth?redirect=/venues/create'" 
             class="hidden md:flex items-center gap-2 bg-[#94FF2B] hover:bg-[#82e026] text-black px-4 xl:px-6 py-2.5 rounded-full font-black text-xs xl:text-[13px] transition-all shadow-lg active:scale-95"
           >
             <Icon name="lucide:plus-circle" class="w-4 h-4" />
@@ -45,14 +45,14 @@
           <!-- AUTH SECTION -->
           <div class="flex items-center">
             <!-- LOGGED IN -->
-            <div v-if="authStore?.token" class="flex items-center gap-2 xl:gap-3 pl-2 sm:pl-4 border-l dark:border-gray-700">
+            <div v-if="isLoggedIn" class="flex items-center gap-2 xl:gap-3 pl-2 sm:pl-4 border-l dark:border-gray-700">
               <NuxtLink :to="dashboardLink" class="flex items-center gap-3 group cursor-pointer">
                 <div class="hidden sm:block text-right">
                   <p class="text-xs font-black text-gray-900 dark:text-white leading-none truncate max-w-[80px] group-hover:text-green-600 transition-colors">
-                    {{ authStore.user?.name || 'User' }}
+                    {{ userProfile?.name || 'User' }}
                   </p>
                   <p class="text-[9px] font-bold text-green-600 uppercase mt-0.5 tracking-wider">
-                    {{ authStore.user?.role || 'User' }}
+                    {{ userProfile?.role || 'User' }}
                   </p>
                 </div>
                 <div class="w-8 h-8 xl:w-9 xl:h-9 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center border-2 border-green-500/30 overflow-hidden group-hover:border-green-500 transition-all">
@@ -62,7 +62,7 @@
 
               <button 
                 @click="handleLogout" 
-                class="text-red-500 hover:bg-red-50 p-1.5 rounded-lg transition-colors"
+                class="text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 p-1.5 rounded-lg transition-colors"
                 title="Logout"
               >
                 <Icon name="lucide:log-out" class="w-4 h-4" />
@@ -99,7 +99,7 @@
       class="lg:hidden fixed top-16 sm:top-20 left-0 w-full bg-white dark:bg-gray-900 border-t dark:border-gray-800 shadow-2xl p-4 sm:p-6 z-[90] flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-70px)]"
     >
       <NuxtLink 
-        :to="authStore?.token ? '/venues/create' : '/auth?redirect=/venues/create'" 
+        :to="isLoggedIn ? '/venues/create' : '/auth?redirect=/venues/create'" 
         @click="isOpen = false" 
         class="flex items-center justify-center gap-2 bg-[#94FF2B] text-black py-3 rounded-xl font-black text-sm"
       >
@@ -107,17 +107,17 @@
         Add Venue
       </NuxtLink>
       
-      <div v-if="authStore?.token" class="grid grid-cols-2 gap-2 mb-2">
+      <div v-if="isLoggedIn" class="grid grid-cols-2 gap-2 mb-2">
         <NuxtLink 
           :to="dashboardLink" 
           @click="isOpen = false" 
-          class="flex items-center justify-center py-2.5 bg-blue-50 text-blue-600 rounded-xl font-bold text-xs"
+          class="flex items-center justify-center py-2.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl font-bold text-xs"
         >
           Dashboard
         </NuxtLink>
         <button 
           @click="handleLogout(); isOpen = false" 
-          class="py-2.5 bg-red-50 text-red-600 rounded-xl font-bold text-xs"
+          class="py-2.5 bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 rounded-xl font-bold text-xs"
         >
           Sign Out
         </button>
@@ -140,26 +140,31 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import { useAuthStore } from '@/stores/auth'
-import { useRoute, useRouter } from 'vue-router'
+import { useAuthStore } from '~/stores/auth'
 
-const authStore = useAuthStore()
 const route = useRoute()
 const router = useRouter()
-const isDark = ref(false)
+
+// Initialize store safely inside setup
+const authStore = useAuthStore()
+
 const isOpen = ref(false)
+
+// Safe state getters
+const isLoggedIn = computed(() => !!authStore?.token)
+const userProfile = computed(() => authStore?.user)
 
 // Dashboard route resolver
 const dashboardLink = computed(() => {
-  if (!authStore?.token) return '/auth'
-  const role = authStore.user?.role?.toLowerCase()
+  if (!isLoggedIn.value) return '/auth'
+  const role = userProfile.value?.role?.toLowerCase()
   
   if (role === 'admin') return '/admin'
   if (role === 'partner') return '/partner'
   return '/'
 })
 
-// Static English navigation items
+// Navigation items configuration
 const staticNavItems = [
   { path: '/', label: 'Home', icon: 'lucide:home' },
   { path: '/about', label: 'About Us', icon: 'lucide:info' },
@@ -167,12 +172,11 @@ const staticNavItems = [
   { path: '/venues', label: 'Venues', icon: 'lucide:stadium' }
 ]
 
-// Computed navigation list with dynamic dashboard link
 const navItems = computed(() => {
   const items = [...staticNavItems]
   
-  if (authStore?.token) {
-    const role = authStore.user?.role?.toLowerCase()
+  if (isLoggedIn.value) {
+    const role = userProfile.value?.role?.toLowerCase()
     
     if (role === 'admin' || role === 'partner') {
       const dashboardLabel = role === 'admin' ? 'Admin Dashboard' : 'Partner Dashboard'
@@ -197,12 +201,16 @@ const navItems = computed(() => {
 })
 
 const handleLogout = () => {
-  authStore.logout()
+  if (authStore?.logout) {
+    authStore.logout()
+  }
   router.push('/')
 }
 
 onMounted(() => {
-  authStore.init()
+  if (authStore?.init) {
+    authStore.init()
+  }
 })
 
 watch(() => route?.path, () => { 

@@ -17,13 +17,9 @@
           Refresh
         </button>
 
-        <button 
-          @click="isAddModalOpen = true"
-          class="flex items-center gap-2 text-xs font-bold text-black bg-emerald-500 hover:bg-emerald-400 px-4 py-2.5 rounded-xl transition active:scale-95 shadow-lg shadow-emerald-500/10 cursor-pointer"
-        >
-          <Icon name="lucide:plus" class="w-4 h-4" />
-          Add New Venue
-        </button>
+        <NuxtLink to="/venues/create" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition">
+              + አዲስ ሜዳ ጨምር
+            </NuxtLink>
       </div>
     </div>
 

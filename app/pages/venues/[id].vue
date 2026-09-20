@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 // Import images
 import img1 from '~/assets/images/venu1.jpg'
@@ -19,10 +19,26 @@ import img13 from '~/assets/images/venuess13.jpg'
 import img14 from '~/assets/images/venuess14.jpg'
 
 const route = useRoute()
+const router = useRouter()
 const venueId = Number(route.params.id)
 
-// All Venues Mock Data
-const allVenues = [
+// State for Booking Form
+const bookingDate = ref('')
+const bookingTime = ref('')
+const isBooked = ref(false)
+
+// State for Edit Modal & Form
+const isEditModalOpen = ref(false)
+const editForm = ref({
+  name: '',
+  sportType: '',
+  price: '',
+  operatingHours: '',
+  description: ''
+})
+
+// All Venues Reactive Mock Data
+const allVenues = ref([
   { 
     id: 1, 
     name: 'Yidnekachew Tessema Stadium', 
@@ -89,23 +105,62 @@ const allVenues = [
   { id: 12, name: 'Ethiopia International Stadium', city: 'Addis Ababa', subCity: 'Kirkos', sportType: 'Athletics', price: '3000', image: img12, rating: 4.9, reviewsCount: 50, description: 'Top tier international arena.', amenities: ['Full Amenities', 'VIP Box', 'Press Room'], operatingHours: '05:00 AM - 11:00 PM' },
   { id: 13, name: 'Arba Minch Sports Complex', city: 'Hawassa', subCity: 'Arba Minch', sportType: 'Football', price: '2100', image: img13, rating: 4.6, reviewsCount: 19, description: 'Complex for sports and tournaments.', amenities: ['Parking Area', 'Cafeteria'], operatingHours: '06:00 AM - 09:00 PM' },
   { id: 14, name: 'Bole Resort Sports Field', city: 'Addis Ababa', subCity: 'Bole', sportType: 'Basketball', price: '2500', image: img14, rating: 4.8, reviewsCount: 35, description: 'Resort standard sports ground.', amenities: ['Swimming Pool Access', 'Restaurant', 'Night Lights'], operatingHours: '07:00 AM - 11:00 PM' }
-]
+])
 
-// Get current venue
+// Get current venue computed
 const venue = computed(() => {
-  return allVenues.find(v => v.id === venueId) || allVenues[0]
+  return allVenues.value.find(v => v.id === venueId) || allVenues.value[0]
 })
 
-// Booking Form State
-const bookingDate = ref('')
-const bookingTime = ref('')
-const isBooked = ref(false)
-
+// Action 1: Handle Booking -> Redirect to App Download
 const handleBooking = () => {
-  if (bookingDate.value && bookingTime.value) {
-    isBooked.value = true
-  } else {
-    alert('እባክዎን ቀኑን እና ሰዓቱን ይምረጡ!')
+  isBooked.value = true
+  
+  // ከ 1.5 ሰከንድ በኋላ ወደ Download App ገጽ ወይም ሊንክ ይወስደዋል
+  setTimeout(() => {
+    // እዚህ ጋር የእርስዎን App Download Page Link ወይም Route ያስገቡ
+    window.location.href = 'https://play.google.com/store' // ወይም router.push('/download-app')
+  }, 1500)
+}
+
+// Action 2: Open Edit Modal
+const openEditModal = () => {
+  if (venue.value) {
+    editForm.value = {
+      name: venue.value.name,
+      sportType: venue.value.sportType,
+      price: venue.value.price,
+      operatingHours: venue.value.operatingHours,
+      description: venue.value.description
+    }
+    isEditModalOpen.value = true
+  }
+}
+
+// Save Edited Venue Data
+const handleSaveEdit = () => {
+  const targetVenue = allVenues.value.find(v => v.id === venue.value.id)
+  if (targetVenue) {
+    targetVenue.name = editForm.value.name
+    targetVenue.sportType = editForm.value.sportType
+    targetVenue.price = editForm.value.price
+    targetVenue.operatingHours = editForm.value.operatingHours
+    targetVenue.description = editForm.value.description
+  }
+  isEditModalOpen.value = false
+  alert('የስታዲየሙ መረጃ በተሳካ ሁኔታ ተሻሽሏል!')
+}
+
+// Action 3: Handle Delete Venue
+const handleDeleteVenue = () => {
+  const confirmDelete = confirm(`እርግጠኛ ነዎት "${venue.value.name}" ማጥፋት ይፈልጋሉ?`)
+  if (confirmDelete) {
+    const index = allVenues.value.findIndex(v => v.id === venue.value.id)
+    if (index !== -1) {
+      allVenues.value.splice(index, 1)
+      alert('ስታዲየሙ ተሰርዟል!')
+      router.push('/') // ወደ ዋናው ገጽ ይመልሰዋል
+    }
   }
 }
 </script>
@@ -114,13 +169,31 @@ const handleBooking = () => {
   <div class="min-h-screen w-full bg-slate-50 dark:bg-gray-950 py-8 px-4 sm:px-8 lg:px-12">
     <div class="max-w-6xl mx-auto">
       
-      <!-- Back Link -->
-      <NuxtLink to="/" class="inline-flex items-center text-green-700 dark:text-green-400 font-semibold mb-6 hover:underline transition-all">
-        <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-        </svg>
-        Back to Venues
-      </NuxtLink>
+      <!-- Top Bar: Back Link & Admin Action Buttons -->
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+        <NuxtLink to="/" class="inline-flex items-center text-green-700 dark:text-green-400 font-semibold hover:underline transition-all">
+          <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+          Back to Venues
+        </NuxtLink>
+
+        <!-- Edit & Delete Action Buttons -->
+        <div class="flex items-center gap-3">
+          <button 
+            @click="openEditModal" 
+            class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-sm font-semibold transition-all shadow-md flex items-center gap-1.5"
+          >
+            ✏️ Edit Venue
+          </button>
+          <button 
+            @click="handleDeleteVenue" 
+            class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-sm font-semibold transition-all shadow-md flex items-center gap-1.5"
+          >
+            🗑️ Delete Venue
+          </button>
+        </div>
+      </div>
 
       <!-- Main Layout Grid -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -207,7 +280,7 @@ const handleBooking = () => {
 
             <!-- Success Alert -->
             <div v-if="isBooked" class="mb-6 p-4 bg-green-100 border border-green-300 text-green-800 rounded-2xl text-xs sm:text-sm">
-              🎉 <strong>Booking Request Sent!</strong> We will confirm your schedule shortly.
+              🚀 <strong>Redirecting to App...</strong> Booking continues on our mobile app!
             </div>
 
             <form @submit.prevent="handleBooking" class="space-y-4">
@@ -240,9 +313,9 @@ const handleBooking = () => {
               <div class="pt-2">
                 <button 
                   type="submit" 
-                  class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg hover:shadow-green-600/30 text-sm"
+                  class="w-full bg-green-600 hover:bg-green-700 text-white uppercase tracking-wider font-extrabold py-4 rounded-xl transition-all shadow-lg hover:shadow-green-600/30 text-sm flex items-center justify-center gap-2"
                 >
-                  Confirm Booking
+                  <span>📱</span> Confirm & Download App
                 </button>
               </div>
             </form>
@@ -256,5 +329,50 @@ const handleBooking = () => {
       </div>
 
     </div>
+
+    <!-- Edit Venue Modal -->
+    <div v-if="isEditModalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+      <div class="bg-white dark:bg-gray-900 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-gray-200 dark:border-gray-800">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Edit Venue Details</h2>
+        
+        <form @submit.prevent="handleSaveEdit" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Venue Name</label>
+            <input v-model="editForm.name" type="text" required class="w-full bg-gray-50 dark:bg-gray-800 border rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white" />
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Sport Type</label>
+              <input v-model="editForm.sportType" type="text" required class="w-full bg-gray-50 dark:bg-gray-800 border rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Price (Birr/Hour)</label>
+              <input v-model="editForm.price" type="number" required class="w-full bg-gray-50 dark:bg-gray-800 border rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Operating Hours</label>
+            <input v-model="editForm.operatingHours" type="text" required class="w-full bg-gray-50 dark:bg-gray-800 border rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Description</label>
+            <textarea v-model="editForm.description" rows="3" required class="w-full bg-gray-50 dark:bg-gray-800 border rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white"></textarea>
+          </div>
+
+          <div class="flex justify-end gap-3 pt-3">
+            <button type="button" @click="isEditModalOpen = false" class="px-5 py-2.5 bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl text-sm font-semibold">
+              Cancel
+            </button>
+            <button type="submit" class="px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-semibold">
+              Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
   </div>
 </template>

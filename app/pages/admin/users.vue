@@ -3,12 +3,12 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
-        <h1 class="text-2xl font-black text-white">User Management</h1>
-        <p class="text-xs text-slate-400 mt-1">Registered players and platform clients</p>
+        <h1 class="text-2xl font-black text-slate-900">User Management</h1>
+        <p class="text-xs text-slate-500 mt-1">Registered players and platform clients</p>
       </div>
       <button 
         @click="openAddModal" 
-        class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-xs font-bold transition text-center"
+        class="bg-[#10B981] hover:bg-emerald-600 active:scale-95 text-white px-4 py-2 rounded-xl text-xs font-bold transition text-center shadow-xs cursor-pointer"
       >
         + Add New User
       </button>
@@ -20,10 +20,10 @@
         v-model="searchQuery"
         type="text" 
         placeholder="Search by name or phone..." 
-        class="bg-[#0b1320] border border-slate-800 text-slate-200 text-xs rounded-xl px-4 py-2.5 focus:outline-none focus:border-emerald-500 w-full sm:w-72"
+        class="bg-white border border-slate-200 text-slate-800 text-xs rounded-xl px-4 py-2.5 focus:outline-none focus:border-emerald-500 w-full sm:w-72 shadow-xs"
       />
-      <div class="text-xs text-slate-400">
-        Total Users: <span class="font-bold text-white">{{ users.length }}</span>
+      <div class="text-xs text-slate-500">
+        Total Users: <span class="font-bold text-slate-900">{{ users.length }}</span>
       </div>
     </div>
 
@@ -32,34 +32,34 @@
       <div 
         v-for="u in filteredUsers" 
         :key="u.id" 
-        class="bg-[#0b1320] border border-slate-800 p-4 rounded-2xl flex flex-col justify-between space-y-4 hover:border-slate-700 transition"
+        class="bg-white border border-slate-200 p-4 rounded-2xl flex flex-col justify-between space-y-4 hover:border-slate-300 shadow-xs transition"
       >
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center font-bold text-emerald-400 text-sm">
+            <div class="w-10 h-10 bg-emerald-50 border border-emerald-100 rounded-xl flex items-center justify-center font-bold text-emerald-600 text-sm">
               {{ u.name.charAt(0) }}
             </div>
             <div>
-              <h3 class="text-xs font-bold text-white">{{ u.name }}</h3>
-              <p class="text-[11px] text-slate-400">{{ u.phone }}</p>
+              <h3 class="text-xs font-bold text-slate-900">{{ u.name }}</h3>
+              <p class="text-[11px] text-slate-500">{{ u.phone }}</p>
             </div>
           </div>
-          <span class="text-[10px] bg-slate-800 text-slate-300 px-2.5 py-1 rounded-lg font-bold">
+          <span class="text-[10px] bg-slate-100 text-slate-700 border border-slate-200 px-2.5 py-1 rounded-lg font-bold">
             {{ u.bookings }} Bookings
           </span>
         </div>
 
         <!-- Action Buttons -->
-        <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-800/60 text-xs">
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 text-xs">
           <button 
             @click="openEditModal(u)" 
-            class="text-blue-400 hover:text-blue-300 font-semibold px-2 py-1 transition"
+            class="text-blue-600 hover:text-blue-700 font-semibold px-2 py-1 transition cursor-pointer"
           >
             Edit
           </button>
           <button 
             @click="deleteUser(u.id)" 
-            class="text-rose-500 hover:text-rose-400 font-semibold px-2 py-1 transition"
+            class="text-rose-600 hover:text-rose-700 font-semibold px-2 py-1 transition cursor-pointer"
           >
             Delete
           </button>
@@ -67,63 +67,63 @@
       </div>
 
       <!-- Empty State -->
-      <div v-if="filteredUsers.length === 0" class="col-span-full bg-[#0b1320] border border-slate-800 p-8 rounded-2xl text-center text-xs text-slate-500">
+      <div v-if="filteredUsers.length === 0" class="col-span-full bg-white border border-slate-200 p-8 rounded-2xl text-center text-xs text-slate-400 shadow-xs">
         No users found matching your search.
       </div>
     </div>
 
     <!-- Create / Edit Modal -->
-    <div v-if="showModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div class="bg-[#0b1320] border border-slate-800 w-full max-w-md rounded-2xl p-6 space-y-4">
-        <h2 class="text-lg font-bold text-white">
+    <div v-if="showModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+      <div class="bg-white border border-slate-200 w-full max-w-md rounded-2xl p-6 space-y-4 shadow-xl">
+        <h2 class="text-lg font-bold text-slate-900">
           {{ isEditing ? 'Edit User' : 'Add New User' }}
         </h2>
 
         <form @submit.prevent="saveUser" class="space-y-4">
           <div>
-            <label class="block text-xs font-bold text-slate-400 mb-1">Full Name</label>
+            <label class="block text-xs font-bold text-slate-600 mb-1">Full Name</label>
             <input 
               v-model="form.name" 
               type="text" 
               required 
               placeholder="e.g. Abebe Bekele"
-              class="w-full bg-[#070c14] border border-slate-800 text-white text-xs rounded-xl p-3 focus:outline-none focus:border-emerald-500"
+              class="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded-xl p-3 focus:outline-none focus:border-emerald-500 focus:bg-white transition"
             />
           </div>
 
           <div>
-            <label class="block text-xs font-bold text-slate-400 mb-1">Phone Number</label>
+            <label class="block text-xs font-bold text-slate-600 mb-1">Phone Number</label>
             <input 
               v-model="form.phone" 
               type="text" 
               required 
               placeholder="e.g. +251 911 22 33 44"
-              class="w-full bg-[#070c14] border border-slate-800 text-white text-xs rounded-xl p-3 focus:outline-none focus:border-emerald-500"
+              class="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded-xl p-3 focus:outline-none focus:border-emerald-500 focus:bg-white transition"
             />
           </div>
 
           <div>
-            <label class="block text-xs font-bold text-slate-400 mb-1">Bookings Count</label>
+            <label class="block text-xs font-bold text-slate-600 mb-1">Bookings Count</label>
             <input 
               v-model.number="form.bookings" 
               type="number" 
               min="0"
               required 
-              class="w-full bg-[#070c14] border border-slate-800 text-white text-xs rounded-xl p-3 focus:outline-none focus:border-emerald-500"
+              class="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded-xl p-3 focus:outline-none focus:border-emerald-500 focus:bg-white transition"
             />
           </div>
 
           <div class="flex gap-3 pt-2">
             <button 
               type="submit" 
-              class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-3 rounded-xl transition"
+              class="flex-1 bg-[#10B981] hover:bg-emerald-600 active:scale-95 text-white text-xs font-bold py-3 rounded-xl transition shadow-xs cursor-pointer"
             >
               {{ isEditing ? 'Update User' : 'Save User' }}
             </button>
             <button 
               type="button" 
               @click="closeModal" 
-              class="px-5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold py-3 rounded-xl transition"
+              class="px-5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-3 rounded-xl transition cursor-pointer"
             >
               Cancel
             </button>

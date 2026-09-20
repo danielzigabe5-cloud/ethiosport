@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue' // 'computed' መጨመሩን እርግጠኛ ሁን
+import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
 const router = useRouter()
 
-
-const isDark = ref(true)
+const isDark = ref(false)
 const isLoading = ref(true)
+const currentLang = ref('አማ')
 
 // 1. Reactive Variables
 const dashboardStats = ref({
@@ -22,7 +22,7 @@ const recentBookings = ref([])
 const fetchDashboardData = async () => {
   isLoading.value = true
   try {
-    const token = localStorage.getItem('auth_token') // ወይም በኩኪ የሚጠቀሙ ከሆነ ይቀይሩት
+    const token = localStorage.getItem('auth_token')
     const response = await fetch('http://localhost:8000/api/owner/overview', {
       method: 'GET',
       headers: {
@@ -41,7 +41,6 @@ const fetchDashboardData = async () => {
     recentBookings.value = data.recentBookings
   } catch (error) {
     console.error("ዳታ መጫን አልተቻለም:", error)
-    // ስህተት ካለ ለተጠቃሚው ማሳያ እዚህ መጨመር ይቻላል
   } finally {
     isLoading.value = false
   }
@@ -51,7 +50,7 @@ onMounted(() => {
   fetchDashboardData()
 })
 
-// 3. የካርዶቹ ዝርዝር (Computed በመሆኑ ዳታው ሲቀየር አብሮ ይለወጣል)
+// 3. የካርዶቹ ዝርዝር (Computed)
 const statsCards = computed(() => [
   {
     title: 'ጠቅላላ ገቢ (Earnings)',
@@ -101,19 +100,19 @@ const handleLogout = () => {
 </script>
 
 <template>
-  <div class="min-h-screen w-full bg-[#070c14] text-white font-sans flex flex-col">
+  <div class="min-h-screen w-full bg-slate-50 text-slate-800 font-sans flex flex-col">
     
     <!-- TOP HEADER -->
-    <header class="h-16 bg-[#0a111e] border-b border-[#1a2432] px-6 flex items-center justify-between sticky top-0 z-50">
+    <header class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between sticky top-0 z-50 shadow-xs">
       <NuxtLink to="/" class="flex items-center gap-1 text-xl font-black tracking-tight">
-        <span class="text-white">ETHIO</span><span class="text-emerald-500">SPORT</span>
+        <span class="text-slate-900">ETHIO</span><span class="text-emerald-600">SPORT</span>
       </NuxtLink>
 
       <div class="flex items-center gap-3">
-        <button @click="toggleLanguage" class="px-3 py-1.5 rounded-xl border border-[#1a2432] text-xs font-bold text-slate-300">
+        <button @click="toggleLanguage" class="px-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-700 transition cursor-pointer">
           {{ currentLang }}
         </button>
-        <button @click="handleLogout" class="px-3 py-1.5 rounded-xl bg-rose-500/10 text-rose-400 text-xs font-bold">
+        <button @click="handleLogout" class="px-3 py-1.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-600 hover:bg-rose-100 text-xs font-bold transition cursor-pointer">
           Logout
         </button>
       </div>
@@ -121,15 +120,15 @@ const handleLogout = () => {
 
     <div class="flex-1 flex w-full relative">
       <!-- SIDEBAR -->
-      <aside class="w-64 bg-[#0d4026] border-r border-[#135936] p-4 hidden md:flex flex-col">
-        <div class="px-2 py-1 text-[11px] font-bold tracking-wider text-emerald-300 uppercase mb-4">
+      <aside class="w-64 bg-white border-r border-slate-200 p-4 hidden md:flex flex-col">
+        <div class="px-2 py-1 text-[11px] font-bold tracking-wider text-slate-400 uppercase mb-4">
           የፓርትነር መቆጣጠሪያ
         </div>
         <nav class="space-y-1">
           <NuxtLink
             v-for="item in partnerSidebarLinks" :key="item.path" :to="item.path"
-            class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold"
-            :class="[route.path === item.path ? 'bg-[#155a36] text-white' : 'text-emerald-100/70 hover:bg-[#10482c]']"
+            class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition"
+            :class="[route.path === item.path ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900']"
           >
             <svg class="w-4 h-4 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" :d="item.icon" />
@@ -144,74 +143,74 @@ const handleLogout = () => {
         
         <!-- LOADING STATE -->
         <div v-if="isLoading" class="flex items-center justify-center h-64">
-           <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-emerald-500"></div>
+           <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-emerald-600 border-r-2"></div>
         </div>
 
         <template v-else>
           <!-- PAGE HEADER -->
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#1a2432] pb-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
             <div>
-              <h1 class="text-xl font-extrabold text-white tracking-tight">የፓርትነር ዳሽቦርድ (Overview)</h1>
-              <p class="text-xs text-slate-400 mt-1">እንኳን በደህና መጡ! የሜዳዎችዎን እንቅስቃሴና ገቢ እዚህ መከታተል ይችላሉ።</p>
+              <h1 class="text-xl font-black text-slate-900 tracking-tight">የፓርትነር ዳሽቦርድ (Overview)</h1>
+              <p class="text-xs text-slate-500 mt-1">እንኳን በደህና መጡ! የሜዳዎችዎን እንቅስቃሴና ገቢ እዚህ መከታተል ይችላሉ።</p>
             </div>
-            <NuxtLink to="/venues/create" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition">
+            <NuxtLink to="/venues/create" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-xs text-center">
               + አዲስ ሜዳ ጨምር
             </NuxtLink>
           </div>
 
           <!-- OVERVIEW STATS CARDS -->
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div v-for="(card, index) in statsCards" :key="index" class="bg-[#0d1522] border border-[#1a2432] rounded-2xl p-4 flex flex-col justify-between">
+            <div v-for="(card, index) in statsCards" :key="index" class="bg-white border border-slate-200 rounded-2xl p-4 flex flex-col justify-between shadow-xs hover:border-slate-300 transition duration-200">
               <div class="flex items-center justify-between">
-                <span class="text-xs font-semibold text-slate-400">{{ card.title }}</span>
-                <div class="p-2 rounded-xl bg-[#131f30] text-emerald-400">
+                <span class="text-xs font-semibold text-slate-500">{{ card.title }}</span>
+                <div class="p-2 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100">
                   <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" :d="card.icon" />
                   </svg>
                 </div>
               </div>
               <div class="mt-4">
-                <div class="text-2xl font-black text-white tracking-tight">{{ card.value }}</div>
-                <div class="text-[11px] font-bold mt-1" :class="card.isPositive ? 'text-emerald-400' : 'text-amber-400'">
-                  {{ card.change }} <span class="text-slate-500 font-normal">ከባለፈው ወር</span>
+                <div class="text-2xl font-black text-slate-900 tracking-tight">{{ card.value }}</div>
+                <div class="text-[11px] font-bold mt-1" :class="card.isPositive ? 'text-emerald-600' : 'text-amber-600'">
+                  {{ card.change }} <span class="text-slate-400 font-normal">ከባለፈው ወር</span>
                 </div>
               </div>
             </div>
           </div>
 
           <!-- RECENT BOOKINGS TABLE -->
-          <div class="bg-[#0d1522] border border-[#1a2432] rounded-2xl p-5">
-            <h2 class="text-sm font-bold text-white mb-4">የቅርብ ጊዜ ቦታ ማስያዣዎች</h2>
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
+            <h2 class="text-sm font-bold text-slate-900 mb-4">የቅርብ ጊዜ ቦታ ማስያዣዎች</h2>
             <div class="overflow-x-auto">
               <table class="w-full text-left border-collapse">
                 <thead>
-                  <tr class="border-b border-[#1a2432] text-[11px] text-slate-400 uppercase font-bold">
-                    <th class="py-3 px-3">የቦታ ID</th>
+                  <tr class="border-b border-slate-200 text-[11px] text-slate-400 uppercase font-bold bg-slate-50/50">
+                    <th class="py-3 px-3 rounded-l-lg">የቦታ ID</th>
                     <th class="py-3 px-3">ተጫዋች</th>
                     <th class="py-3 px-3">ሜዳ</th>
                     <th class="py-3 px-3">ቀንና ሰዓት</th>
                     <th class="py-3 px-3">ዋጋ</th>
-                    <th class="py-3 px-3 text-right">ሁኔታ</th>
+                    <th class="py-3 px-3 text-right rounded-r-lg">ሁኔታ</th>
                   </tr>
                 </thead>
-                <tbody class="divide-y divide-[#16202e] text-xs">
-                  <tr v-for="booking in recentBookings" :key="booking.id" class="hover:bg-[#111a28] transition">
-                    <td class="py-3 px-3 font-mono font-bold text-slate-300">{{ booking.id }}</td>
-                    <td class="py-3 px-3 font-semibold text-white">{{ booking.customer }}</td>
-                    <td class="py-3 px-3 text-slate-400">{{ booking.venue }}</td>
-                    <td class="py-3 px-3 text-slate-300">
+                <tbody class="divide-y divide-slate-100 text-xs">
+                  <tr v-for="booking in recentBookings" :key="booking.id" class="hover:bg-slate-50 transition">
+                    <td class="py-3.5 px-3 font-mono font-bold text-slate-700">{{ booking.id }}</td>
+                    <td class="py-3.5 px-3 font-semibold text-slate-900">{{ booking.customer }}</td>
+                    <td class="py-3.5 px-3 text-slate-600">{{ booking.venue }}</td>
+                    <td class="py-3.5 px-3 text-slate-700">
                       <div>{{ booking.date }}</div>
-                      <div class="text-[10px] text-slate-500">{{ booking.time }}</div>
+                      <div class="text-[10px] text-slate-400">{{ booking.time }}</div>
                     </td>
-                    <td class="py-3 px-3 font-bold text-emerald-400">{{ booking.amount }}</td>
-                    <td class="py-3 px-3 text-right">
-                      <span class="px-2 py-1 rounded-md text-[10px] font-bold border" :class="booking.statusColor">
+                    <td class="py-3.5 px-3 font-bold text-emerald-600">{{ booking.amount }}</td>
+                    <td class="py-3.5 px-3 text-right">
+                      <span class="px-2.5 py-1 rounded-md text-[10px] font-bold border" :class="booking.statusColor">
                         {{ booking.status }}
                       </span>
                     </td>
                   </tr>
                   <tr v-if="recentBookings.length === 0">
-                    <td colspan="6" class="py-10 text-center text-slate-500">ምንም አይነት የቅርብ ጊዜ ቦታ ማስያዣ የለም።</td>
+                    <td colspan="6" class="py-10 text-center text-slate-400">ምንም አይነት የቅርብ ጊዜ ቦታ ማስያዣ የለም።</td>
                   </tr>
                 </tbody>
               </table>
