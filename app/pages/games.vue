@@ -91,7 +91,14 @@ const games = ref([
 const filteredGames = computed(() => {
   return games.value.filter(game => {
     const matchesTab = selectedSportCategory.value === 'All' || game.sport === selectedSportCategory.value
-    const matchesSearch = !searchQuery.value || game.venue.toLowerCase().includes(searchQuery.value.toLowerCase()) || game.hostName.toLowerCase().includes(searchQuery.value.toLowerCase())
+    
+    // Improved Search: Checks Venue, Host Name, and SubCity
+    const q = searchQuery.value.toLowerCase().trim()
+    const matchesSearch = !q || 
+      game.venue.toLowerCase().includes(q) || 
+      game.hostName.toLowerCase().includes(q) ||
+      game.subCity.toLowerCase().includes(q)
+
     const matchesCity = selectedCity.value === 'All' || game.city === selectedCity.value
     const matchesSubCity = selectedSubCity.value === 'All' || game.subCity === selectedSubCity.value
     const matchesLevel = selectedLevel.value === 'All' || game.level.includes(selectedLevel.value)
@@ -101,11 +108,30 @@ const filteredGames = computed(() => {
   })
 })
 
-// New Game State
-const newMatch = ref({
-  venue: '', city: 'Addis Ababa', subCity: 'Bole', sport: 'Football',
-  level: 'Intermediate', date: '', time: '', players: 10, price: 100
+// Helper to format time (24h input to 12h AM/PM string)
+const formatTime = (timeStr) => {
+  if (!timeStr) return ''
+  const [hours, minutes] = timeStr.split(':')
+  let h = parseInt(hours, 10)
+  const ampm = h >= 12 ? 'PM' : 'AM'
+  h = h % 12 || 12
+  return `${h.toString().padStart(2, '0')}:${minutes} ${ampm}`
+}
+
+// Initial Form State
+const getInitialForm = () => ({
+  venue: '', 
+  city: 'Addis Ababa', 
+  subCity: 'Bole', 
+  sport: 'Football',
+  level: 'Intermediate', 
+  date: new Date().toISOString().split('T')[0], 
+  time: '17:00', 
+  players: 10, 
+  price: 100
 })
+
+const newMatch = ref(getInitialForm())
 
 const handleCreateGame = () => {
   isLoading.value = true
@@ -119,14 +145,17 @@ const handleCreateGame = () => {
       subCity: newMatch.value.subCity,
       sport: newMatch.value.sport,
       level: newMatch.value.level,
-      time: newMatch.value.time,
+      time: formatTime(newMatch.value.time),
       date: newMatch.value.date,
       joinedPlayers: 1,
-      totalPlayers: newMatch.value.players,
-      price: newMatch.value.price,
+      totalPlayers: Number(newMatch.value.players),
+      price: Number(newMatch.value.price),
       isJoined: true,
       isUrgent: false
     })
+    
+    // Reset Form
+    newMatch.value = getInitialForm()
     isModalOpen.value = false
     isLoading.value = false
   }, 800)
@@ -145,6 +174,15 @@ const toggleJoin = (game) => {
 const getSportIcon = (sportName) => {
   const found = sportsOptions.find(s => s.name === sportName)
   return found ? found.icon : '🎮'
+}
+
+const resetFilters = () => {
+  searchQuery.value = ''
+  selectedSportCategory.value = 'All'
+  selectedCity.value = 'All'
+  selectedSubCity.value = 'All'
+  selectedLevel.value = 'All'
+  selectedDate.value = ''
 }
 </script>
 
@@ -267,7 +305,7 @@ const getSportIcon = (sportName) => {
           <div class="p-6 space-y-5">
             <div class="flex justify-between items-start">
               <div class="flex items-center gap-3">
-                <img :src="game.hostAvatar" class="w-11 h-11 rounded-xl object-cover ring-2 ring-emerald-500/30" />
+                <img :src="game.hostAvatar" :alt="game.hostName" class="w-11 h-11 rounded-xl object-cover ring-2 ring-emerald-500/30" />
                 <div>
                   <h4 class="font-bold text-sm text-slate-900 dark:text-white leading-tight">{{ game.hostName }}</h4>
                   <span class="text-[10px] text-emerald-500 font-extrabold tracking-wide uppercase">Verified Host</span>
@@ -336,7 +374,7 @@ const getSportIcon = (sportName) => {
               game.isJoined 
                 ? 'bg-amber-500 hover:bg-amber-600 text-white' 
                 : game.joinedPlayers >= game.totalPlayers 
-                  ? 'bg-slate-100 dark:bg-[#0b111a] text-slate-400 cursor-not-allowed' 
+                  ? 'bg-slate-100 dark:bg-[#0b111a] text-slate-400 cursor-not-allowed border-none' 
                   : 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-md shadow-emerald-500/10'
             ]"
           >
@@ -353,7 +391,7 @@ const getSportIcon = (sportName) => {
           <p class="text-xs sm:text-sm text-slate-400 max-w-sm mx-auto">There are no matches fitting your filter criteria right now. Be the first to host one!</p>
         </div>
         <button 
-          @click="searchQuery = ''; selectedSportCategory = 'All'; selectedCity = 'All'; selectedSubCity = 'All'" 
+          @click="resetFilters" 
           class="text-xs font-bold text-emerald-500 hover:underline cursor-pointer"
         >
           Reset All Filters
@@ -380,7 +418,7 @@ const getSportIcon = (sportName) => {
               
               <div class="col-span-2">
                 <label class="text-[11px] font-bold uppercase text-slate-400 mb-1 block">Venue Name</label>
-                <input v-model="newMatch.venue" required type="text" placeholder="e.g. Sarbet Futsal Arena" class="w-full p-3 bg-slate-50 dark:bg-[#0b111a] rounded-xl border border-slate-200 dark:border-[#212e3e] focus:border-emerald-500 text-xs sm:text-sm outline-none" />
+                <input v-model="newMatch.venue" required type="text" placeholder="e.g. Sarbet Futsal Arena" class="w-full p-3 bg-slate-50 dark:bg-[#0b111a] text-slate-900 dark:text-slate-100 rounded-xl border border-slate-200 dark:border-[#212e3e] focus:border-emerald-500 text-xs sm:text-sm outline-none" />
               </div>
 
               <div>
@@ -399,22 +437,22 @@ const getSportIcon = (sportName) => {
 
               <div>
                 <label class="text-[11px] font-bold uppercase text-slate-400 mb-1 block">Date</label>
-                <input v-model="newMatch.date" required type="date" class="w-full p-3 bg-slate-50 dark:bg-[#0b111a] rounded-xl border border-slate-200 dark:border-[#212e3e] focus:border-emerald-500 text-xs sm:text-sm outline-none" />
+                <input v-model="newMatch.date" required type="date" class="w-full p-3 bg-slate-50 dark:bg-[#0b111a] text-slate-900 dark:text-slate-100 rounded-xl border border-slate-200 dark:border-[#212e3e] focus:border-emerald-500 text-xs sm:text-sm outline-none" />
               </div>
 
               <div>
                 <label class="text-[11px] font-bold uppercase text-slate-400 mb-1 block">Start Time</label>
-                <input v-model="newMatch.time" required type="time" class="w-full p-3 bg-slate-50 dark:bg-[#0b111a] rounded-xl border border-slate-200 dark:border-[#212e3e] focus:border-emerald-500 text-xs sm:text-sm outline-none" />
+                <input v-model="newMatch.time" required type="time" class="w-full p-3 bg-slate-50 dark:bg-[#0b111a] text-slate-900 dark:text-slate-100 rounded-xl border border-slate-200 dark:border-[#212e3e] focus:border-emerald-500 text-xs sm:text-sm outline-none" />
               </div>
 
               <div>
                 <label class="text-[11px] font-bold uppercase text-slate-400 mb-1 block">Total Players</label>
-                <input v-model.number="newMatch.players" type="number" class="w-full p-3 bg-slate-50 dark:bg-[#0b111a] rounded-xl border border-slate-200 dark:border-[#212e3e] focus:border-emerald-500 text-xs sm:text-sm font-semibold outline-none" />
+                <input v-model.number="newMatch.players" min="2" max="50" required type="number" class="w-full p-3 bg-slate-50 dark:bg-[#0b111a] text-slate-900 dark:text-slate-100 rounded-xl border border-slate-200 dark:border-[#212e3e] focus:border-emerald-500 text-xs sm:text-sm font-semibold outline-none" />
               </div>
 
               <div>
                 <label class="text-[11px] font-bold uppercase text-slate-400 mb-1 block">Price / Person (ETB)</label>
-                <input v-model.number="newMatch.price" type="number" class="w-full p-3 bg-slate-50 dark:bg-[#0b111a] rounded-xl border border-slate-200 dark:border-[#212e3e] focus:border-emerald-500 text-xs sm:text-sm font-semibold outline-none" />
+                <input v-model.number="newMatch.price" min="0" required type="number" class="w-full p-3 bg-slate-50 dark:bg-[#0b111a] text-slate-900 dark:text-slate-100 rounded-xl border border-slate-200 dark:border-[#212e3e] focus:border-emerald-500 text-xs sm:text-sm font-semibold outline-none" />
               </div>
 
             </div>

@@ -1,25 +1,27 @@
-import type { Config } from 'tailwindcss'
-
-export default <Partial<Config>>{
-  darkMode: 'class',
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    "./components/**/*.{js,vue,ts}",
+    "./layouts/**/*.vue",
+    "./pages/**/*.vue",
+    "./plugins/**/*.{js,ts}",
+    "./app.vue",
+  ],
   theme: {
     extend: {
+      screens: {
+        'xs': '375px', // በትናንሽ ስልኮች ላይ እንዳይበላሽ
+      },
       colors: {
-        // Zappo / Main Brand Colors
         brand: {
-          accent: '#94FF2B',       // Bright Neon Green Button
-          'accent-hover': '#82e026',
-          primary: '#3b82f6',      // Blue Accent
-          dark: '#0f172a',         // Main Dark Background
-          deep: '#020617',         // Deepest Background
-        },
-        // Cards and Containers Surface Colors
-        surface: {
-          light: '#ffffff',
-          dark: '#1e293b',         // Card / Sidebar background
-          'dark-border': '#334155',  // Border for dark cards
+          50: '#ecfdf5',
+          500: '#10b981',
+          600: '#059669',
+          700: '#047857',
+          900: '#064e3b',
         }
       }
-    }
-  }
+    },
+  },
+  plugins: [],
 }
