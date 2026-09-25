@@ -12,7 +12,7 @@
           </span>
         </NuxtLink>
 
-        <!-- 2. NAVIGATION LINKS (Desktop - Adjusted Gap & Padding) -->
+        <!-- 2. NAVIGATION LINKS (Clean Desktop Menu) -->
         <div class="hidden lg:flex items-center gap-0.5 xl:gap-1 flex-1 justify-center">
           <NuxtLink 
             v-for="item in navItems" 
@@ -22,8 +22,7 @@
             :class="[
               route?.path === item.path 
                 ? 'text-[#94FF2B] bg-slate-800/90 shadow-sm border border-slate-700/50' 
-                : 'text-slate-300 hover:text-white hover:bg-slate-800/50',
-              item.isDashboard ? 'text-blue-400 bg-blue-950/40 border border-blue-800/50 hover:bg-blue-900/50' : ''
+                : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
             ]"
           >
             {{ item.label }}
@@ -42,31 +41,73 @@
             Add Venue
           </NuxtLink>
 
-          <!-- AUTH SECTION -->
+          <!-- AUTH / PROFILE SECTION -->
           <div class="flex items-center">
-            <!-- LOGGED IN -->
-            <div v-if="isLoggedIn" class="flex items-center gap-2 xl:gap-2.5 pl-2.5 border-l border-slate-800">
-              <NuxtLink :to="dashboardLink" class="flex items-center gap-2 group cursor-pointer">
-                <div class="hidden sm:block text-right">
-                  <p class="text-xs font-black text-white leading-none truncate max-w-[90px] group-hover:text-[#94FF2B] transition-colors">
-                    {{ userProfile?.name || 'User' }}
-                  </p>
-                  <p class="text-[9px] font-extrabold text-[#94FF2B] uppercase mt-1 tracking-wider">
-                    {{ userProfile?.role || 'User' }}
-                  </p>
-                </div>
-                <div class="w-8 h-8 xl:w-9 xl:h-9 bg-slate-800 rounded-full flex items-center justify-center border border-slate-700 group-hover:border-[#94FF2B] transition-all">
-                  <Icon name="lucide:user" class="w-4 h-4 xl:w-5 xl:h-5 text-slate-300" />
-                </div>
-              </NuxtLink>
-
+            <!-- LOGGED IN USER (PROFILE DROPDOWN) -->
+            <div v-if="isLoggedIn" class="relative" ref="dropdownRef">
               <button 
-                @click="handleLogout" 
-                class="text-red-400 hover:bg-red-950/40 p-1.5 rounded-xl transition-colors"
-                title="Logout"
+                @click="isDropdownOpen = !isDropdownOpen"
+                class="flex items-center gap-2 pl-2 sm:pl-3 border-l border-slate-800 group cursor-pointer focus:outline-none"
               >
-                <Icon name="lucide:log-out" class="w-4 h-4" />
+                <!-- የተጠቃሚውን ስም (feleke) አጥፍተን Role ብቻ እንዲታይ አድርገነዋል -->
+                <div class="hidden sm:block text-right">
+                  <p class="text-xs font-black text-[#94FF2B] uppercase tracking-wider">
+                    {{ userProfile?.role || 'Admin' }}
+                  </p>
+                </div>
+                
+                <div class="w-8 h-8 xl:w-9 xl:h-9 bg-slate-800 rounded-full flex items-center justify-center border border-slate-700 group-hover:border-[#94FF2B] transition-all">
+                  <img 
+                    v-if="userProfile?.avatar" 
+                    :src="userProfile.avatar" 
+                    class="w-full h-full rounded-full object-cover" 
+                  />
+                  <Icon v-else name="lucide:user" class="w-4 h-4 xl:w-5 xl:h-5 text-slate-300" />
+                </div>
+                
+                <Icon name="lucide:chevron-down" class="w-3.5 h-3.5 text-slate-400 group-hover:text-white transition-transform duration-200" :class="{ 'rotate-180': isDropdownOpen }" />
               </button>
+
+              <!-- DROPDOWN CARD -->
+              <Transition
+                enter-active-class="transition duration-150 ease-out"
+                enter-from-class="transform scale-95 opacity-0 -translate-y-2"
+                enter-to-class="transform scale-100 opacity-100 translate-y-0"
+                leave-active-class="transition duration-100 ease-in"
+                leave-from-class="transform scale-100 opacity-100 translate-y-0"
+                leave-to-class="transform scale-95 opacity-0 -translate-y-2"
+              >
+                <div 
+                  v-if="isDropdownOpen" 
+                  class="absolute right-0 mt-2 w-52 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-2 z-50 divide-y divide-slate-800/80"
+                >
+                  <div class="py-1">
+                    <!-- DASHBOARD LINK -->
+                    <NuxtLink 
+                      v-if="dashboardLink !== '/'"
+                      :to="dashboardLink" 
+                      @click="isDropdownOpen = false"
+                      class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-blue-400 hover:bg-blue-950/40 hover:text-blue-300 transition-colors"
+                    >
+                      <Icon name="lucide:layout-dashboard" class="w-4 h-4" />
+                      <span>{{ dashboardLabel }}</span>
+                    </NuxtLink>
+
+                    <!-- MY PROFILE የሚለው ሊንክ ሙሉ በሙሉ ተወግዷል -->
+                  </div>
+
+                  <!-- LOGOUT -->
+                  <div class="pt-1">
+                    <button 
+                      @click="handleLogout" 
+                      class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-rose-400 hover:bg-rose-950/40 transition-colors text-left cursor-pointer"
+                    >
+                      <Icon name="lucide:log-out" class="w-4 h-4" />
+                      <span>Sign Out</span>
+                    </button>
+                  </div>
+                </div>
+              </Transition>
             </div>
 
             <!-- GUEST -->
@@ -101,7 +142,7 @@
       <NuxtLink 
         :to="isLoggedIn ? '/venues/create' : '/auth?redirect=/venues/create'" 
         @click="isOpen = false" 
-        class="flex items-center justify-center gap-2 bg-[#94FF2B] text-slate-950 py-2.5 rounded-xl font-black text-sm"
+        class="flex items-center justify-center gap-2 bg-[#94FF2B] text-slate-950 py-2.5 rounded-xl font-black text-sm mb-1"
       >
         <Icon name="lucide:plus-circle" class="w-5 h-5" />
         Add Venue
@@ -109,17 +150,21 @@
       
       <div v-if="isLoggedIn" class="grid grid-cols-2 gap-2 my-1">
         <NuxtLink 
+          v-if="dashboardLink !== '/'"
           :to="dashboardLink" 
           @click="isOpen = false" 
-          class="flex items-center justify-center py-2 bg-blue-950/60 border border-blue-800/50 text-blue-400 rounded-xl font-bold text-xs"
+          class="flex items-center justify-center gap-1.5 py-2.5 bg-blue-950/60 border border-blue-800/50 text-blue-400 rounded-xl font-bold text-xs"
         >
-          Dashboard
+          <Icon name="lucide:layout-dashboard" class="w-4 h-4" />
+          <span>Dashboard</span>
         </NuxtLink>
         <button 
           @click="handleLogout(); isOpen = false" 
-          class="py-2 bg-red-950/50 border border-red-900/50 text-red-400 rounded-xl font-bold text-xs"
+          class="flex items-center justify-center gap-1.5 py-2.5 bg-red-950/50 border border-red-900/50 text-red-400 rounded-xl font-bold text-xs"
+          :class="{ 'col-span-2': dashboardLink === '/' }"
         >
-          Sign Out
+          <Icon name="lucide:log-out" class="w-4 h-4" />
+          <span>Sign Out</span>
         </button>
       </div>
 
@@ -139,22 +184,22 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '~/stores/auth'
 
 const route = useRoute()
 const router = useRouter()
 
-// Initialize store safely inside setup
 const authStore = useAuthStore()
 
 const isOpen = ref(false)
+const isDropdownOpen = ref(false)
+const dropdownRef = ref(null)
 
-// Safe state getters
 const isLoggedIn = computed(() => !!authStore?.token)
 const userProfile = computed(() => authStore?.user)
 
-// Dashboard route resolver
 const dashboardLink = computed(() => {
   if (!isLoggedIn.value) return '/auth'
   const role = userProfile.value?.role?.toLowerCase()
@@ -164,56 +209,51 @@ const dashboardLink = computed(() => {
   return '/'
 })
 
-// Navigation items configuration
-const staticNavItems = [
-  { path: '/', label: 'Home', icon: 'lucide:home' },
-  { path: '/about', label: 'About Us', icon: 'lucide:info' },
-  { path: '/games', label: 'Games', icon: 'lucide:gamepad-2' },
-  { path: '/venues', label: 'Venues', icon: 'lucide:stadium' }
-]
-
-const navItems = computed(() => {
-  const items = [...staticNavItems]
-  
-  if (isLoggedIn.value) {
-    const role = userProfile.value?.role?.toLowerCase()
-    
-    if (role === 'admin' || role === 'partner') {
-      const dashboardLabel = role === 'admin' ? 'Admin Dashboard' : 'Partner Dashboard'
-      
-      items.push({ 
-        path: dashboardLink.value, 
-        label: dashboardLabel, 
-        icon: 'lucide:layout-dashboard',
-        isDashboard: true 
-      })
-    }
-  }
-
-  items.push(
-    { path: '/events', label: 'Events', icon: 'lucide:calendar' },
-    { path: '/blogs', label: 'Blogs', icon: 'lucide:newspaper' },
-    { path: '/justplay', label: 'JustPlay', icon: 'lucide:play-circle' },
-    { path: '/contact', label: 'Contact', icon: 'lucide:phone' }
-  )
-
-  return items
+const dashboardLabel = computed(() => {
+  const role = userProfile.value?.role?.toLowerCase()
+  if (role === 'admin') return 'Admin Dashboard'
+  if (role === 'partner') return 'Partner Dashboard'
+  return 'Dashboard'
 })
 
+// Clean Static Links
+const navItems = [
+  { path: '/', label: 'Home', icon: 'lucide:home' },
+  { path: '/about', label: 'About Us', icon: 'lucide:info' },
+  { path: '/venues', label: 'Venues', icon: 'lucide:stadium' },
+  { path: '/events', label: 'Events', icon: 'lucide:calendar' },
+  { path: '/blogs', label: 'Blogs', icon: 'lucide:newspaper' },
+  { path: '/justplay', label: 'JustPlay', icon: 'lucide:play-circle' },
+  { path: '/contact', label: 'Contact', icon: 'lucide:phone' }
+]
+
 const handleLogout = () => {
+  isDropdownOpen.value = false
   if (authStore?.logout) {
     authStore.logout()
   }
   router.push('/')
 }
 
+const handleClickOutside = (event) => {
+  if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
+    isDropdownOpen.value = false
+  }
+}
+
 onMounted(() => {
   if (authStore?.init) {
     authStore.init()
   }
+  document.addEventListener('click', handleClickOutside)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
 })
 
 watch(() => route?.path, () => { 
   isOpen.value = false 
+  isDropdownOpen.value = false
 })
 </script>

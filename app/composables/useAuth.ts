@@ -1,4 +1,3 @@
-// composables/useAuth.ts
 import { useAuthStore } from '@/stores/auth'
 import { storeToRefs } from 'pinia'
 
@@ -11,7 +10,6 @@ export const useAuth = () => {
     token,
     isAuthenticated: computed(() => !!token.value),
     userRole: computed(() => user.value?.role),
-    // ለ Real Backend ብቻ የሚሰሩ ዘዴዎች
     login: authStore.login,
     logout: authStore.logout,
     init: authStore.init,
