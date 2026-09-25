@@ -4,7 +4,10 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-// SEO Page Title
+// Import izobrazheniya
+import venueImg from '~/assets/images/venues20.jpg'
+
+// SEO Zagolovok
 useHead({ 
   title: 'JustPlay Matchmaking - Combolojo',
   meta: [
@@ -12,12 +15,12 @@ useHead({
   ]
 })
 
-// Matchmaking State
+// Sostoyanie Matchmaking
 const locationInput = ref('')
 const isSearching = ref(false)
 const searchCompleted = ref(false)
 
-// Navigation to Contact Page
+// Navigaciya na Contact
 const goToContact = (gameTitle = '') => {
   router.push({ 
     path: '/contact',
@@ -25,7 +28,7 @@ const goToContact = (gameTitle = '') => {
   })
 }
 
-// Sample Active Queue
+// Spisok igrokov v ocheredi
 const queuePlayers = ref([
   { id: 1, name: 'Abel T.', level: 'Advanced', position: 'Striker', location: 'Bole', status: 'In Queue', icon: '⚽' },
   { id: 2, name: 'Sami D.', level: 'Intermediate', position: 'Goalkeeper', location: 'Sarbet', status: 'Ready', icon: '🧤' },
@@ -33,7 +36,7 @@ const queuePlayers = ref([
   { id: 4, name: 'Sara L.', level: 'Intermediate', position: 'Defender', location: 'Megenagna', status: 'Ready', icon: '🛡️' }
 ])
 
-// Open Pickup Games
+// Spisok otkrytykh igr
 const openGames = ref([
   {
     id: 101,
@@ -44,7 +47,8 @@ const openGames = ref([
     distance: '1.2 km away',
     neededPlayers: 2,
     price: '120 ETB',
-    organizer: 'Abel'
+    organizer: 'Abel',
+    image: venueImg
   },
   {
     id: 102,
@@ -55,11 +59,12 @@ const openGames = ref([
     distance: '3.5 km away',
     neededPlayers: 3,
     price: '80 ETB',
-    organizer: 'Timothy'
+    organizer: 'Timothy',
+    image: venueImg
   }
 ])
 
-// Matchmaking Search Simulation
+// Imitaciya poiska
 const triggerMatchmaking = () => {
   if (!locationInput.value.trim()) return
   isSearching.value = true
@@ -73,51 +78,57 @@ const triggerMatchmaking = () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-slate-50 text-slate-800 font-sans pb-20 pt-24 md:pt-32 relative overflow-hidden selection:bg-cyan-500 selection:text-white">
+  <!-- pt-24 md:pt-32 የነበረው ወደ pt-16 md:pt-20 ተቀንሷል -->
+  <div class="min-h-screen bg-slate-50 text-slate-800 font-sans pb-20 pt-16 md:pt-20 relative overflow-hidden selection:bg-cyan-500 selection:text-white">
 
-    <!-- Glowing Background Gradients (Light Soft Blue/Cyan Accent) -->
+    <!-- Glowing Background Gradients -->
     <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[500px] bg-gradient-to-b from-cyan-200/40 via-sky-100/20 to-transparent blur-3xl pointer-events-none"></div>
 
-    <!-- HERO & QUICK SEARCH -->
-    <header class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 relative z-10">
-      <div class="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-8 md:p-14 border border-slate-200/80 shadow-2xl shadow-cyan-900/5 text-center space-y-8 relative overflow-hidden">
+    <!-- HERO & QUICK SEARCH (py-8 md:py-12 የነበረው ወደ py-3 md:py-4 ተቀንሷል) -->
+    <header class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 md:py-4 relative z-10">
+      <div class="rounded-[2.5rem] p-6 md:p-12 border border-slate-800 shadow-2xl text-center space-y-6 relative overflow-hidden bg-slate-900">
         
-        <!-- Background Light Orbs -->
-        <div class="absolute -top-32 -left-32 w-80 h-80 bg-cyan-200/50 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute -bottom-32 -right-32 w-80 h-80 bg-sky-200/40 rounded-full blur-3xl pointer-events-none"></div>
+        <!-- Bright Full Background Image -->
+        <div class="absolute inset-0 pointer-events-none">
+          <img :src="venueImg" alt="Venue Background" class="w-full h-full object-cover object-center scale-105" />
+          <div class="absolute inset-0 bg-slate-950/45 backdrop-blur-[2px]"></div>
+        </div>
 
+        <!-- Content Container -->
         <div class="relative z-10 space-y-4 max-w-3xl mx-auto">
           <div class="flex justify-center">
-            <span class="inline-flex items-center gap-2 px-4 py-1.5 bg-cyan-50 text-cyan-600 rounded-full text-xs font-black uppercase tracking-widest border border-cyan-200 shadow-sm">
-              <span class="w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></span>
+            <span class="inline-flex items-center gap-2 px-4 py-1.5 bg-slate-900/80 text-cyan-400 rounded-full text-xs font-black uppercase tracking-widest border border-cyan-400/40 shadow-lg backdrop-blur-md">
+              <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
               Instant Matchmaking
             </span>
           </div>
-          <h1 class="text-4xl md:text-6xl font-black tracking-tight text-slate-900 leading-tight">
-            Just<span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-teal-500">Play</span> Matchmaker
+
+          <h1 class="text-4xl md:text-6xl font-black tracking-tight text-white leading-tight drop-shadow-lg">
+            Just<span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-teal-300">Play</span> Matchmaker
           </h1>
-          <p class="text-base md:text-lg text-slate-600 font-medium leading-relaxed">
+
+          <p class="text-base md:text-lg text-slate-100 font-bold leading-relaxed drop-shadow-md">
             Short of players? Or looking for a game to join? Enter your location and find matches happening right now.
           </p>
         </div>
 
         <!-- Search Bar -->
         <div class="relative max-w-2xl mx-auto z-10">
-          <div class="flex flex-col sm:flex-row gap-3 p-2 bg-slate-100/80 rounded-2xl border border-slate-200 focus-within:border-cyan-500 transition-all shadow-inner">
+          <div class="flex flex-col sm:flex-row gap-3 p-2 bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-slate-700/80 focus-within:border-cyan-400 transition-all shadow-2xl">
             <div class="relative flex-1 flex items-center">
-              <span class="pl-4 text-slate-400 text-lg">📍</span>
+              <span class="pl-4 text-slate-300 text-lg">📍</span>
               <input 
                 v-model="locationInput"
                 type="text" 
                 placeholder="Enter location (e.g. Bole, Sarbet...)" 
-                class="w-full px-3 py-3.5 bg-transparent text-slate-900 placeholder-slate-400 text-sm focus:outline-none font-medium"
+                class="w-full px-3 py-3.5 bg-transparent text-white placeholder-slate-300 text-sm focus:outline-none font-semibold"
                 @keyup.enter="triggerMatchmaking"
               />
             </div>
             <button 
               @click="triggerMatchmaking"
               :disabled="isSearching"
-              class="px-8 py-3.5 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600 text-white font-black rounded-xl shadow-lg shadow-cyan-500/20 transition-all duration-200 active:scale-95 disabled:opacity-50 whitespace-nowrap flex items-center justify-center gap-2 cursor-pointer"
+              class="px-8 py-3.5 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 text-white font-black rounded-xl shadow-lg shadow-cyan-500/30 transition-all duration-200 active:scale-95 disabled:opacity-50 whitespace-nowrap flex items-center justify-center gap-2 cursor-pointer"
             >
               <span v-if="isSearching" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
               <span>{{ isSearching ? 'Finding Matches...' : 'Find Me a Game' }}</span>
@@ -126,11 +137,12 @@ const triggerMatchmaking = () => {
           
           <!-- Search Result Hint -->
           <transition name="fade">
-            <p v-if="searchCompleted" class="mt-4 text-cyan-700 font-bold text-sm flex items-center justify-center gap-2">
-              <span>🎉</span> Found 4 players and 2 open games near <span class="underline decoration-cyan-500">{{ locationInput }}</span>!
+            <p v-if="searchCompleted" class="mt-4 text-cyan-300 font-black text-sm flex items-center justify-center gap-2 drop-shadow">
+              <span>🎉</span> Found 4 players and 2 open games near <span class="underline decoration-cyan-400">{{ locationInput }}</span>!
             </p>
           </transition>
         </div>
+
       </div>
     </header>
 
@@ -157,7 +169,7 @@ const triggerMatchmaking = () => {
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
         
-        <!-- BROWSE OPEN GAMES (2/3 Width) -->
+        <!-- BROWSE OPEN GAMES -->
         <section class="lg:col-span-2 space-y-6">
           <div class="flex justify-between items-end border-b border-slate-200 pb-4">
             <div>
@@ -171,47 +183,51 @@ const triggerMatchmaking = () => {
             <div 
               v-for="game in openGames" 
               :key="game.id" 
-              class="group bg-white rounded-3xl p-6 border border-slate-200 hover:border-cyan-400 transition-all duration-300 flex flex-col justify-between shadow-sm hover:shadow-xl hover:shadow-cyan-900/5"
+              class="group bg-white rounded-3xl overflow-hidden border border-slate-200 hover:border-cyan-400 transition-all duration-300 flex flex-col justify-between shadow-sm hover:shadow-xl hover:shadow-cyan-900/5"
             >
-              <div class="space-y-4">
-                <div class="flex justify-between items-start gap-2">
-                  <div>
-                    <span class="text-[10px] font-black text-cyan-700 uppercase tracking-widest bg-cyan-50 px-2.5 py-1 rounded-md border border-cyan-200">{{ game.sport }}</span>
-                    <h3 class="text-xl font-black text-slate-900 group-hover:text-cyan-600 transition-colors mt-2">{{ game.title }}</h3>
-                  </div>
-                  <span class="px-3 py-1 bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-black rounded-lg whitespace-nowrap">
-                    {{ game.neededPlayers }} SPOTS LEFT
-                  </span>
-                </div>
-                <div class="space-y-2 pt-2 border-t border-slate-100">
-                  <p class="text-xs text-slate-600 font-bold flex items-center gap-2">
-                    <span class="text-slate-400">📍</span> {{ game.venue }} 
-                    <span class="text-cyan-600 text-[11px] font-semibold">• {{ game.distance }}</span>
-                  </p>
-                  <p class="text-xs text-slate-600 font-bold flex items-center gap-2">
-                    <span class="text-slate-400">⏰</span> {{ game.time }}
-                  </p>
-                </div>
+              <div class="h-36 w-full relative overflow-hidden bg-slate-100">
+                <img :src="game.image" :alt="game.title" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                <span class="absolute top-3 left-3 text-[10px] font-black text-white uppercase tracking-widest bg-cyan-600/90 px-2.5 py-1 rounded-md backdrop-blur-md shadow-sm">
+                  {{ game.sport }}
+                </span>
+                <span class="absolute top-3 right-3 px-3 py-1 bg-amber-500/90 text-white text-[10px] font-black rounded-lg whitespace-nowrap backdrop-blur-md shadow-sm">
+                  {{ game.neededPlayers }} SPOTS LEFT
+                </span>
               </div>
 
-              <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
+              <div class="p-6 space-y-4 flex-1 flex flex-col justify-between">
                 <div>
-                  <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Price / Player</p>
-                  <p class="text-lg font-black text-cyan-600">{{ game.price }}</p>
+                  <h3 class="text-xl font-black text-slate-900 group-hover:text-cyan-600 transition-colors">{{ game.title }}</h3>
+                  <div class="space-y-2 pt-3">
+                    <p class="text-xs text-slate-600 font-bold flex items-center gap-2">
+                      <span class="text-slate-400">📍</span> {{ game.venue }} 
+                      <span class="text-cyan-600 text-[11px] font-semibold">• {{ game.distance }}</span>
+                    </p>
+                    <p class="text-xs text-slate-600 font-bold flex items-center gap-2">
+                      <span class="text-slate-400">⏰</span> {{ game.time }}
+                    </p>
+                  </div>
                 </div>
-                <!-- Redirects to Contact Page -->
-                <button 
-                  @click="goToContact(game.title)"
-                  class="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600 text-white font-black text-xs rounded-xl shadow-md shadow-cyan-500/20 transition-all active:scale-95 cursor-pointer"
-                >
-                  JOIN NOW
-                </button>
+
+                <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
+                  <div>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Price / Player</p>
+                    <p class="text-lg font-black text-cyan-600">{{ game.price }}</p>
+                  </div>
+                  <button 
+                    @click="goToContact(game.title)"
+                    class="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600 text-white font-black text-xs rounded-xl shadow-md shadow-cyan-500/20 transition-all active:scale-95 cursor-pointer"
+                  >
+                    JOIN NOW
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
-        <!-- LIVE WAITING QUEUE (1/3 Width) -->
+        <!-- LIVE WAITING QUEUE -->
         <aside class="space-y-6">
           <div class="flex items-center justify-between border-b border-slate-200 pb-4">
             <div class="flex items-center gap-3">
@@ -251,7 +267,6 @@ const triggerMatchmaking = () => {
                 </div>
               </div>
             </div>
-            <!-- Redirects to Contact Page -->
             <button 
               @click="goToContact('Queue Joining')"
               class="w-full py-3.5 bg-slate-50 hover:bg-slate-100 text-cyan-600 text-xs font-black uppercase tracking-wider transition-colors border-t border-slate-200 cursor-pointer"
@@ -266,6 +281,9 @@ const triggerMatchmaking = () => {
     <!-- APP CALL TO ACTION -->
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20 relative z-10">
       <div class="bg-gradient-to-r from-cyan-600 via-teal-600 to-cyan-700 rounded-[2.5rem] p-8 md:p-16 text-center space-y-6 relative overflow-hidden shadow-2xl shadow-cyan-900/10">
+        <div class="absolute inset-0 opacity-15 pointer-events-none mix-blend-overlay">
+          <img :src="venueImg" alt="Venue CTA" class="w-full h-full object-cover" />
+        </div>
         <div class="absolute -right-10 -bottom-10 text-white/10 text-[180px] font-black select-none pointer-events-none leading-none">PLAY</div>
         <div class="relative z-10 max-w-2xl mx-auto space-y-4 text-center">
           <h2 class="text-3xl md:text-5xl font-black text-white leading-tight">Matchmaking is faster on Mobile</h2>
