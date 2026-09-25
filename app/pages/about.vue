@@ -81,34 +81,30 @@ const subCities = ['Bole', 'Yeka', 'Nifas Silk', 'Arada', 'Kirkos', 'Gullele', '
 <template>
   <div class="min-h-screen bg-slate-50 text-slate-800 font-sans selection:bg-emerald-500 selection:text-white">
     
-    <!-- 1. Hero Section -->
-    <section class="relative pt-24 pb-32 px-4 sm:px-6 lg:px-8 border-b border-slate-200 overflow-hidden bg-slate-900">
+    <!-- 1. Hero Section (ምንም overlay ማጨለሚያ የሌለው ጥርት ያለ) -->
+    <section class="relative pt-12 pb-16 px-4 sm:px-6 lg:px-8 border-b border-slate-200 overflow-hidden bg-slate-900">
       
-      <!-- Background Image (ምንም አይነት opacity ሳይቀነስ 100% ጥርት ብሎ እንዲታይ ተደርጓል) -->
+      <!-- Background Image -->
       <img 
         :src="venueImg" 
         alt="Compolojo Sports Venue Background" 
         class="absolute inset-0 w-full h-full object-cover object-center z-0"
       />
-      
-      <!-- Gradient Overlay (ስፖርት ሜዳው መሃል ላይ በግልፅ እንዲታይ በማሰብ ጫፍና ጫፉን ብቻ አጥቁረነዋል) -->
-      <div class="absolute inset-0 bg-slate-900/30 z-0"></div>
-      <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-slate-900/60 z-0"></div>
 
       <!-- Hero Content -->
-      <div class="max-w-4xl mx-auto text-center space-y-6 relative z-10">
+      <div class="max-w-4xl mx-auto text-center space-y-4 relative z-10">
         
         <!-- Top Badge -->
-        <div class="inline-flex items-center gap-2.5 text-xs font-bold uppercase tracking-widest text-emerald-300 bg-slate-900/80 border border-emerald-400/40 px-5 py-2 rounded-full shadow-md backdrop-blur-md">
-          <span class="relative flex h-2.5 w-2.5">
+        <div class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-emerald-300 bg-slate-900/85 border border-emerald-400/40 px-4 py-1 rounded-full shadow-lg backdrop-blur-md">
+          <span class="relative flex h-2 w-2">
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
           </span>
           About EthioSport & Compolojo
         </div>
         
         <!-- Main Title -->
-        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.15] drop-shadow-2xl">
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight [text-shadow:_0_2px_10px_rgba(0,0,0,0.8)]">
           Uniting Ethiopian Sports <br class="hidden sm:inline" />
           <span class="bg-gradient-to-r from-emerald-400 via-amber-300 to-rose-400 bg-clip-text text-transparent">
             Communities & Venues
@@ -116,21 +112,21 @@ const subCities = ['Bole', 'Yeka', 'Nifas Silk', 'Arada', 'Kirkos', 'Gullele', '
         </h1>
         
         <!-- Subtitle -->
-        <p class="text-base sm:text-lg text-white leading-relaxed max-w-3xl mx-auto font-medium drop-shadow-xl">
-          Compolojo is Ethiopia's premier sports facility management & match-making platform. We connect passionate players with local arenas, eliminating friction in match scheduling and court bookings.
+        <p class="text-xs sm:text-sm text-white leading-relaxed max-w-2xl mx-auto font-semibold [text-shadow:_0_2px_8px_rgba(0,0,0,0.9)]">
+          Compolojo is Ethiopia's premier sports facility management & match-making platform. We connect passionate players with local arenas effortlessly.
         </p>
 
-        <!-- Popular Hubs (በ Div ውስጥ በ Glassmorphism Design ተሰርቶ የተቀመጠ) -->
-        <div class="pt-8">
-          <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-5 sm:p-6 max-w-3xl mx-auto shadow-2xl">
-            <h3 class="text-xs sm:text-sm font-bold text-amber-300 uppercase tracking-widest mb-4 drop-shadow-md">
+        <!-- Popular Hubs -->
+        <div class="pt-3">
+          <div class="bg-slate-950/80 backdrop-blur-md border border-white/20 rounded-xl p-3.5 max-w-2xl mx-auto shadow-2xl">
+            <h3 class="text-[11px] font-bold text-amber-300 uppercase tracking-widest mb-2">
               📍 Popular Hubs Covered
             </h3>
-            <div class="flex flex-wrap justify-center items-center gap-2 sm:gap-3">
+            <div class="flex flex-wrap justify-center items-center gap-1.5">
               <span 
                 v-for="city in subCities" 
                 :key="city"
-                class="text-xs sm:text-sm px-4 py-2 bg-slate-900/70 hover:bg-emerald-600 text-white rounded-xl border border-white/10 shadow-sm transition-all duration-200 cursor-default font-medium"
+                class="text-xs px-3 py-1 bg-slate-900 hover:bg-emerald-600 text-white rounded-lg border border-white/20 transition-all cursor-default font-medium shadow-sm"
               >
                 {{ city }}
               </span>
@@ -142,7 +138,7 @@ const subCities = ['Bole', 'Yeka', 'Nifas Silk', 'Arada', 'Kirkos', 'Gullele', '
     </section>
 
     <!-- 2. Stats Section -->
-    <section class="py-10 md:py-12 bg-slate-50 px-4 sm:px-6 lg:px-8 relative z-10 -mt-12">
+    <section class="py-10 md:py-12 bg-slate-50 px-4 sm:px-6 lg:px-8 relative z-10 -mt-8">
       <div class="max-w-7xl mx-auto">
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           <div 

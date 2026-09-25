@@ -1,5 +1,5 @@
-<script setup>
-import { ref, computed } from 'vue'
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue'
 
 useHead({ 
   title: 'Elite Tournaments - EthioSport',
@@ -10,75 +10,90 @@ const searchQuery = ref('')
 const selectedSportCategory = ref('All')
 const selectedStatusCategory = ref('All')
 const isModalOpen = ref(false)
-const selectedEvent = ref(null)
+const selectedEvent = ref<any>(null)
 const isSubmitting = ref(false)
 const registrationSuccess = ref(false)
+const registrationError = ref('')
 
-const registrationForm = ref({ fullName: '', phone: '', teamName: '' })
+// --- BACKEND DATA STATES ---
+const events = ref<any[]>([])
+const isLoadingEvents = ref(true)
 
-// --- DATA ---
-const events = ref([
-  {
-    id: 1,
-    title: 'Addis Corporate Futsal League',
-    category: 'Football',
-    status: 'Upcoming',
-    date: 'Oct 12 - Oct 30, 2026',
-    location: 'Sarbet Futsal Arena',
-    price: '3,500 ETB',
-    type: 'Team Registration',
-    image: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=800&auto=format&fit=crop'
-  },
-  {
-    id: 2,
-    title: 'Bole Tennis Summer Open',
-    category: 'Tennis',
-    status: 'Ongoing',
-    date: 'Sep 01 - Sep 15, 2026',
-    location: 'Bole Atlas Club',
-    price: '600 ETB',
-    type: 'Individual',
-    image: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?q=80&w=800&auto=format&fit=crop'
-  },
-  {
-    id: 3,
-    title: 'CMC Elite Basketball Cup',
-    category: 'Basketball',
-    status: 'Upcoming',
-    date: 'Nov 05 - Nov 10, 2026',
-    location: 'CMC Sports Complex',
-    price: '2,000 ETB',
-    type: 'Team Registration',
-    image: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=800&auto=format&fit=crop'
+const registrationForm = ref({
+  fullName: '',
+  phone: '',
+  teamName: ''
+})
+
+// --- FETCH EVENTS FROM LARAVEL BACKEND ---
+const fetchEvents = async () => {
+  try {
+    isLoadingEvents.value = true
+    // የ Laravel API Endpoint (እንደ ፕሮጀክቱ URL ያስተካክሉት)
+    const response = await $fetch<any>('http://localhost:8000/api/events')
+    events.value = response.data || response
+  } catch (error) {
+    console.error('Error fetching events:', error)
+  } finally {
+    isLoadingEvents.value = false
   }
-])
+}
 
+onMounted(() => {
+  fetchEvents()
+})
+
+// --- FILTERED EVENTS COMPUTED PROPERTY ---
 const filteredEvents = computed(() => {
   return events.value.filter(evt => {
     const matchesStatus = selectedStatusCategory.value === 'All' || evt.status === selectedStatusCategory.value
     const matchesSport = selectedSportCategory.value === 'All' || evt.category === selectedSportCategory.value
     const matchesSearch = !searchQuery.value || 
-                          evt.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-                          evt.location.toLowerCase().includes(searchQuery.value.toLowerCase())
+                          evt.title?.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+                          evt.location?.toLowerCase().includes(searchQuery.value.toLowerCase())
     return matchesStatus && matchesSport && matchesSearch
   })
 })
 
-const openRegisterModal = (evt) => {
+// --- MODAL & REGISTRATION HANDLERS ---
+const openRegisterModal = (evt: any) => {
   if (evt.status === 'Completed') return
   selectedEvent.value = evt
   registrationSuccess.value = false
+  registrationError.value = ''
   registrationForm.value = { fullName: '', phone: '', teamName: '' }
   isModalOpen.value = true
 }
 
-const handleRegister = () => {
+const handleRegister = async () => {
   isSubmitting.value = true
-  setTimeout(() => {
-    isSubmitting.value = false
+  registrationError.value = ''
+
+  try {
+    const payload = {
+      event_id: selectedEvent.value.id,
+      full_name: registrationForm.value.fullName,
+      phone: registrationForm.value.phone,
+      team_name: registrationForm.value.teamName || null
+    }
+
+    // ወደ Laravel API POST ማድረግ
+    await $fetch('http://localhost:8000/api/event-registrations', {
+      method: 'POST',
+      body: payload
+    })
+
     registrationSuccess.value = true
-    setTimeout(() => { isModalOpen.value = false }, 2200)
-  }, 1200)
+    setTimeout(() => { 
+      isModalOpen.value = false 
+    }, 2200)
+
+  } catch (error: any) {
+    console.error('Registration failed:', error)
+    registrationError.value = error.response?._data?.message || 'ምዝገባው አልተሳካም። እባክዎ እንደገና ይሞክሩ።'
+  } finally {
+    isSubmitting.value = false
+  }
 }
 </script>
 
@@ -182,8 +197,14 @@ const handleRegister = () => {
           </span>
         </div>
 
+        <!-- Loading State -->
+        <div v-if="isLoadingEvents" class="text-center py-20 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800">
+          <Icon name="lucide:loader-2" class="w-8 h-8 animate-spin text-emerald-500 mx-auto mb-3" />
+          <p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Loading events from backend...</p>
+        </div>
+
         <!-- Empty State -->
-        <div v-if="filteredEvents.length === 0" class="text-center py-16 bg-white dark:bg-slate-900 rounded-3xl border border-dashed border-slate-300 dark:border-slate-800 space-y-3">
+        <div v-else-if="filteredEvents.length === 0" class="text-center py-16 bg-white dark:bg-slate-900 rounded-3xl border border-dashed border-slate-300 dark:border-slate-800 space-y-3">
           <Icon name="lucide:calendar-x" class="w-12 h-12 text-slate-400 mx-auto" />
           <h3 class="text-lg font-bold text-slate-700 dark:text-slate-300">No tournaments found</h3>
           <p class="text-xs text-slate-400">Try adjusting your filters or search query.</p>
@@ -197,9 +218,9 @@ const handleRegister = () => {
             class="group bg-white dark:bg-slate-900 rounded-3xl overflow-hidden border border-slate-200/80 dark:border-slate-800 hover:shadow-2xl hover:shadow-emerald-500/10 hover:-translate-y-2 transition-all duration-300 flex flex-col"
           >
             <!-- Image Wrapper -->
-            <div class="relative h-56 overflow-hidden">
+            <div class="relative h-56 overflow-hidden bg-slate-200 dark:bg-slate-800">
               <img 
-                :src="evt.image" 
+                :src="evt.image || evt.image_url" 
                 :alt="evt.title"
                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
               />
@@ -286,7 +307,7 @@ const handleRegister = () => {
 
         <!-- Success Message -->
         <div v-if="registrationSuccess" class="text-center py-8 space-y-3">
-          <div class="w-16 h-16 bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto text-2xl">
+          <div class="w-16 h-16 bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto text-2xl font-bold">
             ✓
           </div>
           <h3 class="text-2xl font-black text-slate-900 dark:text-white">Successfully Registered!</h3>
@@ -300,6 +321,11 @@ const handleRegister = () => {
           <div>
             <h3 class="text-xl font-black text-slate-900 dark:text-white">Event Registration</h3>
             <p class="text-xs font-semibold text-slate-400 mt-0.5">{{ selectedEvent?.title }}</p>
+          </div>
+
+          <!-- Error Alert -->
+          <div v-if="registrationError" class="p-3 bg-red-500/10 border border-red-500/20 text-red-500 text-xs rounded-xl font-semibold">
+            {{ registrationError }}
           </div>
 
           <div class="space-y-3">

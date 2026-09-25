@@ -591,23 +591,17 @@ const filteredVenues = computed(() => {
         </p>
 
         <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <!-- Get Started Button Redirects directly to /just-play -->
-          <NuxtLink 
-            to="/just-play" 
-            class="bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-sm px-8 py-4 rounded-2xl shadow-lg shadow-emerald-500/20 hover:scale-105 transition-all duration-300 flex items-center gap-2 w-full sm:w-auto justify-center"
-          >
-            <span>🚀 Get Started</span>
+          <NuxtLink to="/just-play" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm px-8 py-3.5 rounded-xl shadow-lg transition-all">
+            Find Matches Now
           </NuxtLink>
-
-          <NuxtLink 
-            to="/venues" 
-            class="bg-white/10 hover:bg-white/20 text-white border border-white/20 font-bold text-sm px-8 py-4 rounded-2xl transition-all duration-300 w-full sm:w-auto text-center"
-          >
-            Explore Venues
-          </NuxtLink>
+          <button @click="isDownloadModalOpen = true" class="w-full sm:w-auto bg-slate-800 hover:bg-slate-700 text-white font-semibold text-sm px-8 py-3.5 rounded-xl border border-slate-700 transition-all">
+            Get Mobile App
+          </button>
         </div>
       </div>
     </section>
+
+   
 
   </div>
 </template>
