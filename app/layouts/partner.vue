@@ -1,219 +1,785 @@
-<script setup lang="ts">
-import { ref } from 'vue'
-import { useRoute, useRouter } from '#imports'
-
-const route = useRoute()
-const router = useRouter()
-
-const isMobileMenuOpen = ref(false)
-const isProfileMenuOpen = ref(false)
-const isNotificationsOpen = ref(false)
-
-const notifications = ref([
-  { id: 1, title: 'New Booking Request', message: 'Mulugeta booked Field 1 for 4:00 PM', time: '10m ago', unread: true },
-  { id: 2, title: 'Payment Confirmed', message: 'ETB 1,200 received for Booking #482', time: '1h ago', unread: true },
-  { id: 3, title: 'System Notice', message: 'Payout sent to your CBE account', time: '1d ago', unread: false }
-])
-
-const toggleMobileMenu = () => {
-  isMobileMenuOpen.value = !isMobileMenuOpen.value
-}
-
-const toggleProfileMenu = () => {
-  isProfileMenuOpen.value = !isProfileMenuOpen.value
-  if (isProfileMenuOpen.value) isNotificationsOpen.value = false
-}
-
-const toggleNotifications = () => {
-  isNotificationsOpen.value = !isNotificationsOpen.value
-  if (isNotificationsOpen.value) isProfileMenuOpen.value = false
-}
-
-const navLinks = [
-  {
-    name: 'Dashboard',
-    path: '/partner',
-    icon: 'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z'
-  },
-  {
-    name: 'My Venue',
-    path: '/partner/venue',
-    icon: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4'
-  },
-  {
-    name: 'Bookings',
-    path: '/partner/bookings',
-    icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2'
-  },
-  {
-    name: 'Earnings',
-    path: '/partner/earnings',
-    icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
-  },
-  {
-    name: 'Support',
-    path: '/partner/support',
-    icon: 'M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z'
-  }
-]
-
-const handleLogout = () => {
-  isProfileMenuOpen.value = false
-  router.push('/login')
-}
-</script>
-
+```vue
 <template>
-  <div class="flex min-h-screen bg-slate-100 font-sans text-slate-800">
-    
-    <!-- Mobile Backdrop -->
-    <div 
-      v-if="isMobileMenuOpen" 
-      @click="isMobileMenuOpen = false"
-      class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 lg:hidden"
-    ></div>
+  <div class="flex h-screen overflow-hidden bg-slate-50">
 
-    <!-- Permanent Sidebar -->
-    <aside 
-      :class="[
-        'w-64 bg-[#0a141d] text-slate-300 flex flex-col justify-between shrink-0 fixed lg:sticky top-0 h-screen z-50 transition-transform duration-300 ease-in-out',
-        isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-      ]"
+    <!-- =========================
+         MOBILE OVERLAY
+    ========================== -->
+    <div
+      v-if="mobileOpen"
+      class="fixed inset-0 z-40 bg-slate-950/50 lg:hidden"
+      @click="mobileOpen = false"
+    />
+
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
+    <aside
+      class="fixed inset-y-0 left-0 z-50 flex w-[270px] flex-col border-r border-slate-200 bg-white transition-transform duration-300 lg:static lg:translate-x-0"
+      :class="mobileOpen ? 'translate-x-0' : '-translate-x-full'"
     >
-      <div>
-        <div class="p-5 flex items-center justify-between border-b border-slate-800">
-          <NuxtLink to="/partner" class="text-xl font-black uppercase tracking-wider text-white">
-            <span class="text-emerald-400">Combolojo</span>SPORT
-          </NuxtLink>
-          <button @click="isMobileMenuOpen = false" class="lg:hidden text-slate-400 hover:text-white">
-            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-          </button>
-        </div>
 
-        <nav class="p-4 space-y-1 text-sm font-medium">
-          <NuxtLink 
-            v-for="link in navLinks" 
-            :key="link.path"
-            :to="link.path"
-            @click="isMobileMenuOpen = false"
-            :class="[
-              'flex items-center gap-3 px-3 py-2.5 rounded-lg transition duration-150',
-              route.path === link.path || (link.path !== '/partner' && route.path.startsWith(link.path))
-                ? 'bg-emerald-600/20 text-emerald-400 font-semibold border border-emerald-500/30'
-                : 'hover:bg-slate-800 hover:text-white'
-            ]"
+      <!-- LOGO -->
+      <div class="flex h-[76px] shrink-0 items-center border-b border-slate-100 px-5">
+        <NuxtLink
+          to="/partner"
+          class="flex items-center gap-3"
+          @click="mobileOpen = false"
+        >
+          <div
+            class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-600 text-xl shadow-sm"
           >
-            <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="link.icon" />
-            </svg>
-            <span>{{ link.name }}</span>
-          </NuxtLink>
-        </nav>
+            ⚽
+          </div>
+
+          <div>
+            <h1 class="text-lg font-black tracking-tight text-slate-900">
+              COMBO<span class="text-emerald-600">LOJO</span>
+            </h1>
+
+            <p class="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
+              Partner Portal
+            </p>
+          </div>
+        </NuxtLink>
       </div>
 
-      <div class="p-4 m-4 bg-[#12202c] rounded-xl border border-slate-700/50 text-xs">
-        <div class="flex items-center gap-2 font-bold text-white mb-1">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          Partner Portal
+      <!-- =========================
+           NAVIGATION
+      ========================== -->
+      <nav class="custom-scrollbar flex-1 overflow-y-auto px-3 py-5">
+
+        <!-- OVERVIEW -->
+        <div class="mb-6">
+          <p class="mb-2 px-3 text-[10px] font-extrabold uppercase tracking-[0.16em] text-slate-400">
+            Overview
+          </p>
+
+          <NuxtLink
+            to="/partner"
+            class="sidebar-link"
+            :class="isActive('/partner') ? 'sidebar-active' : ''"
+            @click="mobileOpen = false"
+          >
+            <span class="sidebar-icon">
+              ▣
+            </span>
+
+            <span class="flex-1">
+              Dashboard
+            </span>
+          </NuxtLink>
         </div>
-        <p class="text-slate-400 text-[11px]">Manage your venue with CombolojoSPORT.</p>
+
+        <!-- MY SPORT FIELD -->
+        <div class="mb-6">
+          <p class="mb-2 px-3 text-[10px] font-extrabold uppercase tracking-[0.16em] text-slate-400">
+            My Sport Field
+          </p>
+
+          <NuxtLink
+            to="/partner/my-venue"
+            class="sidebar-link"
+            :class="isActive('/partner/my-venue') ? 'sidebar-active' : ''"
+            @click="mobileOpen = false"
+          >
+            <span class="sidebar-icon">
+              ⚽
+            </span>
+
+            <span class="flex-1">
+              My Venue
+            </span>
+          </NuxtLink>
+
+          <NuxtLink
+            to="/partner/slots"
+            class="sidebar-link"
+            :class="isActive('/partner/slots') ? 'sidebar-active' : ''"
+            @click="mobileOpen = false"
+          >
+            <span class="sidebar-icon">
+              ◷
+            </span>
+
+            <span class="flex-1">
+              Manage Slots
+            </span>
+          </NuxtLink>
+
+          <NuxtLink
+            to="/partner/bookings"
+            class="sidebar-link"
+            :class="isActive('/partner/bookings') ? 'sidebar-active' : ''"
+            @click="mobileOpen = false"
+          >
+            <span class="sidebar-icon">
+              📅
+            </span>
+
+            <span class="flex-1">
+              Bookings
+            </span>
+
+            <span
+              v-if="bookingCount > 0"
+              class="flex h-5 min-w-5 items-center justify-center rounded-full bg-emerald-100 px-1.5 text-[10px] font-bold text-emerald-700"
+            >
+              {{ bookingCount }}
+            </span>
+          </NuxtLink>
+        </div>
+
+        <!-- MANAGEMENT -->
+        <div class="mb-6">
+          <p class="mb-2 px-3 text-[10px] font-extrabold uppercase tracking-[0.16em] text-slate-400">
+            Management
+          </p>
+
+          <NuxtLink
+            to="/partner/events"
+            class="sidebar-link"
+            :class="isActive('/partner/events') ? 'sidebar-active' : ''"
+            @click="mobileOpen = false"
+          >
+            <span class="sidebar-icon">
+              🎯
+            </span>
+
+            <span class="flex-1">
+              Events
+            </span>
+          </NuxtLink>
+
+          <NuxtLink
+            to="/partner/games"
+            class="sidebar-link"
+            :class="isActive('/partner/games') ? 'sidebar-active' : ''"
+            @click="mobileOpen = false"
+          >
+            <span class="sidebar-icon">
+              🏆
+            </span>
+
+            <span class="flex-1">
+              Games
+            </span>
+          </NuxtLink>
+        </div>
+
+        <!-- FINANCE -->
+        <div class="mb-6">
+          <p class="mb-2 px-3 text-[10px] font-extrabold uppercase tracking-[0.16em] text-slate-400">
+            Finance
+          </p>
+
+          <NuxtLink
+            to="/partner/earnings"
+            class="sidebar-link"
+            :class="isActive('/partner/earnings') ? 'sidebar-active' : ''"
+            @click="mobileOpen = false"
+          >
+            <span class="sidebar-icon">
+              💰
+            </span>
+
+            <span class="flex-1">
+              Earnings
+            </span>
+          </NuxtLink>
+
+          <NuxtLink
+            to="/partner/payouts"
+            class="sidebar-link"
+            :class="isActive('/partner/payouts') ? 'sidebar-active' : ''"
+            @click="mobileOpen = false"
+          >
+            <span class="sidebar-icon">
+              💳
+            </span>
+
+            <span class="flex-1">
+              Payouts & Wallet
+            </span>
+
+            <span
+              v-if="pendingPayouts > 0"
+              class="flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-100 px-1.5 text-[10px] font-bold text-amber-700"
+            >
+              {{ pendingPayouts }}
+            </span>
+          </NuxtLink>
+        </div>
+
+        <!-- ACCOUNT -->
+        <div>
+          <p class="mb-2 px-3 text-[10px] font-extrabold uppercase tracking-[0.16em] text-slate-400">
+            Account
+          </p>
+
+          <NuxtLink
+            to="/partner/profile"
+            class="sidebar-link"
+            :class="isActive('/partner/profile') ? 'sidebar-active' : ''"
+            @click="mobileOpen = false"
+          >
+            <span class="sidebar-icon">
+              👤
+            </span>
+
+            <span class="flex-1">
+              Profile
+            </span>
+          </NuxtLink>
+
+          <NuxtLink
+            to="/partner/settings"
+            class="sidebar-link"
+            :class="isActive('/partner/settings') ? 'sidebar-active' : ''"
+            @click="mobileOpen = false"
+          >
+            <span class="sidebar-icon">
+              ⚙
+            </span>
+
+            <span class="flex-1">
+              Settings
+            </span>
+          </NuxtLink>
+        </div>
+
+      </nav>
+
+      <!-- =========================
+           VENUE STATUS
+      ========================== -->
+      <div class="shrink-0 border-t border-slate-100 p-4">
+
+        <div class="rounded-2xl bg-slate-900 p-4 text-white">
+
+          <!-- Title -->
+          <div class="mb-3 flex items-center justify-between">
+
+            <p class="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">
+              Venue Status
+            </p>
+
+            <div class="flex items-center gap-1.5">
+              <span class="h-2 w-2 rounded-full bg-emerald-400" />
+
+              <span class="text-[10px] font-bold text-emerald-400">
+                Active
+              </span>
+            </div>
+
+          </div>
+
+          <!-- Venue -->
+          <div class="flex items-center gap-3">
+
+            <div
+              class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 text-lg"
+            >
+              ⚽
+            </div>
+
+            <div class="min-w-0">
+
+              <p class="truncate text-sm font-bold text-white">
+                {{ venueName }}
+              </p>
+
+              <p class="mt-0.5 truncate text-[11px] text-slate-400">
+                📍 {{ venueLocation }}
+              </p>
+
+            </div>
+
+          </div>
+
+          <!-- Manage -->
+          <NuxtLink
+            to="/partner/my-venue"
+            class="mt-3 flex w-full items-center justify-center rounded-xl bg-white/10 py-2 text-xs font-bold text-white transition hover:bg-white/15"
+            @click="mobileOpen = false"
+          >
+            Manage Venue
+          </NuxtLink>
+
+        </div>
+
       </div>
+
+      <!-- =========================
+           BACK TO WEBSITE
+      ========================== -->
+      <div class="shrink-0 border-t border-slate-100 p-4">
+
+        <NuxtLink
+          to="/"
+          class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
+          @click="mobileOpen = false"
+        >
+          <span class="text-lg">
+            ←
+          </span>
+
+          <span>
+            Back to Website
+          </span>
+        </NuxtLink>
+
+      </div>
+
     </aside>
 
-    <!-- Main Dynamic Content Area -->
-    <div class="flex-1 flex flex-col min-w-0">
-      <header class="h-16 bg-white border-b border-slate-200 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30 shadow-sm">
+    <!-- =========================
+         RIGHT SIDE
+    ========================== -->
+    <div class="flex min-w-0 flex-1 flex-col">
+
+      <!-- TOPBAR -->
+      <header
+        class="flex h-[76px] shrink-0 items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6"
+      >
+
+        <!-- LEFT -->
         <div class="flex items-center gap-3">
-          <button 
-            @click="toggleMobileMenu" 
-            class="p-2 text-slate-600 hover:bg-slate-100 rounded-lg lg:hidden"
-            aria-label="Toggle Sidebar"
+
+          <!-- Mobile Menu -->
+          <button
+            class="flex h-10 w-10 items-center justify-center rounded-xl text-slate-600 hover:bg-slate-100 lg:hidden"
+            @click="mobileOpen = true"
           >
-            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+            <svg
+              class="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
           </button>
+
+          <div>
+            <p class="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">
+              Partner Dashboard
+            </p>
+
+            <h2 class="text-base font-bold text-slate-900">
+              {{ pageTitle }}
+            </h2>
+          </div>
+
         </div>
 
-        <div class="flex items-center gap-3 sm:gap-4 relative">
-          <!-- Notifications -->
+        <!-- RIGHT -->
+        <div class="flex items-center gap-2">
+
+          <!-- View Site -->
+          <NuxtLink
+            to="/"
+            class="hidden items-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 md:flex"
+          >
+            <span>↗</span>
+            View Site
+          </NuxtLink>
+
+          <!-- Notification -->
+          <button
+            class="relative flex h-10 w-10 items-center justify-center rounded-xl text-slate-500 hover:bg-slate-100"
+          >
+            <svg
+              class="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 10-12 0v3.2a2 2 0 01-.6 1.4L4 17h5m6 0a3 3 0 01-6 0"
+              />
+            </svg>
+
+            <span
+              v-if="notifications > 0"
+              class="absolute right-1.5 top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-bold text-white"
+            >
+              {{ notifications }}
+            </span>
+          </button>
+
+          <!-- Profile -->
           <div class="relative">
-            <button 
-              @click="toggleNotifications" 
-              class="p-2 text-slate-500 hover:text-slate-700 rounded-full hover:bg-slate-100 relative transition"
+
+            <button
+              class="flex items-center gap-2 rounded-xl p-1.5 hover:bg-slate-100"
+              @click.stop="profileOpen = !profileOpen"
             >
-              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
-              <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full"></span>
+
+              <div
+                class="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-100 font-bold text-emerald-700"
+              >
+                {{ partnerInitials }}
+              </div>
+
+              <div class="hidden text-left sm:block">
+                <p class="max-w-[120px] truncate text-xs font-bold text-slate-900">
+                  {{ partnerName }}
+                </p>
+
+                <p class="text-[10px] text-slate-500">
+                  Partner
+                </p>
+              </div>
+
+              <span class="hidden text-xs text-slate-400 sm:block">
+                ▼
+              </span>
+
             </button>
 
-            <div 
-              v-if="isNotificationsOpen" 
-              class="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 z-50"
+            <!-- Dropdown -->
+            <div
+              v-if="profileOpen"
+              class="absolute right-0 top-14 z-50 w-60 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl"
             >
-              <div class="px-4 py-2 border-b border-slate-100 flex items-center justify-between">
-                <span class="text-xs font-bold text-slate-800">Notifications</span>
-                <span class="text-[10px] bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded-full">2 New</span>
+
+              <div class="border-b border-slate-100 p-4">
+
+                <p class="font-bold text-slate-900">
+                  {{ partnerName }}
+                </p>
+
+                <p class="mt-1 truncate text-xs text-slate-500">
+                  {{ partnerEmail }}
+                </p>
+
               </div>
-              <div class="max-h-64 overflow-y-auto divide-y divide-slate-50">
-                <div 
-                  v-for="item in notifications" 
-                  :key="item.id" 
-                  class="p-3 hover:bg-slate-50 transition cursor-pointer text-xs"
+
+              <div class="p-2">
+
+                <NuxtLink
+                  to="/partner/profile"
+                  class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-slate-600 hover:bg-slate-50"
+                  @click="profileOpen = false"
                 >
-                  <div class="font-bold text-slate-800 flex justify-between">
-                    <span>{{ item.title }}</span>
-                    <span class="text-[10px] text-slate-400 font-normal">{{ item.time }}</span>
-                  </div>
-                  <p class="text-slate-500 text-[11px] mt-0.5">{{ item.message }}</p>
-                </div>
+                  👤
+                  Profile
+                </NuxtLink>
+
+                <NuxtLink
+                  to="/partner/settings"
+                  class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-slate-600 hover:bg-slate-50"
+                  @click="profileOpen = false"
+                >
+                  ⚙
+                  Settings
+                </NuxtLink>
+
               </div>
+
+              <div class="border-t border-slate-100 p-2">
+
+                <button
+                  class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-50"
+                  @click="logout"
+                >
+                  ↪
+                  Logout
+                </button>
+
+              </div>
+
             </div>
+
           </div>
 
-          <!-- User Profile -->
-          <div class="relative pl-3 border-l border-slate-200">
-            <button 
-              @click="toggleProfileMenu" 
-              class="flex items-center gap-3 text-left hover:opacity-80 transition focus:outline-none"
-            >
-              <div class="w-9 h-9 rounded-full bg-slate-200 overflow-hidden ring-2 ring-emerald-500/20">
-                <img 
-                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" 
-                  alt="Avatar" 
-                  class="w-full h-full object-cover" 
-                />
-              </div>
-              <div class="hidden sm:block">
-                <div class="text-xs font-bold text-slate-800 leading-tight">Abebe Kassa</div>
-                <div class="text-[10px] text-slate-500">Sarbet Futsal</div>
-              </div>
-            </button>
-
-            <div 
-              v-if="isProfileMenuOpen" 
-              class="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-slate-100 py-1 z-50 text-xs text-slate-700"
-            >
-              <NuxtLink 
-                to="/partner/profile" 
-                @click="isProfileMenuOpen = false"
-                class="flex items-center gap-2 px-4 py-2.5 hover:bg-slate-50 font-medium transition"
-              >
-                Account Profile
-              </NuxtLink>
-              <button 
-                @click="handleLogout" 
-                class="w-full flex items-center gap-2 px-4 py-2.5 text-rose-600 hover:bg-rose-50 font-bold transition text-left"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
         </div>
+
       </header>
 
-      <!-- Dynamic Page Slot -->
-      <main class="p-4 sm:p-6 space-y-6 overflow-y-auto flex-1">
+      <!-- PAGE -->
+      <main class="custom-scrollbar min-h-0 flex-1 overflow-y-auto">
         <slot />
       </main>
+
     </div>
 
   </div>
 </template>
+
+<script setup lang="ts">
+import { computed, onMounted, onBeforeUnmount, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+
+defineOptions({
+  name: 'PartnerLayout',
+})
+
+const route = useRoute()
+const router = useRouter()
+const authStore = useAuthStore()
+
+/*
+|--------------------------------------------------------------------------
+| UI State
+|--------------------------------------------------------------------------
+*/
+
+const mobileOpen = ref(false)
+const profileOpen = ref(false)
+
+const bookingCount = ref(3)
+const pendingPayouts = ref(1)
+const notifications = ref(3)
+
+/*
+|--------------------------------------------------------------------------
+| Partner Information
+|--------------------------------------------------------------------------
+*/
+
+const partnerName = computed(() => {
+  const user = authStore.user as any
+
+  return (
+    user?.name ||
+    user?.full_name ||
+    user?.fullName ||
+    'Partner'
+  )
+})
+
+const partnerEmail = computed(() => {
+  const user = authStore.user as any
+
+  return user?.email || 'partner@combolojo.com'
+})
+
+const partnerInitials = computed(() => {
+  const name = partnerName.value.trim()
+
+  if (!name) {
+    return 'P'
+  }
+
+  return name
+    .split(' ')
+    .slice(0, 2)
+    .map((part: string) => part.charAt(0))
+    .join('')
+    .toUpperCase()
+})
+
+/*
+|--------------------------------------------------------------------------
+| Venue
+|--------------------------------------------------------------------------
+*/
+
+const venueName = computed(() => {
+  const user = authStore.user as any
+
+  return (
+    user?.venue?.name ||
+    user?.venue_name ||
+    'Sarbet Futsal Arena'
+  )
+})
+
+const venueLocation = computed(() => {
+  const user = authStore.user as any
+
+  return (
+    user?.venue?.location ||
+    user?.venue_location ||
+    'Bole, Addis Ababa'
+  )
+})
+
+/*
+|--------------------------------------------------------------------------
+| Page Title
+|--------------------------------------------------------------------------
+*/
+
+const pageTitle = computed(() => {
+  const path = route.path
+
+  if (path === '/partner') {
+    return 'Dashboard'
+  }
+
+  if (path.includes('/my-venue')) {
+    return 'My Venue'
+  }
+
+  if (path.includes('/slots')) {
+    return 'Manage Slots'
+  }
+
+  if (path.includes('/bookings')) {
+    return 'Bookings'
+  }
+
+  if (path.includes('/events')) {
+    return 'Events'
+  }
+
+  if (path.includes('/games')) {
+    return 'Games'
+  }
+
+  if (path.includes('/earnings')) {
+    return 'Earnings'
+  }
+
+  if (path.includes('/payouts')) {
+    return 'Payouts & Wallet'
+  }
+
+  if (path.includes('/profile')) {
+    return 'Profile'
+  }
+
+  if (path.includes('/settings')) {
+    return 'Settings'
+  }
+
+  return 'Partner Dashboard'
+})
+
+/*
+|--------------------------------------------------------------------------
+| Active Sidebar
+|--------------------------------------------------------------------------
+*/
+
+function isActive(path: string) {
+  if (path === '/partner') {
+    return route.path === '/partner'
+  }
+
+  return (
+    route.path === path ||
+    route.path.startsWith(`${path}/`)
+  )
+}
+
+/*
+|--------------------------------------------------------------------------
+| Logout
+|--------------------------------------------------------------------------
+*/
+
+async function logout() {
+  profileOpen.value = false
+
+  try {
+    await authStore.logout()
+  } catch {
+    // Continue to login page
+  }
+
+  await router.push('/login')
+}
+
+/*
+|--------------------------------------------------------------------------
+| Close Dropdown
+|--------------------------------------------------------------------------
+*/
+
+function closeDropdown(event: MouseEvent) {
+  const target = event.target as HTMLElement
+
+  if (!target.closest('.relative')) {
+    profileOpen.value = false
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', closeDropdown)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', closeDropdown)
+})
+</script>
+
+<style scoped>
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 44px;
+  margin-bottom: 3px;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.75rem;
+  color: #64748b;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease,
+    transform 0.18s ease;
+}
+
+.sidebar-link:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.sidebar-link:hover .sidebar-icon {
+  color: #059669;
+}
+
+.sidebar-active {
+  background: #ecfdf5 !important;
+  color: #047857 !important;
+  font-weight: 700;
+}
+
+.sidebar-active .sidebar-icon {
+  color: #059669;
+}
+
+.sidebar-icon {
+  display: flex;
+  width: 24px;
+  min-width: 24px;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  color: #64748b;
+  transition: color 0.18s ease;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+</style>
+```

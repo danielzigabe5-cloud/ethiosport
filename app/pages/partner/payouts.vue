@@ -1,236 +1,316 @@
-<script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
-
-// ገጹ የፓርትነር ሌይአውትን እንዲጠቀም (layouts/partner.vue ካለህ)
-definePageMeta({ layout: 'partner' })
-
-// 1. የዳታ መቀመጫዎች (State)
-const stats = ref({
-  totalEarned: 0,
-  availableBalance: 0,
-  pendingWithdrawal: 0,
-  lifetimeWithdrawals: 0
-})
-
-const transactions = ref([])
-const isLoading = ref(true)
-const isSubmitting = ref(false)
-const isModalOpen = ref(false)
-
-// 2. የማጣሪያ መቀመጫዎች (Filter State)
-type TabType = 'all' | 'completed' | 'pending' | 'failed'
-const selectedTab = ref<TabType>('all')
-const searchQuery = ref('')
-
-// 3. የገንዘብ ማውጫ ፎርም መቀመጫዎች
-const withdrawAmount = ref<number | ''>('')
-const selectedMethod = ref('CBE')
-const accountNumber = ref('')
-
-// 4. ዳታውን ከባክኤንድ የመጥሪያ ፈንክሽን
-const fetchPayouts = async () => {
-  isLoading.value = true
-  try {
-    const token = localStorage.getItem('auth_token')
-    // ማሳሰቢያ፡ ባክኤንድህ የሚገኝበትን URL እዚህ ጋር አስተካክል
-    const response = await fetch(`http://localhost:8000/api/owner/payouts?status=${selectedTab.value}&search=${searchQuery.value}`, {
-      headers: { 
-        'Authorization': `Bearer ${token}`,
-        'Accept': 'application/json'
-      }
-    })
-    const data = await response.json()
-    if (response.ok) {
-      stats.value = data.stats
-      transactions.value = data.transactions
-    }
-  } catch (e) {
-    console.error("ዳታውን መጫን አልተቻለም:", e)
-  } finally {
-    isLoading.value = false
-  }
-}
-
-// 5. ገንዘብ ማውጫ ጥያቄ መላክ
-const handleWithdrawal = async () => {
-  if (!withdrawAmount.value || withdrawAmount.value <= 0) return
-  
-  isSubmitting.value = true
-  try {
-    const token = localStorage.getItem('auth_token')
-    const response = await fetch('http://localhost:8000/api/owner/withdraw', {
-      method: 'POST',
-      headers: { 
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify({
-        amount: withdrawAmount.value,
-        method: selectedMethod.value,
-        account_number: accountNumber.value
-      })
-    })
-    
-    const result = await response.json()
-    if (response.ok) {
-      alert(result.message)
-      isModalOpen.value = false
-      // ፎርሙን ባዶ አድርግ
-      withdrawAmount.value = ''
-      accountNumber.value = ''
-      fetchPayouts() // ገጹን አድስ
-    } else {
-      alert(result.message || "ስህተት ተከስቷል")
-    }
-  } catch (e) {
-    alert("ከባክኤንድ ጋር መገናኘት አልተቻለም!")
-  } finally {
-    isSubmitting.value = false
-  }
-}
-
-// ገጹ ሲከፈት ዳታ ጥራ
-onMounted(fetchPayouts)
-
-// ማጣሪያው (Filter) ሲቀየር ዳታውን በድጋሚ ጥራ
-watch([selectedTab, searchQuery], () => {
-  fetchPayouts()
-})
-</script>
-
+```vue
 <template>
-  <div class="p-6 space-y-6 bg-[#070c14] min-h-screen text-white">
-    <!-- Header Section -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-      <div>
-        <h1 class="text-2xl font-black text-white">የክፍያ ታሪክ (Payouts)</h1>
-        <p class="text-slate-400 text-sm mt-1">የተሰበሰበ ገቢንና የወጪ ጥያቄዎችን እዚህ መከታተል ይችላሉ።</p>
+  <div class="min-h-full bg-slate-50">
+
+    <section class="border-b border-slate-200 bg-white">
+      <div class="mx-auto max-w-[1500px] px-6 py-7 lg:px-8">
+
+        <p class="text-sm font-semibold text-emerald-600">
+          Finance
+        </p>
+
+        <h1 class="mt-1 text-2xl font-black text-slate-900">
+          Payouts & Wallet
+        </h1>
+
+        <p class="mt-1 text-sm text-slate-500">
+          Manage your wallet, withdrawals and payout history.
+        </p>
+
+      </div>
+    </section>
+
+    <div class="mx-auto max-w-[1500px] px-6 py-7 lg:px-8">
+
+      <!-- WALLET -->
+      <div class="grid gap-5 lg:grid-cols-[1.4fr_1fr]">
+
+        <div class="rounded-3xl bg-slate-900 p-7 text-white shadow-sm">
+
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-xs font-bold uppercase tracking-wider text-slate-400">
+                Available Balance
+              </p>
+
+              <p class="mt-3 text-4xl font-black">
+                ETB 54,200
+              </p>
+            </div>
+
+            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/15 text-2xl">
+              💳
+            </div>
+          </div>
+
+          <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+            <button
+              class="rounded-xl bg-emerald-500 px-5 py-3 text-sm font-bold text-white hover:bg-emerald-600"
+              @click="showWithdrawModal = true"
+            >
+              Withdraw Funds
+            </button>
+
+            <NuxtLink
+              to="/partner/earnings"
+              class="rounded-xl bg-white/10 px-5 py-3 text-center text-sm font-bold text-white hover:bg-white/15"
+            >
+              View Earnings
+            </NuxtLink>
+          </div>
+
+        </div>
+
+        <div class="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm">
+
+          <p class="text-xs font-bold uppercase tracking-wider text-slate-400">
+            Payout Account
+          </p>
+
+          <div class="mt-5 flex items-center gap-4">
+
+            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-xl">
+              🏦
+            </div>
+
+            <div>
+              <p class="font-black text-slate-900">
+                Commercial Bank of Ethiopia
+              </p>
+
+              <p class="mt-1 text-xs text-slate-500">
+                **** **** 4521
+              </p>
+            </div>
+
+          </div>
+
+          <button
+            class="mt-6 w-full rounded-xl border border-slate-200 py-3 text-xs font-bold text-slate-600 hover:bg-slate-50"
+          >
+            Manage Payout Account
+          </button>
+
+        </div>
+
       </div>
 
-      <button 
-        @click="isModalOpen = true"
-        class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-5 py-2.5 rounded-xl transition shadow-lg active:scale-95 text-sm cursor-pointer"
-      >
-        ገንዘብ ወጪ አድርግ (Withdraw)
-      </button>
-    </div>
+      <!-- PAYOUT STATS -->
+      <div class="mt-7 grid gap-4 sm:grid-cols-3">
 
-    <!-- Overview Stats Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <div class="bg-[#0d1522] border border-[#1a2432] p-5 rounded-2xl">
-        <span class="text-slate-400 text-xs font-semibold uppercase">ጠቅላላ ገቢ</span>
-        <div class="text-2xl font-black text-white mt-2">{{ stats.totalEarned.toLocaleString() }} ETB</div>
-      </div>
-
-      <div class="bg-[#0d1522] border border-emerald-500/30 p-5 rounded-2xl">
-        <span class="text-emerald-400 text-xs font-semibold uppercase">ሊወጣ የሚችል ሂሳብ</span>
-        <div class="text-2xl font-black text-emerald-400 mt-2">{{ stats.availableBalance.toLocaleString() }} ETB</div>
-      </div>
-
-      <div class="bg-[#0d1522] border border-[#1a2432] p-5 rounded-2xl">
-        <span class="text-slate-400 text-xs font-semibold uppercase">በሂደት ላይ (Pending)</span>
-        <div class="text-2xl font-black text-amber-400 mt-2">{{ stats.pendingWithdrawal.toLocaleString() }} ETB</div>
-      </div>
-
-      <div class="bg-[#0d1522] border border-[#1a2432] p-5 rounded-2xl">
-        <span class="text-slate-400 text-xs font-semibold uppercase">የወጡ ክፍያዎች</span>
-        <div class="text-2xl font-black text-slate-300 mt-2">{{ stats.lifetimeWithdrawals.toLocaleString() }} ETB</div>
-      </div>
-    </div>
-
-    <!-- Filter Bar -->
-    <div class="flex flex-col md:flex-row justify-between items-center gap-4 bg-[#0d1522] p-4 rounded-2xl border border-[#1a2432]">
-      <div class="flex gap-1 bg-[#070c14] p-1 rounded-xl border border-[#1a2432]">
-        <button 
-          v-for="tab in (['all', 'completed', 'pending', 'failed'] as const)" 
-          :key="tab"
-          @click="selectedTab = tab"
-          class="px-4 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer"
-          :class="selectedTab === tab ? 'bg-[#152338] text-emerald-400 border border-[#24354d]' : 'text-slate-400'"
+        <div
+          v-for="item in payoutStats"
+          :key="item.title"
+          class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
         >
-          {{ tab === 'all' ? 'ሁሉም' : tab === 'completed' ? 'የተጠናቀቁ' : tab === 'pending' ? 'በሂደት ላይ' : 'ያልተሳኩ' }}
-        </button>
+          <p class="text-xs text-slate-500">
+            {{ item.title }}
+          </p>
+
+          <p class="mt-2 text-xl font-black text-slate-900">
+            {{ item.value }}
+          </p>
+        </div>
+
       </div>
 
-      <input 
-        v-model="searchQuery" 
-        type="text" 
-        placeholder="በመለያ ቁጥር ፈልግ..."
-        class="bg-[#070c14] border border-[#1a2432] rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-emerald-500 w-full md:w-64"
-      />
-    </div>
+      <!-- HISTORY -->
+      <section class="mt-7 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
 
-    <!-- Transactions Table -->
-    <div class="bg-[#0d1522] border border-[#1a2432] rounded-2xl overflow-hidden shadow-xl">
-      <div v-if="isLoading" class="p-10 text-center text-slate-500">በመጫን ላይ...</div>
-      <table v-else class="w-full text-left text-xs">
-        <thead class="bg-[#070c14] border-b border-[#1a2432] text-slate-400 uppercase">
-          <tr>
-            <th class="py-4 px-4">የክፍያ መለያ</th>
-            <th class="py-4 px-4">ቀን</th>
-            <th class="py-4 px-4">የክፍያ መንገድ</th>
-            <th class="py-4 px-4">መጠን (ETB)</th>
-            <th class="py-4 px-4">ሁኔታ</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-[#1a2432]/60 text-slate-300">
-          <tr v-for="tx in transactions" :key="tx.id" class="hover:bg-[#131f30] transition">
-            <td class="py-4 px-4 font-mono font-bold text-white">{{ tx.id }}</td>
-            <td class="py-4 px-4">{{ tx.date }}</td>
-            <td class="py-4 px-4">{{ tx.method }}</td>
-            <td class="py-4 px-4 font-black text-white">{{ tx.amount.toLocaleString() }}</td>
-            <td class="py-4 px-4">
-              <span 
-                class="px-2.5 py-1 rounded-full text-[10px] font-bold border"
-                :class="{
-                  'bg-emerald-500/10 text-emerald-400 border-emerald-500/20': tx.status === 'completed',
-                  'bg-amber-500/10 text-amber-400 border-amber-500/20': tx.status === 'pending',
-                  'bg-rose-500/10 text-rose-400 border-rose-500/20': tx.status === 'failed'
-                }"
+        <div class="border-b border-slate-100 px-6 py-5">
+          <h2 class="font-black text-slate-900">
+            Payout History
+          </h2>
+        </div>
+
+        <div class="overflow-x-auto">
+
+          <table class="w-full min-w-[700px] text-left">
+
+            <thead class="bg-slate-50">
+              <tr>
+                <th class="px-6 py-4 text-xs font-bold uppercase text-slate-400">
+                  Reference
+                </th>
+
+                <th class="px-6 py-4 text-xs font-bold uppercase text-slate-400">
+                  Date
+                </th>
+
+                <th class="px-6 py-4 text-xs font-bold uppercase text-slate-400">
+                  Method
+                </th>
+
+                <th class="px-6 py-4 text-xs font-bold uppercase text-slate-400">
+                  Amount
+                </th>
+
+                <th class="px-6 py-4 text-xs font-bold uppercase text-slate-400">
+                  Status
+                </th>
+              </tr>
+            </thead>
+
+            <tbody class="divide-y divide-slate-100">
+
+              <tr
+                v-for="payout in payouts"
+                :key="payout.id"
               >
-                {{ tx.status }}
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                <td class="px-6 py-4 text-sm font-bold text-slate-900">
+                  {{ payout.reference }}
+                </td>
+
+                <td class="px-6 py-4 text-sm text-slate-600">
+                  {{ payout.date }}
+                </td>
+
+                <td class="px-6 py-4 text-sm text-slate-600">
+                  {{ payout.method }}
+                </td>
+
+                <td class="px-6 py-4 text-sm font-black text-slate-900">
+                  ETB {{ payout.amount }}
+                </td>
+
+                <td class="px-6 py-4">
+                  <span
+                    class="rounded-full px-3 py-1 text-[11px] font-bold"
+                    :class="payout.status === 'Completed'
+                      ? 'bg-emerald-50 text-emerald-700'
+                      : 'bg-amber-50 text-amber-700'"
+                  >
+                    {{ payout.status }}
+                  </span>
+                </td>
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </section>
+
     </div>
 
-    <!-- WITHDRAWAL MODAL -->
-    <div v-if="isModalOpen" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-      <div class="bg-[#0d1522] border border-[#1a2432] rounded-2xl w-full max-w-md p-6 space-y-5">
-        <h3 class="text-lg font-bold text-white border-b border-[#1a2432] pb-3">የገንዘብ ማውጫ ጥያቄ</h3>
-        
-        <div class="space-y-4">
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">የማውጫ መጠን (ETB)</label>
-            <input v-model="withdrawAmount" type="number" class="w-full bg-[#070c14] border border-[#1a2432] rounded-xl px-4 py-2.5 text-white" />
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">የክፍያ ዘዴ</label>
-            <select v-model="selectedMethod" class="w-full bg-[#070c14] border border-[#1a2432] rounded-xl px-4 py-2.5 text-white">
-              <option value="CBE">CBE</option>
-              <option value="Telebirr">Telebirr</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">የሂሳብ ቁጥር</label>
-            <input v-model="accountNumber" type="text" class="w-full bg-[#070c14] border border-[#1a2432] rounded-xl px-4 py-2.5 text-white" />
+    <!-- WITHDRAW MODAL -->
+    <div
+      v-if="showWithdrawModal"
+      class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/50 p-4"
+      @click.self="showWithdrawModal = false"
+    >
+      <div class="w-full max-w-md rounded-3xl bg-white shadow-2xl">
+
+        <div class="border-b border-slate-100 p-6">
+          <div class="flex items-center justify-between">
+            <h2 class="font-black text-slate-900">
+              Withdraw Funds
+            </h2>
+
+            <button
+              class="text-xl text-slate-400"
+              @click="showWithdrawModal = false"
+            >
+              ×
+            </button>
           </div>
         </div>
 
-        <div class="flex justify-end gap-3 pt-4">
-          <button @click="isModalOpen = false" class="text-slate-400 text-sm font-bold">ሰርዝ</button>
-          <button 
-            @click="handleWithdrawal" 
-            :disabled="isSubmitting"
-            class="bg-emerald-500 text-slate-950 px-5 py-2 rounded-xl font-bold text-sm disabled:opacity-50"
+        <div class="p-6">
+
+          <label class="text-xs font-bold text-slate-500">
+            Amount
+          </label>
+
+          <div class="mt-2 flex items-center rounded-xl border border-slate-200 px-4">
+            <span class="font-bold text-slate-400">ETB</span>
+
+            <input
+              v-model="amount"
+              type="number"
+              placeholder="0.00"
+              class="w-full border-0 px-3 py-3 outline-none"
+            />
+          </div>
+
+          <p class="mt-2 text-xs text-slate-500">
+            Available: ETB 54,200
+          </p>
+
+        </div>
+
+        <div class="flex justify-end gap-3 border-t border-slate-100 p-6">
+          <button
+            class="rounded-xl px-4 py-2 text-sm font-bold text-slate-500"
+            @click="showWithdrawModal = false"
           >
-            {{ isSubmitting ? 'በመላክ ላይ...' : 'ጥያቄውን ላክ' }}
+            Cancel
+          </button>
+
+          <button
+            class="rounded-xl bg-emerald-600 px-5 py-2 text-sm font-bold text-white hover:bg-emerald-700"
+            @click="requestPayout"
+          >
+            Request Payout
           </button>
         </div>
+
       </div>
     </div>
+
   </div>
 </template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+
+definePageMeta({
+  layout: 'partner',
+})
+
+const showWithdrawModal = ref(false)
+const amount = ref('')
+
+const payoutStats = [
+  { title: 'Total Paid Out', value: 'ETB 432,300' },
+  { title: 'Pending Payouts', value: 'ETB 12,500' },
+  { title: 'Last Payout', value: 'ETB 45,000' },
+]
+
+const payouts = [
+  {
+    id: 1,
+    reference: 'PO-2026-0098',
+    date: 'Sep 20, 2026',
+    method: 'CBE Bank',
+    amount: '45,000',
+    status: 'Completed',
+  },
+  {
+    id: 2,
+    reference: 'PO-2026-0091',
+    date: 'Sep 05, 2026',
+    method: 'CBE Bank',
+    amount: '38,500',
+    status: 'Completed',
+  },
+  {
+    id: 3,
+    reference: 'PO-2026-0101',
+    date: 'Sep 27, 2026',
+    method: 'CBE Bank',
+    amount: '12,500',
+    status: 'Pending',
+  },
+]
+
+function requestPayout() {
+  if (!amount.value) return
+
+  showWithdrawModal.value = false
+  amount.value = ''
+}
+</script>
+```
