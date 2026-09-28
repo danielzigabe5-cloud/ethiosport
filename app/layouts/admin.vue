@@ -1,242 +1,576 @@
+```vue
 <template>
-  <div class="h-screen w-full bg-[#f8fafc] dark:bg-[#080c14] text-slate-800 dark:text-slate-100 flex flex-col font-sans overflow-hidden antialiased">
-
-    <!-- HEADER -->
-    <header class="h-16 shrink-0 bg-white/80 dark:bg-[#0d1527]/90 backdrop-blur-xl border-b border-slate-200/80 dark:border-slate-800/60 z-50 px-4 lg:px-8 flex items-center justify-between shadow-xs">
-      <div class="flex items-center gap-4">
+  <div
+    class="flex h-screen w-full flex-col overflow-hidden bg-slate-50 text-slate-800 antialiased dark:bg-[#070b12] dark:text-slate-100"
+  >
+    <!-- =========================================================
+         HEADER
+    ========================================================== -->
+    <header
+      class="relative z-50 flex h-16 shrink-0 items-center justify-between border-b border-slate-200 bg-white px-4 shadow-sm dark:border-slate-800 dark:bg-[#0d1421] lg:px-7"
+    >
+      <!-- LEFT -->
+      <div class="flex min-w-0 items-center gap-3">
+        <!-- Sidebar Toggle -->
         <button
+          type="button"
           @click="toggleSidebar"
-          class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition active:scale-95 cursor-pointer"
-          title="Toggle Navigation Menu"
+          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-slate-600 transition hover:bg-slate-100 hover:text-emerald-600 active:scale-95 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-emerald-400"
+          title="Toggle navigation"
         >
-          <Icon name="lucide:menu" class="w-5 h-5" />
+          <Icon name="lucide:menu" class="h-5 w-5" />
         </button>
 
-        <div class="flex flex-col justify-center">
-          <NuxtLink to="/admin" class="flex items-center gap-1.5 text-xl font-black uppercase tracking-widest group leading-none">
-            <span class="text-slate-900 dark:text-white transition group-hover:text-emerald-400">COMPO</span>
-            <span class="text-emerald-500 drop-shadow-[0_0_12px_rgba(16,185,129,0.4)]">LOJO</span>
-          </NuxtLink>
+        <!-- Logo -->
+        <NuxtLink
+          to="/admin"
+          class="group flex min-w-0 items-center gap-2"
+        >
+          <div
+            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500 text-lg shadow-sm shadow-emerald-500/20"
+          >
+            ⚽
+          </div>
 
-          <div class="flex items-center gap-1.5 mt-1">
-            <span class="inline-block w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
-            <span class="text-[10px] font-black tracking-wider uppercase text-blue-900 dark:text-blue-300">
-              Welcome to Admin Dashboard
-            </span>
+          <div class="hidden min-w-0 sm:block">
+            <div class="flex items-center gap-1 text-lg font-black tracking-tight">
+              <span class="text-slate-900 dark:text-white">COMBO</span>
+              <span class="text-emerald-500">LOJO</span>
+            </div>
+
+            <p
+              class="truncate text-[9px] font-bold uppercase tracking-[1.8px] text-slate-400"
+            >
+              Sport Field Management
+            </p>
+          </div>
+        </NuxtLink>
+
+        <!-- Separator -->
+        <div class="mx-1 hidden h-7 w-px bg-slate-200 dark:bg-slate-800 md:block"></div>
+
+        <!-- Location -->
+        <div
+          class="hidden items-center gap-2 rounded-lg bg-slate-50 px-3 py-2 dark:bg-slate-800/60 md:flex"
+        >
+          <Icon
+            name="lucide:map-pin"
+            class="h-4 w-4 text-emerald-500"
+          />
+
+          <div class="leading-none">
+            <p class="text-[9px] font-bold uppercase tracking-wider text-slate-400">
+              Location
+            </p>
+            <p class="mt-1 text-xs font-bold text-slate-700 dark:text-slate-200">
+              Ethiopia
+            </p>
           </div>
         </div>
       </div>
 
-      <div class="flex items-center gap-3 md:gap-5">
+      <!-- RIGHT -->
+      <div class="flex items-center gap-2 md:gap-3">
+
+        <!-- View Public Site -->
         <NuxtLink
           to="/"
           target="_blank"
-          class="hidden sm:flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-emerald-500 dark:hover:text-emerald-400 transition-colors py-2 px-3.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/40"
+          class="hidden items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold text-slate-500 transition hover:bg-slate-100 hover:text-emerald-600 dark:text-slate-400 dark:hover:bg-slate-800 sm:flex"
         >
+          <Icon name="lucide:external-link" class="h-4 w-4" />
           <span>View Site</span>
-          <Icon name="lucide:external-link" class="w-3.5 h-3.5" />
         </NuxtLink>
 
+        <!-- Add Venue -->
         <NuxtLink
           :to="authStore.user ? '/venues/create' : '/auth?redirect=/venues/create'"
-          class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-black transition-all duration-200 shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_25px_rgba(16,185,129,0.5)] active:scale-95"
+          class="flex items-center gap-2 rounded-xl bg-emerald-500 px-3.5 py-2.5 text-xs font-black text-white shadow-sm shadow-emerald-500/20 transition hover:bg-emerald-600 active:scale-95"
         >
-          <Icon name="lucide:plus" class="w-4 h-4 stroke-[3]" />
-          <span>Add Venue</span>
+          <Icon name="lucide:plus" class="h-4 w-4 stroke-[3]" />
+          <span class="hidden sm:inline">Add Sport Field</span>
+          <span class="sm:hidden">Add</span>
         </NuxtLink>
 
-        <div class="relative" ref="dropdownRef">
+        <!-- Notifications -->
+        <button
+          type="button"
+          class="relative flex h-10 w-10 items-center justify-center rounded-xl text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
+          title="Notifications"
+        >
+          <Icon name="lucide:bell" class="h-5 w-5" />
+
+          <span
+            class="absolute right-2 top-2 h-2 w-2 rounded-full border-2 border-white bg-red-500 dark:border-[#0d1421]"
+          ></span>
+        </button>
+
+        <!-- Profile -->
+        <div
+          ref="dropdownRef"
+          class="relative"
+        >
           <button
-            @click="toggleDropdown"
             type="button"
-            class="flex items-center pl-2 border-l border-slate-200 dark:border-slate-800/80 hover:opacity-90 transition-all focus:outline-none cursor-pointer group"
-            title="Account Settings"
+            @click="toggleDropdown"
+            class="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-1.5 pr-2 transition hover:border-emerald-300 hover:shadow-sm dark:border-slate-800 dark:bg-slate-900"
           >
-            <div class="relative shrink-0">
+            <!-- Avatar -->
+            <div class="relative">
               <img
                 v-if="userAvatar"
                 :src="userAvatar"
-                alt="Profile Avatar"
-                class="w-10 h-10 rounded-xl object-cover border-2 border-emerald-500/60 shadow-md shadow-emerald-500/20 group-hover:border-emerald-400 transition-all"
+                alt="Admin"
+                class="h-8 w-8 rounded-lg object-cover"
               />
+
               <div
                 v-else
-                class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-cyan-500 text-slate-950 flex items-center justify-center font-black text-sm shadow-md shadow-emerald-500/20 border-2 border-emerald-500/60 group-hover:border-emerald-400 transition-all"
+                class="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500 text-xs font-black text-white"
               >
-                <Icon name="lucide:user" class="w-5 h-5 text-slate-950" />
+                A
               </div>
-              <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 border-2 border-white dark:border-[#0d1527] rounded-full shadow-xs"></span>
+
+              <span
+                class="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-emerald-500 dark:border-slate-900"
+              ></span>
             </div>
+
+            <div class="hidden text-left lg:block">
+              <p class="max-w-[110px] truncate text-xs font-bold text-slate-800 dark:text-slate-100">
+                {{ adminName }}
+              </p>
+
+              <p class="text-[9px] font-semibold uppercase tracking-wider text-slate-400">
+                Administrator
+              </p>
+            </div>
+
+            <Icon
+              name="lucide:chevron-down"
+              class="hidden h-3.5 w-3.5 text-slate-400 lg:block"
+            />
           </button>
 
+          <!-- Profile Dropdown -->
           <Transition
             enter-active-class="transition duration-150 ease-out"
-            enter-from-class="transform scale-95 opacity-0 -translate-y-2"
-            enter-to-class="transform scale-100 opacity-100 translate-y-0"
+            enter-from-class="translate-y-1 scale-95 opacity-0"
+            enter-to-class="translate-y-0 scale-100 opacity-100"
             leave-active-class="transition duration-100 ease-in"
-            leave-from-class="transform scale-100 opacity-100 translate-y-0"
-            leave-to-class="transform scale-95 opacity-0 -translate-y-2"
+            leave-from-class="translate-y-0 scale-100 opacity-100"
+            leave-to-class="translate-y-1 scale-95 opacity-0"
           >
             <div
               v-if="isProfileOpen"
-              class="absolute right-0 mt-3 w-56 bg-white dark:bg-[#0d1527] rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800/80 p-2 z-50 divide-y divide-slate-100 dark:divide-slate-800/80"
+              class="absolute right-0 mt-2.5 w-64 overflow-hidden rounded-2xl border border-slate-200 bg-white p-2 shadow-xl dark:border-slate-800 dark:bg-[#0d1421]"
             >
-              <div class="px-3 py-2.5">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Signed in as</p>
-                <p class="text-xs font-bold text-slate-800 dark:text-slate-200 truncate mt-0.5">
-                  {{ authStore.user?.email || 'admin@compolojo.com' }}
-                </p>
+              <!-- Account -->
+              <div
+                class="mb-1 rounded-xl bg-slate-50 p-3 dark:bg-slate-800/60"
+              >
+                <div class="flex items-center gap-3">
+                  <div
+                    class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500 font-black text-white"
+                  >
+                    A
+                  </div>
+
+                  <div class="min-w-0">
+                    <p class="truncate text-xs font-bold">
+                      {{ adminName }}
+                    </p>
+
+                    <p class="mt-0.5 truncate text-[10px] text-slate-400">
+                      {{ authStore.user?.email || 'admin@combolojo.com' }}
+                    </p>
+                  </div>
+                </div>
               </div>
 
-              <div class="py-1">
-                <NuxtLink
-                  to="/admin/profile"
-                  @click="isProfileOpen = false"
-                  class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-emerald-500 dark:hover:text-emerald-400 transition-colors"
-                >
-                  <Icon name="lucide:user-cog" class="w-4 h-4 text-emerald-400" />
-                  <span>Profile Settings</span>
-                </NuxtLink>
-              </div>
+              <!-- Profile -->
+              <NuxtLink
+                to="/admin/profile"
+                @click="handleSidebarNavigation"
+                class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-600 transition hover:bg-slate-100 hover:text-emerald-600 dark:text-slate-300 dark:hover:bg-slate-800"
+              >
+                <Icon name="lucide:user-cog" class="h-4 w-4" />
+                Profile Settings
+              </NuxtLink>
 
-              <div class="pt-1">
-                <button
-                  type="button"
-                  @click="handleLogout"
-                  :disabled="isLoggingOut"
-                  class="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-rose-500 hover:bg-rose-500/10 dark:hover:bg-rose-500/20 rounded-xl transition-colors disabled:opacity-50 cursor-pointer text-left"
-                >
-                  <span v-if="isLoggingOut" class="w-4 h-4 border-2 border-rose-500 border-t-transparent rounded-full animate-spin"></span>
-                  <template v-else>
-                    <Icon name="lucide:log-out" class="w-4 h-4" />
-                    <span>Logout</span>
-                  </template>
-                </button>
-              </div>
+              <!-- Settings -->
+              <NuxtLink
+                to="/admin/settings"
+                @click="handleSidebarNavigation"
+                class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-600 transition hover:bg-slate-100 hover:text-emerald-600 dark:text-slate-300 dark:hover:bg-slate-800"
+              >
+                <Icon name="lucide:settings" class="h-4 w-4" />
+                Settings
+              </NuxtLink>
+
+              <div class="my-1 border-t border-slate-100 dark:border-slate-800"></div>
+
+              <!-- Logout -->
+              <button
+                type="button"
+                @click="handleLogout"
+                :disabled="isLoggingOut"
+                class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-xs font-bold text-rose-500 transition hover:bg-rose-50 disabled:opacity-50 dark:hover:bg-rose-500/10"
+              >
+                <span
+                  v-if="isLoggingOut"
+                  class="h-4 w-4 animate-spin rounded-full border-2 border-rose-500 border-t-transparent"
+                ></span>
+
+                <Icon
+                  v-else
+                  name="lucide:log-out"
+                  class="h-4 w-4"
+                />
+
+                <span>
+                  {{ isLoggingOut ? 'Logging out...' : 'Logout' }}
+                </span>
+              </button>
             </div>
           </Transition>
         </div>
       </div>
     </header>
 
-    <!-- BODY -->
-    <div class="flex-1 flex overflow-hidden relative">
+    <!-- =========================================================
+         BODY
+    ========================================================== -->
+    <div class="relative flex min-h-0 flex-1 overflow-hidden">
 
-      <!-- MOBILE BACKDROP -->
+      <!-- Mobile Backdrop -->
       <Transition
-        enter-active-class="transition duration-300 ease-out"
+        enter-active-class="transition-opacity duration-200"
         enter-from-class="opacity-0"
         enter-to-class="opacity-100"
-        leave-active-class="transition duration-200 ease-in"
+        leave-active-class="transition-opacity duration-150"
         leave-from-class="opacity-100"
         leave-to-class="opacity-0"
       >
         <div
           v-if="isMobileSidebarOpen"
+          class="fixed inset-0 z-40 bg-slate-950/50 backdrop-blur-sm lg:hidden"
           @click="isMobileSidebarOpen = false"
-          class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-40 lg:hidden"
         ></div>
       </Transition>
 
-      <!-- 🟢 ADMIN SIDEBAR — Dark Green Style -->
+      <!-- =======================================================
+           SIDEBAR
+      ======================================================== -->
       <aside
-        class="fixed lg:static left-0 top-16 bottom-0 bg-[#0d2818] dark:bg-[#0a1f13] backdrop-blur-2xl border-r border-emerald-900/40 z-40 flex flex-col justify-between transition-all duration-300 ease-in-out h-[calc(100vh-64px)] shrink-0 shadow-[10px_0_30px_-10px_rgba(0,0,0,0.6)] relative overflow-hidden"
+        class="fixed bottom-0 left-0 top-16 z-50 flex h-[calc(100vh-64px)] shrink-0 flex-col border-r border-slate-200 bg-white transition-all duration-300 dark:border-slate-800 dark:bg-[#0b111d] lg:static lg:z-30"
         :class="[
-          isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
-          isSidebarCollapsed ? 'lg:w-0 lg:p-0 lg:overflow-hidden lg:border-none' : 'w-64'
+          isMobileSidebarOpen
+            ? 'translate-x-0'
+            : '-translate-x-full lg:translate-x-0',
+
+          isSidebarCollapsed
+            ? 'lg:w-0 lg:overflow-hidden lg:border-0'
+            : 'w-64'
         ]"
       >
-        <div class="flex flex-col h-full">
 
-          <!-- 🔍 SEARCH BAR (TOP OF SIDEBAR) -->
-          <div class="p-4 shrink-0 border-b border-emerald-900/30">
+        <!-- Sidebar Content -->
+        <div class="flex h-full min-w-[256px] flex-col">
+
+          <!-- Sidebar Header -->
+          <div class="border-b border-slate-100 px-4 py-4 dark:border-slate-800">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-[10px] font-black uppercase tracking-[1.5px] text-slate-400">
+                  Admin Panel
+                </p>
+
+                <h2 class="mt-1 text-sm font-black text-slate-900 dark:text-white">
+                  Sport Management
+                </h2>
+              </div>
+
+              <div
+                class="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-500/10"
+              >
+                <Icon
+                  name="lucide:shield-check"
+                  class="h-4 w-4 text-emerald-500"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Search -->
+          <div class="px-3 pt-3">
             <div class="relative">
               <Icon
                 name="lucide:search"
-                class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-emerald-300/50 pointer-events-none"
+                class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
               />
+
               <input
                 v-model="searchQuery"
                 type="text"
-                placeholder="Search..."
-                class="w-full pl-9 pr-8 py-2 rounded-lg bg-emerald-950/50 border border-emerald-800/50 text-xs font-semibold text-emerald-50 placeholder:text-emerald-300/40 focus:outline-none focus:border-emerald-400/70 focus:bg-emerald-950/70 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-200"
+                placeholder="Search menu..."
+                class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-9 pr-8 text-xs font-semibold text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-emerald-400 focus:bg-white focus:ring-2 focus:ring-emerald-500/10 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:focus:bg-slate-950"
               />
+
               <button
                 v-if="searchQuery"
-                @click="searchQuery = ''"
                 type="button"
-                class="absolute right-2.5 top-1/2 -translate-y-1/2 text-emerald-300/50 hover:text-rose-400 transition-colors cursor-pointer"
-                title="Clear search"
+                @click="searchQuery = ''"
+                class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-rose-500"
               >
-                <Icon name="lucide:x" class="w-3.5 h-3.5" />
+                <Icon name="lucide:x" class="h-3.5 w-3.5" />
               </button>
             </div>
           </div>
 
-          <!-- 📋 MENU ITEMS -->
-          <div class="flex-1 overflow-y-auto custom-scrollbar p-3">
-            <nav class="space-y-0.5">
-              <NuxtLink
-                v-for="item in filteredMenuItems"
-                :key="item.path"
-                :to="item.path"
-                @click="isMobileSidebarOpen = false"
-                class="group relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-semibold transition-all duration-200"
-                :class="isLinkActive(item.path)
-                  ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-900/50 font-bold'
-                  : 'text-emerald-100/80 hover:bg-emerald-800/40 hover:text-white'"
+          <!-- Navigation -->
+          <div class="custom-scrollbar flex-1 overflow-y-auto px-3 py-4">
+
+            <!-- Main -->
+            <div class="mb-5">
+              <p
+                class="mb-2 px-3 text-[9px] font-black uppercase tracking-[1.5px] text-slate-400"
+              >
+                Overview
+              </p>
+
+              <nav class="space-y-1">
+                <NuxtLink
+                  v-for="item in filteredOverviewItems"
+                  :key="item.path"
+                  :to="item.path"
+                  @click="handleSidebarNavigation"
+                  class="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[12px] font-bold transition"
+                  :class="
+                    isLinkActive(item.path)
+                      ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-500/20'
+                      : 'text-slate-600 hover:bg-slate-100 hover:text-emerald-600 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-emerald-400'
+                  "
+                >
+                  <Icon
+                    :name="item.icon"
+                    class="h-[17px] w-[17px] shrink-0"
+                    :class="
+                      isLinkActive(item.path)
+                        ? 'text-white'
+                        : 'text-slate-400 group-hover:text-emerald-500'
+                    "
+                  />
+
+                  <span class="truncate">
+                    {{ item.label }}
+                  </span>
+
+                  <span
+                    v-if="item.badge"
+                    class="ml-auto rounded-full px-1.5 py-0.5 text-[9px] font-black"
+                    :class="
+                      isLinkActive(item.path)
+                        ? 'bg-white/20 text-white'
+                        : 'bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400'
+                    "
+                  >
+                    {{ item.badge }}
+                  </span>
+                </NuxtLink>
+              </nav>
+            </div>
+
+            <!-- Management -->
+            <div class="mb-5">
+              <p
+                class="mb-2 px-3 text-[9px] font-black uppercase tracking-[1.5px] text-slate-400"
+              >
+                Management
+              </p>
+
+              <nav class="space-y-1">
+                <NuxtLink
+                  v-for="item in filteredManagementItems"
+                  :key="item.path"
+                  :to="item.path"
+                  @click="handleSidebarNavigation"
+                  class="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[12px] font-bold transition"
+                  :class="
+                    isLinkActive(item.path)
+                      ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-500/20'
+                      : 'text-slate-600 hover:bg-slate-100 hover:text-emerald-600 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-emerald-400'
+                  "
+                >
+                  <Icon
+                    :name="item.icon"
+                    class="h-[17px] w-[17px] shrink-0"
+                    :class="
+                      isLinkActive(item.path)
+                        ? 'text-white'
+                        : 'text-slate-400 group-hover:text-emerald-500'
+                    "
+                  />
+
+                  <span class="truncate">
+                    {{ item.label }}
+                  </span>
+
+                  <span
+                    v-if="item.badge"
+                    class="ml-auto rounded-full bg-amber-100 px-1.5 py-0.5 text-[9px] font-black text-amber-700 dark:bg-amber-500/10 dark:text-amber-400"
+                  >
+                    {{ item.badge }}
+                  </span>
+                </NuxtLink>
+              </nav>
+            </div>
+
+            <!-- Finance -->
+            <div class="mb-5">
+              <p
+                class="mb-2 px-3 text-[9px] font-black uppercase tracking-[1.5px] text-slate-400"
+              >
+                Finance
+              </p>
+
+              <nav class="space-y-1">
+                <NuxtLink
+                  v-for="item in filteredFinanceItems"
+                  :key="item.path"
+                  :to="item.path"
+                  @click="handleSidebarNavigation"
+                  class="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[12px] font-bold transition"
+                  :class="
+                    isLinkActive(item.path)
+                      ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-500/20'
+                      : 'text-slate-600 hover:bg-slate-100 hover:text-emerald-600 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-emerald-400'
+                  "
+                >
+                  <Icon
+                    :name="item.icon"
+                    class="h-[17px] w-[17px] shrink-0"
+                    :class="
+                      isLinkActive(item.path)
+                        ? 'text-white'
+                        : 'text-slate-400 group-hover:text-emerald-500'
+                    "
+                  />
+
+                  <span class="truncate">
+                    {{ item.label }}
+                  </span>
+                </NuxtLink>
+              </nav>
+            </div>
+
+            <!-- Account -->
+            <div>
+              <p
+                class="mb-2 px-3 text-[9px] font-black uppercase tracking-[1.5px] text-slate-400"
+              >
+                Account
+              </p>
+
+              <nav class="space-y-1">
+                <NuxtLink
+                  v-for="item in filteredAccountItems"
+                  :key="item.path"
+                  :to="item.path"
+                  @click="handleSidebarNavigation"
+                  class="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[12px] font-bold transition"
+                  :class="
+                    isLinkActive(item.path)
+                      ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-500/20'
+                      : 'text-slate-600 hover:bg-slate-100 hover:text-emerald-600 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-emerald-400'
+                  "
+                >
+                  <Icon
+                    :name="item.icon"
+                    class="h-[17px] w-[17px] shrink-0"
+                    :class="
+                      isLinkActive(item.path)
+                        ? 'text-white'
+                        : 'text-slate-400 group-hover:text-emerald-500'
+                    "
+                  />
+
+                  <span class="truncate">
+                    {{ item.label }}
+                  </span>
+                </NuxtLink>
+              </nav>
+            </div>
+
+            <!-- No Search Results -->
+            <div
+              v-if="hasNoSearchResults"
+              class="flex flex-col items-center justify-center px-4 py-10 text-center"
+            >
+              <div
+                class="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-800"
               >
                 <Icon
-                  :name="item.icon"
-                  class="w-4 h-4 shrink-0"
-                  :class="isLinkActive(item.path) ? 'text-white' : 'text-emerald-300/70 group-hover:text-emerald-200'"
+                  name="lucide:search-x"
+                  class="h-5 w-5 text-slate-400"
                 />
-                <span class="truncate">{{ item.label }}</span>
-              </NuxtLink>
-
-              <!-- NO RESULTS -->
-              <div
-                v-if="filteredMenuItems.length === 0"
-                class="flex flex-col items-center justify-center py-8 px-3 text-center"
-              >
-                <Icon name="lucide:search-x" class="w-7 h-7 text-emerald-300/30 mb-2" />
-                <p class="text-[11px] font-bold text-emerald-300/50 uppercase tracking-wider">No menu found</p>
-                <p class="text-[10px] text-emerald-300/30 mt-1">Try a different keyword</p>
               </div>
-            </nav>
+
+              <p class="mt-3 text-xs font-bold text-slate-500">
+                No menu found
+              </p>
+
+              <p class="mt-1 text-[10px] text-slate-400">
+                Try another keyword
+              </p>
+            </div>
           </div>
 
-          <!-- ADMIN PORTAL BUTTON (bottom card) -->
-          <div class="p-3 shrink-0 border-t border-emerald-900/30">
-            <NuxtLink
-              to="/admin/settings"
-              class="w-full flex items-center gap-3 px-3 py-3 rounded-xl bg-emerald-900/40 border border-emerald-700/40 hover:bg-emerald-800/50 hover:border-emerald-500/50 transition-all duration-200 group"
+          <!-- Sidebar Bottom -->
+          <div class="border-t border-slate-100 p-3 dark:border-slate-800">
+
+            <!-- Ethiopia Card -->
+            <div
+              class="rounded-2xl border border-emerald-100 bg-emerald-50 p-3 dark:border-emerald-500/10 dark:bg-emerald-500/5"
             >
-              <div class="w-9 h-9 rounded-lg bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center shrink-0">
-                <Icon name="lucide:shield-check" class="w-4 h-4 text-emerald-300" />
-              </div>
-              <div class="flex flex-col min-w-0">
-                <span class="text-[11px] font-bold text-emerald-100 truncate">Admin Portal</span>
-                <span class="text-[9px] font-semibold text-emerald-300/60 truncate">Manage platform settings</span>
-              </div>
-            </NuxtLink>
-          </div>
+              <div class="flex items-center gap-2.5">
+                <div
+                  class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500 text-white"
+                >
+                  <Icon name="lucide:map-pin" class="h-4 w-4" />
+                </div>
 
+                <div class="min-w-0">
+                  <p class="text-[10px] font-black text-emerald-700 dark:text-emerald-400">
+                    Addis Ababa
+                  </p>
+
+                  <p class="mt-0.5 truncate text-[9px] font-semibold text-slate-500 dark:text-slate-400">
+                    Sport field network
+                  </p>
+                </div>
+              </div>
+            </div>
+
+          </div>
         </div>
       </aside>
 
-      <!-- MAIN CONTENT -->
-      <main class="flex-1 min-w-0 h-full overflow-y-auto bg-slate-100/60 dark:bg-[#080c14] custom-scrollbar p-4 lg:p-8">
-        <div class="max-w-7xl mx-auto">
+      <!-- =======================================================
+           MAIN CONTENT
+      ======================================================== -->
+      <main
+        class="custom-scrollbar min-w-0 flex-1 overflow-y-auto bg-slate-50 dark:bg-[#070b12]"
+      >
+        <div class="mx-auto min-h-full w-full max-w-[1600px] p-4 md:p-6 lg:p-8">
           <slot />
         </div>
       </main>
-
     </div>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
@@ -245,39 +579,156 @@ const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
 
+/* =========================================================
+   STATE
+========================================================= */
+
 const isMobileSidebarOpen = ref(false)
 const isSidebarCollapsed = ref(false)
 const isProfileOpen = ref(false)
-const dropdownRef = ref(null)
+const dropdownRef = ref<HTMLElement | null>(null)
 const isLoggingOut = ref(false)
-
-// 🔍 SEARCH STATE
 const searchQuery = ref('')
+
+/* =========================================================
+   USER
+========================================================= */
 
 const userAvatar = computed(() => authStore.user?.avatar || '')
 
-// 📋 ADMIN MENU ITEMS (flat list, same as you provided)
-const adminMenuItems = [
-  { path: '/admin', label: 'Overview', icon: 'lucide:layout-dashboard' },
-  { path: '/admin/my-venues', label: 'My Venues', icon: 'lucide:map-pin' },
-  { path: '/admin/approvals', label: 'Approvals', icon: 'lucide:check-circle' },
-  { path: '/admin/bookings', label: 'Bookings', icon: 'lucide:wallet' },
-  { path: '/admin/partners', label: 'Partners', icon: 'lucide:users' },
-  { path: '/admin/users', label: 'Users', icon: 'lucide:user-check' },
-  { path: '/admin/payouts', label: 'Payouts & Wallet', icon: 'lucide:wallet-cards' },
-  { path: '/admin/profile', label: 'Profile Settings', icon: 'lucide:user-cog' },
-  { path: '/admin/settings', label: 'Settings', icon: 'lucide:settings' },
+const adminName = computed(() => {
+  const user = authStore.user
+
+  return (
+    user?.name ||
+    user?.full_name ||
+    user?.fullName ||
+    'Admin'
+  )
+})
+
+/* =========================================================
+   ADMIN MENU
+========================================================= */
+
+const overviewItems = [
+  {
+    path: '/admin',
+    label: 'Dashboard',
+    icon: 'lucide:layout-dashboard'
+  },
+  {
+    path: '/admin/my-venues',
+    label: 'Sport Fields',
+    icon: 'lucide:map-pin'
+  },
+  {
+    path: '/admin/approvals',
+    label: 'Approvals',
+    icon: 'lucide:check-circle',
+    badge: '9'
+  }
 ]
 
-// 🔍 FILTERED MENU (search)
-const filteredMenuItems = computed(() => {
+const managementItems = [
+  {
+    path: '/admin/bookings',
+    label: 'Bookings',
+    icon: 'lucide:calendar-check'
+  },
+  {
+    path: '/admin/partners',
+    label: 'Partners',
+    icon: 'lucide:handshake'
+  },
+  {
+    path: '/admin/users',
+    label: 'Users',
+    icon: 'lucide:users'
+  },
+  {
+    path: '/admin/events',
+    label: 'Events',
+    icon: 'lucide:trophy'
+  },
+  {
+    path: '/admin/games',
+    label: 'Games',
+    icon: 'lucide:gamepad-2'
+  }
+]
+
+const financeItems = [
+  {
+    path: '/admin/payouts',
+    label: 'Payouts & Wallet',
+    icon: 'lucide:wallet-cards'
+  },
+  {
+    path: '/admin/reports',
+    label: 'Reports',
+    icon: 'lucide:chart-no-axes-combined'
+  }
+]
+
+const accountItems = [
+  {
+    path: '/admin/profile',
+    label: 'Profile Settings',
+    icon: 'lucide:user-cog'
+  },
+  {
+    path: '/admin/settings',
+    label: 'Settings',
+    icon: 'lucide:settings'
+  }
+]
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+const filterItems = (items: typeof overviewItems) => {
   const query = searchQuery.value.trim().toLowerCase()
-  if (!query) return adminMenuItems
-  return adminMenuItems.filter(item =>
+
+  if (!query) return items
+
+  return items.filter(item =>
     item.label.toLowerCase().includes(query) ||
     item.path.toLowerCase().includes(query)
   )
+}
+
+const filteredOverviewItems = computed(() =>
+  filterItems(overviewItems)
+)
+
+const filteredManagementItems = computed(() =>
+  filterItems(managementItems)
+)
+
+const filteredFinanceItems = computed(() =>
+  filterItems(financeItems)
+)
+
+const filteredAccountItems = computed(() =>
+  filterItems(accountItems)
+)
+
+const hasNoSearchResults = computed(() => {
+  if (!searchQuery.value.trim()) return false
+
+  return (
+    filteredOverviewItems.value.length === 0 &&
+    filteredManagementItems.value.length === 0 &&
+    filteredFinanceItems.value.length === 0 &&
+    filteredAccountItems.value.length === 0
+  )
 })
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
 
 const toggleSidebar = () => {
   if (window.innerWidth < 1024) {
@@ -287,20 +738,69 @@ const toggleSidebar = () => {
   }
 }
 
+const handleSidebarNavigation = () => {
+  searchQuery.value = ''
+  isMobileSidebarOpen.value = false
+  isProfileOpen.value = false
+}
+
+/* =========================================================
+   ACTIVE LINK
+========================================================= */
+
+const isLinkActive = (path: string) => {
+  if (path === '/admin') {
+    return route.path === '/admin'
+  }
+
+  return route.path === path || route.path.startsWith(`${path}/`)
+}
+
+/* =========================================================
+   PROFILE DROPDOWN
+========================================================= */
+
 const toggleDropdown = () => {
   isProfileOpen.value = !isProfileOpen.value
 }
 
-const isLinkActive = (path) => {
-  if (path === '/admin') return route.path === '/admin'
-  return route.path.startsWith(path)
-}
+const handleClickOutside = (event: MouseEvent) => {
+  const target = event.target as Node | null
 
-const handleClickOutside = (event) => {
-  if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
+  if (
+    dropdownRef.value &&
+    target &&
+    !dropdownRef.value.contains(target)
+  ) {
     isProfileOpen.value = false
   }
 }
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+const handleLogout = async () => {
+  if (isLoggingOut.value) return
+
+  isLoggingOut.value = true
+
+  try {
+    await authStore.logout()
+
+    isProfileOpen.value = false
+
+    await router.push('/')
+  } catch (error) {
+    console.error('Logout failed:', error)
+  } finally {
+    isLoggingOut.value = false
+  }
+}
+
+/* =========================================================
+   LIFECYCLE
+========================================================= */
 
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
@@ -309,37 +809,30 @@ onMounted(() => {
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
 })
-
-const handleLogout = async () => {
-  isLoggingOut.value = true
-  try {
-    if (authStore.logout) {
-      await authStore.logout()
-    } else {
-      useCookie('auth_token').value = null
-    }
-    isProfileOpen.value = false
-    router.push('/')
-  } catch (error) {
-    console.error('Logout failed:', error)
-  } finally {
-    isLoggingOut.value = false
-  }
-}
 </script>
 
 <style scoped>
 .custom-scrollbar::-webkit-scrollbar {
   width: 5px;
+  height: 5px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(16, 185, 129, 0.2);
-  border-radius: 20px;
+  background: rgba(100, 116, 139, 0.25);
+  border-radius: 999px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.45);
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 116, 139, 0.3) transparent;
 }
 </style>
+```

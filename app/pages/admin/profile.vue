@@ -88,6 +88,8 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useAuthStore } from '~/stores/auth'
 
+definePageMeta({ layout: 'admin' })
+
 const authStore = useAuthStore()
 const config = useRuntimeConfig()
 

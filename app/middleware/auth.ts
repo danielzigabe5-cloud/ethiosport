@@ -20,7 +20,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
   
   // If authenticated and trying to access auth pages
   if (token.value && isPublicRoute && to.path !== '/') {
-    const role = authStore.user?.role?.toLowerCase()
+    const role = String(authStore.user?.role || '').trim().toLowerCase()
     
     if (role === 'admin') return navigateTo('/admin')
     if (role === 'partner' || role === 'owner') return navigateTo('/partner/dashboard')
@@ -32,7 +32,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
     if (!token.value) {
       return navigateTo('/auth/login')
     }
-    if (authStore.user?.role !== 'admin') {
+    if (String(authStore.user?.role || '').trim().toLowerCase() !== 'admin') {
       return navigateTo('/')
     }
   }
@@ -42,7 +42,8 @@ export default defineNuxtRouteMiddleware((to, from) => {
     if (!token.value) {
       return navigateTo('/auth/login')
     }
-    if (!['partner', 'owner'].includes(authStore.user?.role || '')) {
+    const role = String(authStore.user?.role || '').trim().toLowerCase()
+    if (!['partner', 'owner'].includes(role)) {
       return navigateTo('/')
     }
   }

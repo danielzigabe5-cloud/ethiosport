@@ -8,7 +8,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
   if (to.path === '/') return
 
   // 3. Admin ካልሆነ ወደ Home (/) መልሰው
-  if (userRole.value !== 'admin') {
+  if (String(userRole.value || '').trim().toLowerCase() !== 'admin') {
     return navigateTo('/')
   }
 })

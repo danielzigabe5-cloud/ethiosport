@@ -103,7 +103,7 @@ const toggleMode = () => {
 }
 
 const dashboardLink = computed(() => {
-  const role = authStore.user?.role?.toLowerCase()
+  const role = String(authStore.user?.role || '').trim().toLowerCase()
   if (role === 'admin') return '/admin'
   if (role === 'partner') return '/partner'
   return '/' 

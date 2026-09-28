@@ -1,261 +1,365 @@
+```vue
 <template>
-  <div class="space-y-6 min-h-screen bg-slate-50 dark:bg-[#070b10] text-slate-800 dark:text-slate-100 p-6">
-    <!-- Header -->
-    <div class="flex items-center justify-between">
-      <div>
-        <h1 class="text-2xl font-black text-gray-900 dark:text-white">Approvals</h1>
-        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">ሁሉንም ሜዳዎች ይመልከቱ እና ያስተዳድሩ</p>
+  <div class="min-h-full bg-slate-50 p-4 sm:p-6 lg:p-8">
+    <div class="mb-6">
+      <div class="flex items-center gap-2 text-sm text-slate-500">
+        <NuxtLink to="/admin" class="hover:text-emerald-600">
+          Dashboard
+        </NuxtLink>
+        <span>/</span>
+        <span>Approvals</span>
       </div>
-      <div class="text-xs font-bold text-amber-600 bg-amber-50 dark:bg-amber-900/20 px-3 py-1.5 rounded-lg border border-amber-200 dark:border-amber-800">
-        {{ pendingVenues.length }} በመጠባበቅ ላይ
+
+      <h1 class="mt-2 text-2xl font-bold text-slate-900">
+        Approvals
+      </h1>
+
+      <p class="mt-1 text-sm text-slate-500">
+        Review and approve sport field and partner submissions.
+      </p>
+    </div>
+
+    <div
+      v-if="error"
+      class="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700"
+    >
+      {{ error }}
+    </div>
+
+    <!-- Summary -->
+    <div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <p class="text-sm text-slate-500">Pending Approvals</p>
+        <p class="mt-2 text-3xl font-bold text-slate-900">
+          {{ approvals.length }}
+        </p>
+      </div>
+
+      <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <p class="text-sm text-slate-500">Sport Fields</p>
+        <p class="mt-2 text-3xl font-bold text-emerald-600">
+          {{ approvals.filter(a => a.type === 'venue').length }}
+        </p>
+      </div>
+
+      <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <p class="text-sm text-slate-500">Partners</p>
+        <p class="mt-2 text-3xl font-bold text-blue-600">
+          {{ approvals.filter(a => a.type === 'partner').length }}
+        </p>
       </div>
     </div>
 
-    <!-- Tabs -->
-    <div class="flex items-center gap-2 border-b border-slate-200 dark:border-[#212e3e] pb-2">
+    <!-- Filter -->
+    <div class="mb-5 flex flex-wrap gap-2">
       <button
-        @click="activeTab = 'all'"
-        class="px-4 py-2 text-sm font-bold rounded-xl transition"
-        :class="activeTab === 'all' 
-          ? 'bg-emerald-500 text-slate-950' 
-          : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'"
+        v-for="filter in filters"
+        :key="filter.value"
+        @click="activeFilter = filter.value"
+        class="rounded-xl px-4 py-2.5 text-sm font-semibold transition"
+        :class="
+          activeFilter === filter.value
+            ? 'bg-emerald-600 text-white shadow-sm'
+            : 'border border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+        "
       >
-        📋 ሁሉም ({{ allVenues.length }})
-      </button>
-      <button
-        @click="activeTab = 'approved'"
-        class="px-4 py-2 text-sm font-bold rounded-xl transition"
-        :class="activeTab === 'approved' 
-          ? 'bg-emerald-500 text-slate-950' 
-          : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'"
-      >
-        ✅ የተፈቀዱ ({{ approvedVenues.length }})
-      </button>
-      <button
-        @click="activeTab = 'pending'"
-        class="px-4 py-2 text-sm font-bold rounded-xl transition"
-        :class="activeTab === 'pending' 
-          ? 'bg-amber-500 text-white' 
-          : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'"
-      >
-        ⏳ በመጠባበቅ ላይ ({{ pendingVenues.length }})
+        {{ filter.label }}
       </button>
     </div>
 
-    <!-- Error Message -->
-    <div v-if="errorMessage" class="p-4 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-xl">
-      <div class="flex items-center gap-2 text-red-700 dark:text-red-300">
-        <Icon name="lucide:alert-circle" class="w-5 h-5" />
-        <span class="text-sm font-bold">{{ errorMessage }}</span>
+    <!-- Approval Cards -->
+    <div class="space-y-4">
+      <div
+        v-if="loading"
+        class="rounded-2xl border border-slate-200 bg-white p-10 text-center text-slate-500"
+      >
+        Loading approval requests...
       </div>
-    </div>
 
-    <!-- Loading State -->
-    <div v-if="isLoading" class="text-center py-10">
-      <div class="animate-spin inline-block w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full"></div>
-      <p class="mt-2 text-sm text-slate-500">በመጫን ላይ...</p>
-    </div>
-
-    <!-- Empty State -->
-    <div v-else-if="currentVenues.length === 0" class="text-center py-16 bg-white dark:bg-[#0b1320] rounded-2xl border border-gray-200 dark:border-slate-800">
-      <div class="text-6xl mb-4">✅</div>
-      <h2 class="text-xl font-bold text-gray-900 dark:text-white">ምንም ቬኒዎች የሉም</h2>
-      <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">{{ emptyMessage }}</p>
-    </div>
-
-    <!-- Venues List -->
-    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <div v-for="venue in currentVenues" :key="venue.id" 
-        class="rounded-2xl overflow-hidden border-2"
-        :class="venue.status === 'approved' || venue.is_active 
-          ? 'bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-800' 
-          : 'bg-amber-50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-800'"
+      <div
+        v-else-if="filteredApprovals.length === 0"
+        class="rounded-2xl border border-slate-200 bg-white p-10 text-center"
       >
-        <div class="relative h-40 bg-slate-200 dark:bg-slate-800">
-          <img
-            v-if="venue.image"
-            :src="getVenueImage(venue)"
-            :alt="venue.name"
-            class="w-full h-full object-cover"
-          />
-          <div v-else class="w-full h-full flex items-center justify-center">
-            <Icon name="lucide:stadium" class="w-12 h-12 text-gray-400" />
+        <div class="text-4xl">✓</div>
+        <h3 class="mt-3 font-bold text-slate-900">
+          No pending approvals
+        </h3>
+        <p class="mt-1 text-sm text-slate-500">
+          Everything is currently reviewed.
+        </p>
+      </div>
+
+      <div
+        v-for="item in filteredApprovals"
+        :key="item.id"
+        class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+      >
+        <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+          <div class="flex gap-4">
+            <div
+              class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl"
+              :class="
+                item.type === 'venue'
+                  ? 'bg-emerald-100 text-emerald-700'
+                  : 'bg-blue-100 text-blue-700'
+              "
+            >
+              <span class="text-2xl">
+                {{ item.type === 'venue' ? '⚽' : '👤' }}
+              </span>
+            </div>
+
+            <div>
+              <div class="flex flex-wrap items-center gap-2">
+                <h3 class="font-bold text-slate-900">
+                  {{ item.title }}
+                </h3>
+
+                <span
+                  class="rounded-full px-2.5 py-1 text-xs font-bold"
+                  :class="
+                    item.type === 'venue'
+                      ? 'bg-emerald-100 text-emerald-700'
+                      : 'bg-blue-100 text-blue-700'
+                  "
+                >
+                  {{ item.type === 'venue' ? 'Sport Field' : 'Partner' }}
+                </span>
+              </div>
+
+              <p class="mt-1 text-sm text-slate-500">
+                Submitted by {{ item.submitted_by }}
+              </p>
+
+              <div class="mt-3 flex flex-wrap gap-4 text-xs text-slate-500">
+                <span>📍 {{ item.city }}</span>
+                <span v-if="item.sport_type">
+                  🏆 {{ item.sport_type }}
+                </span>
+                <span>📅 {{ formatDate(item.created_at) }}</span>
+              </div>
+            </div>
           </div>
-          
-          <!-- Status Badge -->
-          <span class="absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-bold text-white"
-            :class="venue.status === 'approved' || venue.is_active ? 'bg-emerald-500' : 'bg-amber-500'"
-          >
-            {{ venue.status === 'approved' || venue.is_active ? '✅ Approved' : '⏳ Pending' }}
-          </span>
-          
-          <span class="absolute bottom-3 left-3 px-3 py-1 rounded-full text-xs font-bold bg-slate-950/70 text-white">
-            {{ venue.city }}
-          </span>
+
+          <div class="flex gap-2">
+            <button
+              @click="rejectApproval(item)"
+              :disabled="processingId === item.id"
+              class="rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-bold text-red-600 hover:bg-red-100 disabled:opacity-50"
+            >
+              Reject
+            </button>
+
+            <button
+              @click="approveApproval(item)"
+              :disabled="processingId === item.id"
+              class="rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-emerald-700 disabled:opacity-50"
+            >
+              {{ processingId === item.id ? 'Processing...' : 'Approve' }}
+            </button>
+          </div>
         </div>
+      </div>
+    </div>
 
-        <div class="p-4">
-          <h3 class="text-lg font-bold text-slate-900 dark:text-white">{{ venue.name }}</h3>
-          <p class="text-sm text-slate-500 dark:text-slate-400">{{ venue.location }}</p>
-          <p class="text-xs text-slate-400 mt-1">
-            ባለቤት: {{ venue.user?.name || 'Unknown' }}
-          </p>
-          <div class="flex items-center gap-4 mt-3 text-sm">
-            <span>👥 {{ venue.capacity }}</span>
-            <span class="font-bold"
-              :class="venue.status === 'approved' || venue.is_active ? 'text-emerald-500' : 'text-amber-500'"
-            >
-              {{ venue.price_per_hour }} ETB/hr
-            </span>
-          </div>
-          
-          <!-- Admin Actions - Only for pending venues -->
-          <div v-if="venue.status === 'pending' || !venue.is_active" class="flex gap-2 mt-4 pt-4 border-t border-amber-200 dark:border-amber-800">
-            <button
-              @click="approveVenue(venue.id)"
-              class="flex-1 px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-sm font-bold rounded-xl transition"
-            >
-              ✅ አረጋግጥ
-            </button>
-            <button
-              @click="rejectVenue(venue.id)"
-              class="flex-1 px-4 py-2 bg-red-500 hover:bg-red-400 text-white text-sm font-bold rounded-xl transition"
-            >
-              ❌ ውድቅ አድርግ
-            </button>
-          </div>
+    <!-- Reject Modal -->
+    <div
+      v-if="showRejectModal"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4"
+    >
+      <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+        <h2 class="text-xl font-bold text-slate-900">
+          Reject Request
+        </h2>
+
+        <p class="mt-2 text-sm text-slate-500">
+          Please provide a reason for rejecting this request.
+        </p>
+
+        <textarea
+          v-model="rejectReason"
+          rows="4"
+          placeholder="Reason..."
+          class="mt-4 w-full rounded-xl border border-slate-200 p-3 text-sm outline-none focus:border-red-500 focus:ring-2 focus:ring-red-100"
+        />
+
+        <div class="mt-5 flex justify-end gap-2">
+          <button
+            @click="closeRejectModal"
+            class="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600"
+          >
+            Cancel
+          </button>
+
+          <button
+            @click="confirmReject"
+            :disabled="!rejectReason.trim() || processingId !== null"
+            class="rounded-xl bg-red-600 px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50"
+          >
+            Reject Request
+          </button>
         </div>
       </div>
     </div>
   </div>
 </template>
 
-<script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useAuthStore } from '@/stores/auth'
-import { useRouter } from 'vue-router'
-import { useRuntimeConfig } from '#imports'
+<script setup lang="ts">
+import { computed, onMounted, ref } from 'vue'
 
-const authStore = useAuthStore()
-const router = useRouter()
+definePageMeta({
+  layout: 'admin',
+})
+
+interface Approval {
+  id: number
+  type: 'venue' | 'partner'
+  title: string
+  submitted_by: string
+  city?: string
+  sport_type?: string
+  created_at: string
+}
+
 const config = useRuntimeConfig()
+const apiBase = config.public.apiBase || 'http://127.0.0.1:8001'
 
-const allVenues = ref([])
-const approvedVenues = ref([])
-const pendingVenues = ref([])
-const isLoading = ref(false)
-const errorMessage = ref('')
-const activeTab = ref('all')
+const approvals = ref<Approval[]>([])
+const loading = ref(false)
+const error = ref('')
+const activeFilter = ref('all')
+const processingId = ref<number | null>(null)
 
-// Admin ካልሆነ ወደ መነሻ ይሂድ
-onMounted(async () => {
-  if (authStore.user?.role !== 'admin') {
-    router.push('/')
+const showRejectModal = ref(false)
+const selectedApproval = ref<Approval | null>(null)
+const rejectReason = ref('')
+
+const filters = [
+  { label: 'All', value: 'all' },
+  { label: 'Sport Fields', value: 'venue' },
+  { label: 'Partners', value: 'partner' },
+]
+
+const filteredApprovals = computed(() => {
+  if (activeFilter.value === 'all') {
+    return approvals.value
+  }
+
+  return approvals.value.filter(
+    item => item.type === activeFilter.value,
+  )
+})
+
+function formatDate(date: string) {
+  return new Date(date).toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  })
+}
+
+async function loadApprovals() {
+  loading.value = true
+  error.value = ''
+
+  try {
+    const response: any = await $fetch(
+      `${apiBase}/api/admin/approvals`,
+      {
+        credentials: 'include',
+      },
+    )
+
+    approvals.value =
+      response.data ??
+      response.approvals ??
+      []
+  } catch (err: any) {
+    error.value =
+      err?.data?.message ||
+      'Unable to load approval requests.'
+  } finally {
+    loading.value = false
+  }
+}
+
+async function approveApproval(item: Approval) {
+  processingId.value = item.id
+  error.value = ''
+
+  try {
+    await $fetch(
+      `${apiBase}/api/admin/approvals/${item.id}/approve`,
+      {
+        method: 'PATCH',
+        credentials: 'include',
+        body: {
+          type: item.type,
+        },
+      },
+    )
+
+    approvals.value = approvals.value.filter(
+      a => a.id !== item.id,
+    )
+  } catch (err: any) {
+    error.value =
+      err?.data?.message ||
+      'Approval failed.'
+  } finally {
+    processingId.value = null
+  }
+}
+
+function rejectApproval(item: Approval) {
+  selectedApproval.value = item
+  rejectReason.value = ''
+  showRejectModal.value = true
+}
+
+function closeRejectModal() {
+  showRejectModal.value = false
+  selectedApproval.value = null
+  rejectReason.value = ''
+}
+
+async function confirmReject() {
+  if (!selectedApproval.value || !rejectReason.value.trim()) {
     return
   }
-  await fetchAllVenues()
-})
-definePageMeta({ layout: 'admin' })
-// ============================================
-// FETCH ALL VENUES (Both Approved & Pending)
-// ============================================
-const fetchAllVenues = async () => {
-  isLoading.value = true
-  errorMessage.value = ''
+
+  const item = selectedApproval.value
+
+  processingId.value = item.id
+  error.value = ''
+
   try {
-    // Fetch ALL venues (both approved and pending)
-    const response = await $fetch(`${config.public.apiBase}/admin/venues`, {
-      headers: {
-        'Authorization': `Bearer ${authStore.token}`
-      }
-    })
-    
-    if (response.success) {
-      allVenues.value = response.data?.data || response.data || []
-      
-      // Separate into approved and pending
-      approvedVenues.value = allVenues.value.filter(v => v.status === 'approved' || v.is_active === true)
-      pendingVenues.value = allVenues.value.filter(v => v.status === 'pending' || v.is_active === false)
-    }
-  } catch (error) {
-    console.error('Error fetching venues:', error)
-    errorMessage.value = 'Failed to fetch venues. Please try again.'
+    await $fetch(
+      `${apiBase}/api/admin/approvals/${item.id}/reject`,
+      {
+        method: 'PATCH',
+        credentials: 'include',
+        body: {
+          type: item.type,
+          reason: rejectReason.value.trim(),
+        },
+      },
+    )
+
+    approvals.value = approvals.value.filter(
+      a => a.id !== item.id,
+    )
+
+    closeRejectModal()
+  } catch (err: any) {
+    error.value =
+      err?.data?.message ||
+      'Rejection failed.'
   } finally {
-    isLoading.value = false
+    processingId.value = null
   }
 }
 
-// ============================================
-// COMPUTED
-// ============================================
-const currentVenues = computed(() => {
-  if (activeTab.value === 'all') return allVenues.value
-  if (activeTab.value === 'approved') return approvedVenues.value
-  if (activeTab.value === 'pending') return pendingVenues.value
-  return allVenues.value
-})
-
-const emptyMessage = computed(() => {
-  if (activeTab.value === 'all') return 'ምንም ቬኒዎች አልተገኙም'
-  if (activeTab.value === 'approved') return 'ምንም የተፈቀዱ ቬኒዎች የሉም'
-  if (activeTab.value === 'pending') return 'ምንም በመጠባበቅ ላይ ያሉ ቬኒዎች የሉም'
-  return ''
-})
-
-// ============================================
-// APPROVE VENUE
-// ============================================
-const approveVenue = async (id) => {
-  errorMessage.value = ''
-  if (!confirm('ይህን ሜዳ ማረጋገጥ ይፈልጋሉ?')) return
-  
-  try {
-    const response = await $fetch(`${config.public.apiBase}/admin/approvals/${id}/approve`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${authStore.token}`
-      }
-    })
-    
-    if (response.success) {
-      // Refresh the list
-      await fetchAllVenues()
-      alert('ሜዳ በሚገባ ተረጋግጧል!')
-    }
-  } catch (error) {
-    console.error('Error approving venue:', error)
-    errorMessage.value = 'Failed to approve venue. Please try again.'
-  }
-}
-
-// ============================================
-// REJECT VENUE
-// ============================================
-const rejectVenue = async (id) => {
-  errorMessage.value = ''
-  if (!confirm('ይህን ሜዳ ውድቅ ማድረግ ይፈልጋሉ?')) return
-  
-  try {
-    const response = await $fetch(`${config.public.apiBase}/admin/approvals/${id}/reject`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${authStore.token}`
-      }
-    })
-    
-    if (response.success) {
-      await fetchAllVenues()
-      alert('ሜዳ ውድቅ ተደርጓል!')
-    }
-  } catch (error) {
-    console.error('Error rejecting venue:', error)
-    errorMessage.value = 'Failed to reject venue. Please try again.'
-  }
-}
-const getVenueImage = (venue) => {
-  if (!venue) return '/placeholder.png'
-  const img = venue.image_full_url || venue.image_url || venue.image
-  if (!img) return 'data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22400%22%20height%3D%22300%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20400%20300%22%3E%3Crect%20width%3D%22400%22%20height%3D%22300%22%20fill%3D%22%23eeeeee%22%3E%3C%2Frect%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20fill%3D%22%23999999%22%3ENo%20Image%3C/text%3E%3C/svg%3E'
-  return img.startsWith('http') ? img : `http://127.0.0.1:8000/storage/${img}`
-}
+onMounted(loadApprovals)
 </script>
+```

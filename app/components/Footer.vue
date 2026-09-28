@@ -1,4 +1,3 @@
-```vue
 <template>
   <footer
     class="bg-slate-950 text-slate-300
@@ -22,21 +21,47 @@
 
           <NuxtLink
             to="/"
-            class="inline-flex items-center gap-1 mb-5"
+            class="inline-flex items-center gap-3 mb-5"
           >
 
-            <span
-              class="text-2xl font-black
-                     tracking-tight text-white"
+            <!-- LOGO IMAGE -->
+            <div
+              class="w-12 h-12
+                     rounded-xl
+                     overflow-hidden
+                     border border-emerald-500/30
+                     bg-slate-900
+                     flex items-center justify-center"
             >
-              COMBOLOJO
-            </span>
+              <img
+                src="~/assets/images/venue.jpg"
+                alt="CombolojoSPORT Logo"
+                class="w-full h-full object-cover"
+              />
+            </div>
 
-            <span
-              class="text-2xl font-black
-                     text-emerald-400"
-            >
-            </span>
+            <!-- LOGO TEXT -->
+            <div class="flex flex-col leading-none">
+
+              <span
+                class="text-2xl font-black
+                       tracking-tight
+                       text-white"
+              >
+                COMBOLOJO
+              </span>
+
+              <span
+                class="text-[10px]
+                       font-bold
+                       tracking-[0.25em]
+                       text-emerald-400
+                       mt-1"
+              >
+                SPORT
+              </span>
+
+            </div>
 
           </NuxtLink>
 
@@ -235,12 +260,14 @@
                        font-semibold
                        transition-colors"
               >
+
                 <Icon
                   name="lucide:plus-circle"
                   class="w-4 h-4"
                 />
 
                 List Your Venue
+
               </NuxtLink>
             </li>
 
@@ -337,11 +364,18 @@
                  text-xs
                  text-center md:text-left"
         >
+
           © {{ currentYear }}
-          <span class="text-slate-400 font-semibold">
+
+          <span
+            class="text-slate-400
+                   font-semibold"
+          >
             COMBOLOJO SPORT
           </span>.
+
           All rights reserved.
+
         </p>
 
 
@@ -420,32 +454,43 @@ const handleSubscribe = () => {
 <style scoped>
 
 .footer-link {
+
   display: inline-flex;
+
   align-items: center;
+
   gap: 8px;
 
   color: #94a3b8;
 
   font-size: 0.875rem;
+
   font-weight: 500;
 
   transition:
     color 0.2s ease,
     transform 0.2s ease;
+
 }
 
+
 .footer-link::before {
+
   content: '›';
 
   color: #10b981;
 
   font-weight: 800;
+
 }
 
+
 .footer-link:hover {
+
   color: #34d399;
+
   transform: translateX(3px);
+
 }
 
 </style>
-```

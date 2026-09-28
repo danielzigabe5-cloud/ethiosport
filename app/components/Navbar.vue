@@ -8,34 +8,66 @@
 
     <!-- CONTAINER -->
     <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="h-16 lg:h-[76px] flex items-center justify-between gap-4">
 
-        <!-- LOGO -->
+      <div
+        class="h-16 lg:h-[76px]
+               flex items-center
+               justify-between gap-4"
+      >
+
+        <!-- ================= LOGO ================= -->
         <NuxtLink
           to="/"
           class="flex items-center flex-shrink-0 group"
         >
-          <div class="flex items-center gap-1">
 
-            <span
-              class="text-xl sm:text-2xl font-black
-                     tracking-tight text-slate-900"
-            >
-              COMBOLOJO
-            </span>
+          <div class="flex items-center gap-2">
 
-            <span
-              class="text-xl sm:text-2xl font-black
-                     text-[#16A34A]"
+            <!-- LOGO IMAGE -->
+            <div
+              class="w-10 h-10 sm:w-11 sm:h-11
+                     rounded-lg
+                     overflow-hidden
+                     flex items-center justify-center
+                     bg-slate-100
+                     border border-slate-200
+                     flex-shrink-0"
             >
-              SPORT
-            </span>
+
+              <img
+                src="~/assets/images/venue.jpg"
+                alt="CombolojoSPORT Logo"
+                class="w-full h-full object-cover"
+              />
+
+            </div>
+
+
+            <!-- LOGO TEXT -->
+            <div class="flex items-center gap-1">
+
+              <span
+                class="text-xl sm:text-2xl font-black
+                       tracking-tight text-slate-900"
+              >
+                COMBOLOJO
+              </span>
+
+              <span
+                class="text-xl sm:text-2xl font-black
+                       text-[#16A34A]"
+              >
+                SPORT
+              </span>
+
+            </div>
 
           </div>
+
         </NuxtLink>
 
 
-        <!-- DESKTOP NAVIGATION -->
+        <!-- ================= DESKTOP NAVIGATION ================= -->
         <div
           class="hidden lg:flex items-center
                  justify-center flex-1 gap-1"
@@ -55,6 +87,7 @@
                 : 'text-slate-600 hover:text-[#16A34A]'
             "
           >
+
             {{ item.label }}
 
             <!-- ACTIVE LINE -->
@@ -64,12 +97,13 @@
                      h-[3px] rounded-full
                      bg-[#16A34A]"
             />
+
           </NuxtLink>
 
         </div>
 
 
-        <!-- RIGHT ACTIONS -->
+        <!-- ================= RIGHT ACTIONS ================= -->
         <div class="flex items-center gap-2">
 
           <!-- ADD VENUE -->
@@ -90,16 +124,18 @@
                    transition-all
                    active:scale-95"
           >
+
             <Icon
               name="lucide:plus"
               class="w-4 h-4"
             />
 
             Add Venue
+
           </NuxtLink>
 
 
-          <!-- LOGGED USER -->
+          <!-- ================= LOGGED USER ================= -->
           <div
             v-if="isLoggedIn"
             ref="dropdownRef"
@@ -126,6 +162,7 @@
                 <img
                   v-if="userProfile?.avatar"
                   :src="userProfile.avatar"
+                  alt="User avatar"
                   class="w-full h-full object-cover"
                 />
 
@@ -137,10 +174,12 @@
 
               </div>
 
+
               <Icon
                 name="lucide:chevron-down"
                 class="hidden sm:block w-4 h-4
-                       text-slate-500"
+                       text-slate-500
+                       transition-transform"
                 :class="{
                   'rotate-180': isDropdownOpen
                 }"
@@ -149,7 +188,7 @@
             </button>
 
 
-            <!-- DROPDOWN -->
+            <!-- ================= DROPDOWN ================= -->
             <Transition
               enter-active-class="transition duration-150 ease-out"
               enter-from-class="opacity-0 scale-95 -translate-y-2"
@@ -248,7 +287,7 @@
           </div>
 
 
-          <!-- SIGN IN -->
+          <!-- ================= SIGN IN ================= -->
           <NuxtLink
             v-else
             to="/auth"
@@ -267,7 +306,7 @@
           </NuxtLink>
 
 
-          <!-- MOBILE -->
+          <!-- ================= MOBILE MENU BUTTON ================= -->
           <button
             @click="isOpen = !isOpen"
             class="lg:hidden
@@ -292,10 +331,11 @@
         </div>
 
       </div>
+
     </div>
 
 
-    <!-- MOBILE MENU -->
+    <!-- ================= MOBILE MENU ================= -->
     <Transition
       enter-active-class="transition duration-200"
       enter-from-class="opacity-0 -translate-y-3"
@@ -370,7 +410,7 @@
         </div>
 
 
-        <!-- MOBILE AUTH -->
+        <!-- ================= MOBILE AUTH ================= -->
         <div
           v-if="!isLoggedIn"
           class="mt-3 pt-3
@@ -393,7 +433,7 @@
         </div>
 
 
-        <!-- MOBILE DASHBOARD -->
+        <!-- ================= MOBILE DASHBOARD ================= -->
         <div
           v-if="isLoggedIn"
           class="mt-3 pt-3
@@ -420,6 +460,7 @@
             {{ dashboardLabel }}
 
           </NuxtLink>
+
 
           <button
             @click="handleLogout(); isOpen = false"
@@ -451,6 +492,7 @@
 
 
 <script setup>
+
 import {
   ref,
   computed,
@@ -468,18 +510,23 @@ import { useAuthStore } from '~/stores/auth'
 
 
 const route = useRoute()
+
 const router = useRouter()
 
 const authStore = useAuthStore()
 
+
 const isOpen = ref(false)
+
 const isDropdownOpen = ref(false)
+
 const dropdownRef = ref(null)
 
 
 const isLoggedIn = computed(
   () => !!authStore?.token
 )
+
 
 const userProfile = computed(
   () => authStore?.user
@@ -586,7 +633,9 @@ const handleClickOutside = (event) => {
     dropdownRef.value &&
     !dropdownRef.value.contains(event.target)
   ) {
+
     isDropdownOpen.value = false
+
   }
 
 }
@@ -620,6 +669,7 @@ watch(
   () => {
 
     isOpen.value = false
+
     isDropdownOpen.value = false
 
   }
