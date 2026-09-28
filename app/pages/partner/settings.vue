@@ -1,4 +1,4 @@
-```vue
+
 <template>
   <div class="min-h-full bg-slate-50">
 
@@ -250,4 +250,4 @@ function saveSettings() {
   })
 }
 </script>
-```
+

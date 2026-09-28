@@ -1,4 +1,4 @@
-```vue
+
 <template>
   <div
     class="flex h-screen w-full flex-col overflow-hidden bg-slate-50 text-slate-800 antialiased dark:bg-[#070b12] dark:text-slate-100"
@@ -115,26 +115,27 @@
             @click="toggleDropdown"
             class="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-1.5 pr-2 transition hover:border-emerald-300 hover:shadow-sm dark:border-slate-800 dark:bg-slate-900"
           >
-            <!-- Avatar -->
-            <div class="relative">
-              <img
-                v-if="userAvatar"
-                :src="userAvatar"
-                alt="Admin"
-                class="h-8 w-8 rounded-lg object-cover"
-              />
-
-              <div
-                v-else
-                class="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500 text-xs font-black text-white"
-              >
-                A
-              </div>
-
-              <span
+           <!-- Avatar -->
+<div class="relative h-10 w-10 shrink-0">
+  <img
+    v-if="userAvatar"
+    :src="userAvatar"
+    alt="Admin"
+    class="h-10 w-10 rounded-xl object-cover ring-1 ring-slate-200 dark:ring-slate-700"
+    @error="onAvatarError"
+  />
+  <div
+    v-else
+    class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500 font-black text-white"
+  >
+    {{ userInitials }}
+  </div>
+</div>
+ 
+         <span
                 class="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-emerald-500 dark:border-slate-900"
               ></span>
-            </div>
+                 
 
             <div class="hidden text-left lg:block">
               <p class="max-w-[110px] truncate text-xs font-bold text-slate-800 dark:text-slate-100">
@@ -569,7 +570,6 @@
     </div>
   </div>
 </template>
-
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -578,6 +578,7 @@ import { useAuthStore } from '@/stores/auth'
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
+const config = useRuntimeConfig()
 
 /* =========================================================
    STATE
@@ -591,18 +592,68 @@ const isLoggingOut = ref(false)
 const searchQuery = ref('')
 
 /* =========================================================
-   USER
+   API BASE
 ========================================================= */
 
-const userAvatar = computed(() => authStore.user?.avatar || '')
+const apiBase = computed(() => {
+  const base = String(config.public.apiBase || 'http://127.0.0.1:8000')
+    .replace(/\/+$/, '')
+  return base.endsWith('/api') ? base.replace(/\/api$/, '') : base
+})
+
+/* =========================================================
+   USER — Avatar URL builder
+========================================================= */
+
+/**
+ * Full URL for the admin's avatar.
+ * Handles: null, relative paths, full URLs, data URIs.
+ */
+const userAvatar = computed<string | null>(() => {
+  const raw = authStore.user?.avatar || (authStore.user as any)?.avatar_url
+  if (!raw) return null
+
+  // Already a full URL or data URI
+  if (
+    raw.startsWith('http://') ||
+    raw.startsWith('https://') ||
+    raw.startsWith('data:')
+  ) {
+    return raw
+  }
+
+  // Relative path → build full storage URL
+  return `${apiBase.value}/storage/${raw.replace(/^\/+/, '')}`
+})
+
+/**
+ * Fallback avatar error handler — hides broken images so
+ * the initial-letter fallback shows.
+ */
+const onAvatarError = (e: Event) => {
+  const img = e.target as HTMLImageElement
+  img.style.display = 'none'
+}
+
+/**
+ * User initials for the fallback avatar.
+ */
+const userInitials = computed(() => {
+  const name = authStore.user?.name || 'Admin'
+  return String(name)
+    .split(' ')
+    .slice(0, 2)
+    .map((n: string) => n.charAt(0))
+    .join('')
+    .toUpperCase() || 'A'
+})
 
 const adminName = computed(() => {
   const user = authStore.user
-
   return (
     user?.name ||
-    user?.full_name ||
-    user?.fullName ||
+    (user as any)?.full_name ||
+    (user as any)?.fullName ||
     'Admin'
   )
 })
@@ -612,76 +663,25 @@ const adminName = computed(() => {
 ========================================================= */
 
 const overviewItems = [
-  {
-    path: '/admin',
-    label: 'Dashboard',
-    icon: 'lucide:layout-dashboard'
-  },
-  {
-    path: '/admin/my-venues',
-    label: 'Sport Fields',
-    icon: 'lucide:map-pin'
-  },
-  {
-    path: '/admin/approvals',
-    label: 'Approvals',
-    icon: 'lucide:check-circle',
-    badge: '9'
-  }
+  { path: '/admin',              label: 'Dashboard',  icon: 'lucide:layout-dashboard' },
+  { path: '/admin/my-venues',    label: 'Sport Fields', icon: 'lucide:map-pin' },
+  { path: '/admin/approvals',    label: 'Approvals',  icon: 'lucide:check-circle', badge: '9' },
 ]
 
 const managementItems = [
-  {
-    path: '/admin/bookings',
-    label: 'Bookings',
-    icon: 'lucide:calendar-check'
-  },
-  {
-    path: '/admin/partners',
-    label: 'Partners',
-    icon: 'lucide:handshake'
-  },
-  {
-    path: '/admin/users',
-    label: 'Users',
-    icon: 'lucide:users'
-  },
-  {
-    path: '/admin/events',
-    label: 'Events',
-    icon: 'lucide:trophy'
-  },
-  {
-    path: '/admin/games',
-    label: 'Games',
-    icon: 'lucide:gamepad-2'
-  }
+  { path: '/admin/bookings',  label: 'Bookings', icon: 'lucide:calendar-check' },
+  { path: '/admin/partners',  label: 'Partners', icon: 'lucide:handshake' },
+  { path: '/admin/users',     label: 'Users',    icon: 'lucide:users' },
 ]
 
 const financeItems = [
-  {
-    path: '/admin/payouts',
-    label: 'Payouts & Wallet',
-    icon: 'lucide:wallet-cards'
-  },
-  {
-    path: '/admin/reports',
-    label: 'Reports',
-    icon: 'lucide:chart-no-axes-combined'
-  }
+  { path: '/admin/payouts',  label: 'Payouts & Wallet', icon: 'lucide:wallet-cards' },
+  { path: '/admin/reports',  label: 'Reports',          icon: 'lucide:chart-no-axes-combined' },
 ]
 
 const accountItems = [
-  {
-    path: '/admin/profile',
-    label: 'Profile Settings',
-    icon: 'lucide:user-cog'
-  },
-  {
-    path: '/admin/settings',
-    label: 'Settings',
-    icon: 'lucide:settings'
-  }
+  { path: '/admin/profile',  label: 'Profile Settings', icon: 'lucide:user-cog' },
+  { path: '/admin/settings', label: 'Settings',         icon: 'lucide:settings' },
 ]
 
 /* =========================================================
@@ -690,7 +690,6 @@ const accountItems = [
 
 const filterItems = (items: typeof overviewItems) => {
   const query = searchQuery.value.trim().toLowerCase()
-
   if (!query) return items
 
   return items.filter(item =>
@@ -699,25 +698,13 @@ const filterItems = (items: typeof overviewItems) => {
   )
 }
 
-const filteredOverviewItems = computed(() =>
-  filterItems(overviewItems)
-)
-
-const filteredManagementItems = computed(() =>
-  filterItems(managementItems)
-)
-
-const filteredFinanceItems = computed(() =>
-  filterItems(financeItems)
-)
-
-const filteredAccountItems = computed(() =>
-  filterItems(accountItems)
-)
+const filteredOverviewItems   = computed(() => filterItems(overviewItems))
+const filteredManagementItems = computed(() => filterItems(managementItems))
+const filteredFinanceItems    = computed(() => filterItems(financeItems))
+const filteredAccountItems    = computed(() => filterItems(accountItems))
 
 const hasNoSearchResults = computed(() => {
   if (!searchQuery.value.trim()) return false
-
   return (
     filteredOverviewItems.value.length === 0 &&
     filteredManagementItems.value.length === 0 &&
@@ -749,10 +736,7 @@ const handleSidebarNavigation = () => {
 ========================================================= */
 
 const isLinkActive = (path: string) => {
-  if (path === '/admin') {
-    return route.path === '/admin'
-  }
-
+  if (path === '/admin') return route.path === '/admin'
   return route.path === path || route.path.startsWith(`${path}/`)
 }
 
@@ -766,7 +750,6 @@ const toggleDropdown = () => {
 
 const handleClickOutside = (event: MouseEvent) => {
   const target = event.target as Node | null
-
   if (
     dropdownRef.value &&
     target &&
@@ -782,14 +765,11 @@ const handleClickOutside = (event: MouseEvent) => {
 
 const handleLogout = async () => {
   if (isLoggingOut.value) return
-
   isLoggingOut.value = true
 
   try {
     await authStore.logout()
-
     isProfileOpen.value = false
-
     await router.push('/')
   } catch (error) {
     console.error('Logout failed:', error)
@@ -804,13 +784,15 @@ const handleLogout = async () => {
 
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
+
+  // 🔄 Refresh user data on mount to pick up any avatar changes
+  authStore.fetchUser?.()?.catch(() => {})
 })
 
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
 })
 </script>
-
 <style scoped>
 .custom-scrollbar::-webkit-scrollbar {
   width: 5px;
