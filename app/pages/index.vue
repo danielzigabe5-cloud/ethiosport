@@ -1,607 +1,997 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 
-// Import all images directly from app/assets/images/
-import heroBg from '~/assets/images/images.jpg'
 import img1 from '~/assets/images/venu1.jpg'
 import img2 from '~/assets/images/venue2.jpg'
 import img3 from '~/assets/images/venue3.jpg'
 import img4 from '~/assets/images/venue4.jpg'
 import img5 from '~/assets/images/venue5.jpg'
-import img6 from '~/assets/images/venues6.jpg'
-import img7 from '~/assets/images/venues7.jpg'
-import img8 from '~/assets/images/venues8.jpg'
-import img9 from '~/assets/images/venues9.jpg'
-import img10 from '~/assets/images/venuess10.jpg'
-import img11 from '~/assets/images/venuess11.jpg'
-import img12 from '~/assets/images/venuess12.png'
-import img13 from '~/assets/images/venuess13.jpg'
-import img14 from '~/assets/images/venuess14.jpg'
+import venue20Image from '~/assets/images/venues20.jpg'
+import venue11Image from '~/assets/images/venuess11.jpg'
+import venue12Image from '~/assets/images/venuess12.png'
 
-// State for Modal
-const selectedVenue = ref<any>(null)
-const isModalOpen = ref(false)
-const isDownloadModalOpen = ref(false)
-
-const openVenueModal = (venue: any) => {
-  selectedVenue.value = venue
-  isModalOpen.value = true
+interface Venue {
+  id: number
+  name: string
+  location: string
+  sport: string
+  rating: number
+  reviews: number
+  price: number
+  image: string
+  description: string
+  features: string[]
 }
 
-const closeModal = () => {
-  isModalOpen.value = false
+interface SportEvent {
+  id: number
+  title: string
+  date: string
+  time: string
+  location: string
+  image: string
+}
+
+const venueSection = ref<HTMLElement | null>(null)
+
+const searchSport = ref('All Sports')
+const searchLocation = ref('')
+
+const selectedVenue = ref<Venue | null>(null)
+
+const showVenueModal = ref(false)
+const showAppModal = ref(false)
+
+const openFaq = ref<number | null>(null)
+
+/* =========================
+   VENUES
+========================= */
+
+const venues: Venue[] = [
+  {
+    id: 1,
+    name: 'ሳርቤት ፉትሳል',
+    location: 'Addis Ababa, Saris',
+    sport: 'Football',
+    rating: 4.9,
+    reviews: 124,
+    price: 500,
+    image: img1,
+    description:
+      'Modern futsal field suitable for competitive and friendly games.',
+    features: ['Parking', 'Changing Room', 'Night Lighting']
+  },
+  {
+    id: 2,
+    name: 'Combolojo Football Arena',
+    location: 'Addis Ababa, Bole',
+    sport: 'Football',
+    rating: 4.8,
+    reviews: 98,
+    price: 600,
+    image: img2,
+    description:
+      'Premium football venue with a quality playing surface.',
+    features: ['Parking', 'Flood Lights', 'Refreshments']
+  },
+  {
+    id: 3,
+    name: 'City Basketball Court',
+    location: 'Addis Ababa, Kazanchis',
+    sport: 'Basketball',
+    rating: 4.7,
+    reviews: 76,
+    price: 350,
+    image: img3,
+    description:
+      'Professional basketball court for training and games.',
+    features: ['Changing Room', 'Night Lighting', 'Seating']
+  },
+  {
+    id: 4,
+    name: 'Unity Volleyball Center',
+    location: 'Addis Ababa, Piassa',
+    sport: 'Volleyball',
+    rating: 4.8,
+    reviews: 67,
+    price: 300,
+    image: img4,
+    description:
+      'Comfortable volleyball venue for teams and communities.',
+    features: ['Parking', 'Seating', 'Equipment']
+  },
+  {
+    id: 5,
+    name: 'Sport Life Arena',
+    location: 'Addis Ababa, CMC',
+    sport: 'Football',
+    rating: 4.9,
+    reviews: 112,
+    price: 550,
+    image: img5,
+    description:
+      'Spacious sports venue designed for an enjoyable game day.',
+    features: ['Parking', 'Flood Lights', 'Changing Room']
+  }
+]
+
+/* =========================
+   EVENTS
+========================= */
+
+const events: SportEvent[] = [
+  {
+    id: 1,
+    title: 'Combolojo Football Tournament',
+    date: 'Oct 05, 2026',
+    time: '09:00 AM',
+    location: 'Sarbet Football Field',
+    image: img1
+  },
+  {
+    id: 2,
+    title: 'Community Basketball Day',
+    date: 'Oct 12, 2026',
+    time: '02:00 PM',
+    location: 'City Basketball Court',
+    image: img3
+  },
+  {
+    id: 3,
+    title: 'Weekend Volleyball Challenge',
+    date: 'Oct 18, 2026',
+    time: '10:00 AM',
+    location: 'Unity Volleyball Center',
+    image: img4
+  }
+]
+
+/* =========================
+   TESTIMONIALS
+========================= */
+
+const testimonials = [
+  {
+    name: 'Abebe K.',
+    role: 'Football Player',
+    text:
+      'Booking a football field is now much easier. I can find a venue and reserve it in minutes.'
+  },
+  {
+    name: 'Mimi T.',
+    role: 'Sports Community',
+    text:
+      'CombolojoSPORT makes it easy for our group to organize games every weekend.'
+  },
+  {
+    name: 'Dawit M.',
+    role: 'Venue Partner',
+    text:
+      'The platform helps us manage bookings and reach more players.'
+  }
+]
+
+/* =========================
+   FAQ
+========================= */
+
+const faqs = [
+  {
+    question: 'How can I book a sports venue?',
+    answer:
+      'Choose your sport and location, select a venue, choose an available time slot, and complete your booking.'
+  },
+  {
+    question: 'Can I book a venue from my phone?',
+    answer:
+      'Yes. CombolojoSPORT is designed to work on mobile devices.'
+  },
+  {
+    question: 'Can venue owners join CombolojoSPORT?',
+    answer:
+      'Yes. Venue partners can register their venues and manage bookings, slots, events and earnings from the partner dashboard.'
+  },
+  {
+    question: 'Can I participate in sports events?',
+    answer:
+      'Yes. Visit the Events section to discover upcoming sports events and activities.'
+  }
+]
+
+/* =========================
+   SEARCH
+========================= */
+
+const filteredVenues = computed(() => {
+  return venues.filter((venue) => {
+    const sportMatch =
+      searchSport.value === 'All Sports' ||
+      venue.sport === searchSport.value
+
+    const locationMatch =
+      !searchLocation.value ||
+      venue.location
+        .toLowerCase()
+        .includes(searchLocation.value.toLowerCase()) ||
+      venue.name
+        .toLowerCase()
+        .includes(searchLocation.value.toLowerCase())
+
+    return sportMatch && locationMatch
+  })
+})
+
+/* =========================
+   FUNCTIONS
+========================= */
+
+function searchVenues() {
+  venueSection.value?.scrollIntoView({
+    behavior: 'smooth',
+    block: 'start'
+  })
+}
+
+function selectSport(sport: string) {
+  searchSport.value = sport
+  searchVenues()
+}
+
+function openVenue(venue: Venue) {
+  selectedVenue.value = venue
+  showVenueModal.value = true
+}
+
+function closeVenue() {
+  showVenueModal.value = false
   selectedVenue.value = null
 }
 
-const handleBookNow = () => {
-  isModalOpen.value = false
-  isDownloadModalOpen.value = true
-}
+function bookVenue(venue: Venue) {
+  closeVenue()
 
-const closeDownloadModal = () => {
-  isDownloadModalOpen.value = false
-}
-
-// Search State
-const searchQuery = ref('')
-const selectedType = ref('All Types')
-
-// Sports Categories
-const categories = [
-  { name: 'Football', label: 'Fields & Courts', icon: '⚽' },
-  { name: 'Basketball', label: 'Courts & Gyms', icon: '🏀' },
-  { name: 'Futsal', label: 'Indoor & Outdoor', icon: '⚽' },
-  { name: 'Volleyball', label: 'Courts & Halls', icon: '🏐' },
-  { name: 'Just Play', label: 'Find Players', icon: '🏃' },
-  { name: 'Events', label: 'Tournaments & More', icon: '📅' }
-]
-
-// All Venues with extended details in English
-const venues = ref([
-  { 
-    id: 1, 
-    name: 'Sarbet Futsal Arena', 
-    location: 'Bole, Addis Ababa', 
-    type: 'Futsal', 
-    badge: 'Indoor', 
-    rating: '4.8', 
-    reviews: '124', 
-    price: '1,500', 
-    tag: 'Top Rated', 
-    image: img1, 
-    phone: '+251 911 123 456', 
-    hours: '06:00 AM - 11:00 PM', 
-    description: 'Sarbet Futsal Arena offers state-of-the-art indoor artificial turf pitches ideal for competitive matches and casual games with friends.',
-    rules: ['Futsal or turf shoes are required.', 'Arrive at least 15 minutes before your booked slot.', 'Smoking and alcohol are strictly prohibited inside the arena.'],
-    amenities: ['Night Lighting', 'Shower Room', 'Secure Parking', 'Cafeteria & Lounge', 'Locker Room'] 
-  },
-  { 
-    id: 2, 
-    name: 'Unity Football Arena', 
-    location: 'Mexico, Addis Ababa', 
-    type: 'Football', 
-    badge: 'Outdoor', 
-    rating: '4.6', 
-    reviews: '98', 
-    price: '2,000', 
-    image: img2, 
-    phone: '+251 922 234 567', 
-    hours: '06:00 AM - 10:00 PM', 
-    description: 'A spacious outdoor football ground located in the center of the city. Perfect for group training, friendly games, and local leagues.',
-    rules: ['Change into sports apparel inside dressing rooms only.', 'Respect reserved time slots.'],
-    amenities: ['High-Grade Turf', 'Dressing Room', 'Parking', 'First Aid On-Site'] 
-  },
-  { 
-    id: 3, 
-    name: 'Yeka Basketball Court', 
-    location: 'Yeka, Addis Ababa', 
-    type: 'Basketball', 
-    badge: 'Indoor', 
-    rating: '4.5', 
-    reviews: '76', 
-    price: '1,200', 
-    image: img3, 
-    phone: '+251 933 345 678', 
-    hours: '07:00 AM - 09:00 PM', 
-    description: 'Modern indoor basketball facility with professional wooden flooring, scoreboard, and private shower amenities.',
-    rules: ['Indoor basketball non-marking shoes only.', 'No food or sugary drinks on the playing surface.'],
-    amenities: ['Professional Hoops', 'Digital Scoreboard', 'Shower Room', 'Spectator Seating'] 
-  },
-  { 
-    id: 4, 
-    name: 'Summit Sports Complex', 
-    location: 'Kirkos, Addis Ababa', 
-    type: 'Football', 
-    badge: 'Outdoor', 
-    rating: '4.7', 
-    reviews: '62', 
-    price: '2,500', 
-    image: img4, 
-    phone: '+251 944 456 789', 
-    hours: '06:00 AM - 11:00 PM', 
-    description: 'Premium outdoor venue equipped with floodlights for evening games and full spectator stands.',
-    rules: ['Full sports kit required.', 'Ensure personal belongings are stored safely.'],
-    amenities: ['Floodlights', 'Spectator Stands', 'Cafeteria', 'VIP Lounge'] 
-  },
-  { id: 5, name: 'Mekelle Martyrs Stadium', location: 'Mekelle', type: 'Football', badge: 'Outdoor', rating: '4.4', reviews: '45', price: '1,500', image: img5, phone: '+251 955 567 890', hours: '06:00 AM - 08:00 PM', description: 'Standard stadium with natural grass field suitable for tournament fixtures.', rules: ['Follow field safety guidelines.'], amenities: ['Natural Grass', 'Parking', 'Restrooms'] },
-  { id: 6, name: 'Hawassa International Stadium', location: 'Hawassa', type: 'Athletics', badge: 'Outdoor', rating: '4.9', reviews: '110', price: '2,200', image: img6, phone: '+251 966 678 901', hours: '06:00 AM - 07:00 PM', description: 'Comprehensive athletic running track and full-size football arena.', rules: ['Track spikes must conform to regulation length.'], amenities: ['Running Track', 'Locker Room', 'First Aid Station'] },
-  { id: 7, name: 'Dire Dawa Stadium', location: 'Dire Dawa', type: 'Football', badge: 'Outdoor', rating: '4.3', reviews: '38', price: '1,700', image: img7, phone: '+251 977 789 012', hours: '06:00 AM - 09:00 PM', description: 'Multi-purpose sports ground featuring night floodlights.', rules: ['No pets allowed on the playing pitch.'], amenities: ['Night Lighting', 'Parking'] },
-  { id: 8, name: 'Bahir Dar Sports Arena', location: 'Bahir Dar', type: 'Athletics', badge: 'Outdoor', rating: '4.6', reviews: '84', price: '1,900', image: img8, phone: '+251 988 890 123', hours: '06:00 AM - 08:00 PM', description: 'Premier athletics track and field arena.', rules: ['Respect other athletes on the track.'], amenities: ['Running Track', 'Shower Room'] },
-  { id: 9, name: 'Jimma Athletics Field', location: 'Yeka, Addis Ababa', type: 'Athletics', badge: 'Outdoor', rating: '4.2', reviews: '29', price: '1,600', image: img9, phone: '+251 911 000 111', hours: '06:00 AM - 07:00 PM', description: 'Open-air athletic pitch with training facilities.', rules: ['Keep the facility clean.'], amenities: ['Open Air Ground', 'Parking'] },
-  { id: 10, name: 'Harar Football Field', location: 'Dire Dawa', type: 'Football', badge: 'Outdoor', rating: '4.1', reviews: '19', price: '1,400', image: img10, phone: '+251 922 111 222', hours: '06:00 AM - 08:00 PM', description: 'Natural turf football ground.', rules: ['Follow stadium rules.'], amenities: ['Grass Field', 'Water Station'] },
-  { id: 11, name: 'Addis Ababa Basketball Arena', location: 'Lideta, Addis Ababa', type: 'Basketball', badge: 'Indoor', rating: '4.8', reviews: '150', price: '1,200', image: img11, phone: '+251 933 222 333', hours: '07:00 AM - 10:00 PM', description: 'High-grade indoor hardwood basketball arena.', rules: ['Proper basketball footwear required.'], amenities: ['Hardwood Floor', 'Shower Room', 'Night Lighting'] },
-  { id: 12, name: 'Ethiopia International Stadium', location: 'Kirkos, Addis Ababa', type: 'Athletics', badge: 'Outdoor', rating: '5.0', reviews: '210', price: '3,000', image: img12, phone: '+251 944 333 444', hours: '06:00 AM - 10:00 PM', description: 'World-class international arena for grand sports events.', rules: ['Strict security protocols apply.'], amenities: ['VIP Section', 'Night Lighting', 'Full Sports Kit Services'] },
-  { id: 13, name: 'Arba Minch Sports Complex', location: 'Hawassa', type: 'Football', badge: 'Outdoor', rating: '4.5', reviews: '53', price: '2,100', image: img13, phone: '+251 955 444 555', hours: '06:00 AM - 09:00 PM', description: 'Modern artificial turf complex.', rules: ['Respect scheduled game times.'], amenities: ['Artificial Turf', 'Cafeteria'] },
-  { id: 14, name: 'Bole Resort Sports Field', location: 'Bole, Addis Ababa', type: 'Basketball', badge: 'Outdoor', rating: '4.7', reviews: '88', price: '2,500', image: img14, phone: '+251 966 555 666', hours: '06:00 AM - 11:00 PM', description: 'Luxury outdoor sports court situated within resort premises.', rules: ['Resort guest guidelines apply.'], amenities: ['Resort View', 'Night Lighting', 'VIP Bar'] }
-])
-
-// Events Data
-const events = ref([
-  { id: 1, month: 'AUG', day: '30', title: '5-a-side Football Tournament', location: 'Bole Arena', time: '9:00 AM – 5:00 PM', image: img6 },
-  { id: 2, month: 'SEP', day: '05', title: 'Basketball Friendly Match', location: 'Yeka Court', time: '4:00 PM – 7:00 PM', image: img11 },
-  { id: 3, month: 'SEP', day: '12', title: 'Futsal Championship', location: 'Summit Complex', time: '10:00 AM – 6:00 PM', image: img12 }
-])
-
-// Search filter implementation
-const filteredVenues = computed(() => {
-  const result = venues.value.filter(v => {
-    const matchesSearch = searchQuery.value === '' || 
-      v.name.toLowerCase().includes(searchQuery.value.toLowerCase()) || 
-      v.location.toLowerCase().includes(searchQuery.value.toLowerCase())
-    const matchesType = selectedType.value === 'All Types' || v.type.toLowerCase() === selectedType.value.toLowerCase()
-    
-    return matchesSearch && matchesType
+  navigateTo({
+    path: '/booking',
+    query: {
+      venue: venue.id
+    }
   })
-  return result.slice(0, 4)
-})
+}
+
+function goToEvents() {
+  navigateTo('/events')
+}
+
+function openAppModal() {
+  showAppModal.value = true
+}
+
+function closeAppModal() {
+  showAppModal.value = false
+}
+
+function toggleFaq(index: number) {
+  openFaq.value = openFaq.value === index ? null : index
+}
+
+function clearSearch() {
+  searchSport.value = 'All Sports'
+  searchLocation.value = ''
+}
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50 text-gray-800 font-sans">
+  <div class="min-h-screen bg-gray-50 text-gray-900">
 
-    <!-- NAVBAR -->
-    <header class="bg-white border-b border-gray-100 sticky top-0 z-50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-        <!-- Logo -->
-        <div class="flex items-center gap-2">
-          <div class="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center text-white font-bold text-xl">
-            ⚽
-          </div>
-          <span class="text-2xl font-bold text-gray-900">
-            Combolojo<span class="text-emerald-600">SPORT</span>
-          </span>
-        </div>
-
-        <!-- Navigation Links -->
-        <nav class="hidden md:flex items-center gap-8 font-medium text-sm text-gray-600">
-          <NuxtLink to="/" class="text-emerald-600 font-semibold border-b-2 border-emerald-600 pb-1">Home</NuxtLink>
-          <NuxtLink to="/venues" class="hover:text-emerald-600 transition-colors">Venues</NuxtLink>
-          <NuxtLink to="/events" class="hover:text-emerald-600 transition-colors">Events</NuxtLink>
-          <NuxtLink to="/just-play" class="hover:text-emerald-600 transition-colors">Just Play</NuxtLink>
-          <NuxtLink to="/contact" class="hover:text-emerald-600 transition-colors">Contact</NuxtLink>
-        </nav>
-
-        <!-- Right Side Controls -->
-        <div class="flex items-center gap-4">
-          <NuxtLink to="/contact" class="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-xs px-3.5 py-2 rounded-full flex items-center gap-1 transition-all">
-            <span>⊕</span> Add Venue
-          </NuxtLink>
-          <div class="relative">
-            <button class="p-2 text-gray-500 hover:text-emerald-600">🔔</button>
-            <span class="absolute top-1 right-1 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">3</span>
-          </div>
-          <div class="flex items-center gap-2 border-l pl-4 border-gray-200">
-            <div class="w-9 h-9 rounded-full bg-slate-700 text-white flex items-center justify-center text-sm font-semibold">
-              A
-            </div>
-            <span class="text-sm font-medium hidden sm:inline">Alemu</span>
-            <span class="text-xs text-gray-400">▼</span>
-          </div>
-        </div>
+    <!-- HERO -->
+    <section class="relative min-h-[500px] overflow-hidden">
+      <div class="absolute inset-0 bg-gray-900">
+        <img :src="venue20Image" alt="" aria-hidden="true" class="hero-image hero-image-1" />
+        <img :src="venue11Image" alt="" aria-hidden="true" class="hero-image hero-image-2" />
+        <img :src="venue12Image" alt="" aria-hidden="true" class="hero-image hero-image-3" />
+        <div class="absolute inset-0 bg-gradient-to-r from-black/45 via-black/15 to-transparent"></div>
       </div>
-    </header>
 
-    <!-- HERO SECTION WITH SLOW ZOOM ANIMATION -->
-    <section class="relative bg-slate-900 text-white py-20 px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[480px] flex items-center">
-      <div 
-        class="absolute inset-0 z-0 opacity-40 bg-cover bg-center animate-hero-zoom" 
-        :style="{ backgroundImage: `url(${heroBg})` }"
-      ></div>
-      
-      <div class="max-w-7xl mx-auto w-full relative z-10 grid md:grid-cols-2 gap-8 items-center">
-        <div>
-          <span class="text-emerald-400 font-semibold tracking-wider text-sm uppercase mb-2 block animate-pulse">
-            Play · Book · Connect
-          </span>
-          <h1 class="text-4xl sm:text-5xl font-extrabold leading-tight mb-4">
-            Your Sports Experience <br />
-            <span class="text-emerald-400">Starts Here</span>
+      <div
+        class="relative mx-auto flex min-h-[500px] max-w-7xl items-center px-6 py-12 lg:px-8"
+      >
+        <div class="max-w-4xl">
+          <div
+            class="mb-4 inline-flex items-center gap-2 rounded-full border border-white/60 bg-white/90 px-3 py-1 text-xs font-bold text-green-700 shadow-lg backdrop-blur-sm"
+          >
+            <span class="h-2 w-2 animate-pulse rounded-full bg-green-600"></span>
+            Find • Book • Play
+          </div>
+
+          <h1
+            class="text-3xl font-black leading-tight text-white drop-shadow-[0_3px_8px_rgba(0,0,0,0.8)] sm:text-4xl lg:text-6xl"
+          >
+            WELL COME TO ETHIOPIAN COMBOLOJOS
+            <span class="text-green-400">
+              starts here.
+            </span>
           </h1>
-          <p class="text-gray-300 text-base sm:text-lg mb-8 max-w-lg leading-relaxed">
-            Find and book the best sports venues, join exciting events, play with friends, or create your own game. CombolojoSPORT brings the sports community together.
+
+          <p
+            class="mt-4 max-w-2xl text-base leading-7 text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)] sm:text-lg"
+          >
+            Discover sports venues, book your favorite field,
+            join events and enjoy the game with
+            <strong>CombolojoSPORT.</strong>
           </p>
 
-          <!-- Search Bar Box -->
-          <div class="bg-white rounded-2xl p-2 shadow-2xl flex flex-col sm:flex-row gap-2 max-w-xl text-gray-800">
-            <div class="flex-1 flex items-center gap-2 px-3">
-              <span class="text-gray-400">📍</span>
-              <input 
-                v-model="searchQuery" 
-                type="text" 
-                placeholder="Search venues, events or games..." 
-                class="w-full bg-transparent focus:outline-none text-sm"
-              />
-            </div>
-            <div class="border-t sm:border-t-0 sm:border-l border-gray-200 flex items-center px-3 py-2 sm:py-0">
-              <select v-model="selectedType" class="bg-transparent text-sm focus:outline-none cursor-pointer text-gray-600">
-                <option>All Types</option>
-                <option>Football</option>
-                <option>Basketball</option>
-                <option>Futsal</option>
-                <option>Athletics</option>
-              </select>
-            </div>
-            <button class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all">
-              🔍 Search
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>
+          <div
+            class="mt-6 rounded-2xl bg-white p-3 shadow-2xl lg:p-4"
+          >
+            <div class="grid gap-3 md:grid-cols-3">
+              <div class="rounded-xl bg-gray-100 px-4 py-2">
+                <label
+                  class="mb-1 block text-xs font-bold uppercase tracking-wide text-gray-500"
+                >
+                  Sport
+                </label>
+                <select
+                  v-model="searchSport"
+                  class="w-full border-none bg-transparent font-semibold text-gray-900 outline-none"
+                >
+                  <option>All Sports</option>
+                  <option>Football</option>
+                  <option>Basketball</option>
+                  <option>Volleyball</option>
+                  <option>Tennis</option>
+                </select>
+              </div>
 
-    <!-- CATEGORIES SECTION -->
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 mb-12">
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-        <div 
-          v-for="cat in categories" 
-          :key="cat.name"
-          class="bg-white rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 text-center border border-gray-100 cursor-pointer flex flex-col items-center justify-center group"
-        >
-          <div class="w-14 h-14 rounded-full bg-emerald-50 text-emerald-600 text-2xl flex items-center justify-center mb-3 leading-none shrink-0 group-hover:scale-110 transition-transform">
-            <span class="flex items-center justify-center leading-none">{{ cat.icon }}</span>
-          </div>
-          <h3 class="font-bold text-gray-900 text-sm mb-0.5 leading-snug">{{ cat.name }}</h3>
-          <p class="text-xs text-gray-400 font-normal">{{ cat.label }}</p>
-        </div>
-      </div>
-    </section>
+              <div class="rounded-xl bg-gray-100 px-4 py-2">
+                <label
+                  class="mb-1 block text-xs font-bold uppercase tracking-wide text-gray-500"
+                >
+                  Location
+                </label>
+                <input
+                  v-model="searchLocation"
+                  type="text"
+                  placeholder="Search venue or location"
+                  class="w-full bg-transparent font-semibold text-gray-900 outline-none placeholder:text-gray-400"
+                  @keyup.enter="searchVenues"
+                />
+              </div>
 
-    <!-- TOP RATED SPORTS VENUES -->
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div class="flex justify-between items-end mb-8">
-        <div>
-          <span class="text-emerald-600 font-semibold text-xs uppercase tracking-widest">Featured Venues</span>
-          <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 mt-1">Top Rated Sports Venues</h2>
-          <p class="text-gray-500 text-sm mt-1">Discover and book the best venues near you. Quality facilities, fair prices, and great experiences.</p>
-        </div>
-        <NuxtLink to="/venues" class="text-emerald-600 hover:text-emerald-700 font-semibold text-sm flex items-center gap-1">
-          View All Venues →
-        </NuxtLink>
-      </div>
-
-      <!-- Venues Grid Card Display -->
-      <div v-if="filteredVenues.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div 
-          v-for="venue in filteredVenues" 
-          :key="venue.id"
-          class="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col justify-between"
-        >
-          <div>
-            <!-- Card Image Box -->
-            <div class="relative h-48 overflow-hidden bg-gray-200">
-              <img :src="venue.image" :alt="venue.name" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-              
-              <span v-if="venue.tag" class="absolute top-3 left-3 bg-emerald-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow">
-                {{ venue.tag }}
-              </span>
-              
-              <button class="absolute top-3 right-3 bg-slate-900/40 text-white p-2 rounded-full backdrop-blur-sm hover:bg-slate-900/60 transition-colors">
-                🤍
+              <button
+                type="button"
+                @click="searchVenues"
+                class="flex items-center justify-center gap-2 rounded-xl bg-green-600 px-6 py-3 font-bold text-white transition hover:bg-green-700"
+              >
+                <span>Search Venues</span>
+                <span class="text-lg">→</span>
               </button>
             </div>
-
-            <!-- Card Body -->
-            <div class="p-5">
-              <h3 class="font-bold text-gray-900 text-base mb-1 truncate">{{ venue.name }}</h3>
-              <p class="text-xs text-gray-500 flex items-center gap-1 mb-3">
-                📍 {{ venue.location }}
-              </p>
-
-              <div class="flex items-center gap-2 mb-4">
-                <span class="text-xs bg-gray-100 text-gray-600 px-2.5 py-0.5 rounded-md font-medium">⚽ {{ venue.type }}</span>
-                <span class="text-xs bg-gray-100 text-gray-600 px-2.5 py-0.5 rounded-md font-medium">🏢 {{ venue.badge }}</span>
-              </div>
-
-              <div class="flex justify-between items-center text-xs border-t pt-3 border-gray-100">
-                <div class="flex items-center gap-1">
-                  <span class="text-amber-500 font-bold">★ {{ venue.rating }}</span>
-                  <span class="text-gray-400">({{ venue.reviews }})</span>
-                </div>
-                <div>
-                  <span class="font-bold text-emerald-600 text-sm">ETB {{ venue.price }}</span>
-                  <span class="text-gray-400"> / hr</span>
-                </div>
-              </div>
-            </div>
           </div>
 
-          <div class="px-5 pb-5">
-            <button 
-              @click="openVenueModal(venue)"
-              class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-medium text-xs py-2.5 rounded-xl transition-all shadow-sm hover:shadow"
-            >
-              View Details →
-            </button>
+          <div
+            class="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-xs font-semibold text-white drop-shadow-md"
+          >
+            <span>✓ Verified venues</span>
+            <span>✓ Easy booking</span>
+            <span>✓ Secure payment</span>
+            <span>✓ Sports events</span>
           </div>
         </div>
-      </div>
-
-      <div v-else class="text-center py-12 text-gray-500">
-        No sports venues found matching your criteria.
       </div>
     </section>
 
-    <!-- FULL PAGE MODAL FOR VENUE DETAILS -->
-    <div v-if="isModalOpen" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/80 backdrop-blur-md flex items-start justify-center p-2 sm:p-4 pt-16 sm:pt-20 animate-fade-in">
-      <div class="bg-white rounded-3xl max-w-4xl w-full my-6 overflow-hidden shadow-2xl relative border border-gray-100 animate-scale-up">
-        
-        <!-- Modal Top Floating Close Button -->
-        <button @click="closeModal" class="absolute top-4 right-4 bg-slate-900/80 hover:bg-slate-950 text-white rounded-full w-9 h-9 flex items-center justify-center font-bold z-40 backdrop-blur-sm transition-colors border border-white/20 shadow-md">
-          ✕
-        </button>
-
-        <!-- Header Section: Title & Badge -->
-        <div class="bg-slate-950 p-6 sm:p-8 pb-4 text-white">
-          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div>
-              <span class="bg-emerald-500 text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow">
-                {{ selectedVenue?.type }} • {{ selectedVenue?.badge }}
-              </span>
-              <h2 class="text-2xl sm:text-3xl font-extrabold mt-2 text-white">{{ selectedVenue?.name }}</h2>
-              <p class="text-xs sm:text-sm text-gray-300 flex items-center gap-1 mt-1">
-                📍 {{ selectedVenue?.location }}
-              </p>
-            </div>
-
-            <div class="bg-slate-900/90 border border-white/10 p-3 rounded-2xl text-right shrink-0">
-              <span class="text-xs text-gray-400 block">Hourly Rate</span>
-              <span class="text-xl sm:text-2xl font-black text-emerald-400">ETB {{ selectedVenue?.price }}</span>
-              <span class="text-xs text-gray-400"> / hour</span>
-            </div>
-          </div>
+    <!-- SPORTS CATEGORIES -->
+    <section class="bg-white py-10">
+      <div class="mx-auto max-w-7xl px-6 lg:px-8">
+        <div class="text-center">
+          <p class="font-bold uppercase tracking-widest text-green-600 text-xs">
+            Choose your sport
+          </p>
+          <h2 class="mt-2 text-2xl font-black sm:text-3xl">
+            What do you want to play?
+          </h2>
+          <p class="mx-auto mt-2 max-w-2xl text-sm text-gray-600">
+            Choose your favorite sport and discover available venues.
+          </p>
         </div>
 
-        <!-- Complete Uncropped Center Image -->
-        <div class="relative w-full bg-slate-950 flex items-center justify-center border-t border-slate-800/80 overflow-hidden min-h-[250px] sm:min-h-[350px]">
-          
-          <!-- Background Blurred Ambient Effect -->
-          <img :src="selectedVenue?.image" :alt="selectedVenue?.name" class="absolute inset-0 w-full h-full object-cover blur-3xl opacity-30 scale-110" />
-
-          <!-- Full Uncropped Center Image -->
-          <img 
-            :src="selectedVenue?.image" 
-            :alt="selectedVenue?.name" 
-            class="relative z-10 w-full max-h-[60vh] object-contain mx-auto shadow-xl" 
-          />
-        </div>
-
-        <!-- Detailed Content Body -->
-        <div class="p-6 sm:p-8 space-y-8">
-          
-          <!-- Key Metrics -->
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 bg-gray-50 p-4 rounded-2xl border border-gray-100">
-            <div>
-              <span class="text-xs text-gray-400 block">Rating & Reviews</span>
-              <div class="flex items-center gap-1 font-bold text-gray-800 mt-0.5">
-                <span class="text-amber-500">★ {{ selectedVenue?.rating }}</span>
-                <span class="text-xs text-gray-500 font-normal">({{ selectedVenue?.reviews }} reviews)</span>
-              </div>
+        <div class="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
+          <button
+            v-for="sport in [
+              { name: 'Football', icon: '⚽' },
+              { name: 'Basketball', icon: '🏀' },
+              { name: 'Volleyball', icon: '🏐' },
+              { name: 'Tennis', icon: '🎾' }
+            ]"
+            :key="sport.name"
+            type="button"
+            @click="selectSport(sport.name)"
+            class="group rounded-2xl border border-gray-200 bg-gray-50 p-5 text-center transition duration-300 hover:-translate-y-1 hover:border-green-500 hover:bg-green-50 hover:shadow-lg"
+          >
+            <div
+              class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-white text-3xl shadow-sm transition group-hover:scale-110"
+            >
+              {{ sport.icon }}
             </div>
-            <div>
-              <span class="text-xs text-gray-400 block">Opening Hours</span>
-              <span class="font-bold text-gray-800 text-xs sm:text-sm block mt-0.5">{{ selectedVenue?.hours }}</span>
-            </div>
-            <div>
-              <span class="text-xs text-gray-400 block">Contact Phone</span>
-              <span class="font-bold text-gray-800 text-xs sm:text-sm block mt-0.5">{{ selectedVenue?.phone }}</span>
-            </div>
-            <div>
-              <span class="text-xs text-gray-400 block">Instant Booking</span>
-              <span class="text-emerald-600 font-bold text-xs sm:text-sm block mt-0.5">✓ Available</span>
-            </div>
-          </div>
-
-          <!-- Description Section -->
-          <div>
-            <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider mb-2">About This Venue</h3>
-            <p class="text-gray-600 text-sm leading-relaxed">{{ selectedVenue?.description }}</p>
-          </div>
-
-          <!-- Amenities Section -->
-          <div>
-            <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider mb-3">Facility Amenities</h3>
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              <div v-for="item in selectedVenue?.amenities" :key="item" class="bg-emerald-50/60 border border-emerald-100/80 p-3 rounded-xl flex items-center gap-2 text-xs text-emerald-900 font-medium">
-                <span class="text-emerald-600 text-base">✓</span> {{ item }}
-              </div>
-            </div>
-          </div>
-
-          <!-- Venue Rules Section -->
-          <div v-if="selectedVenue?.rules?.length">
-            <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider mb-3">Venue Rules & Terms</h3>
-            <div class="bg-amber-50/50 border border-amber-100 p-4 rounded-2xl">
-              <ul class="space-y-2 text-xs text-gray-700">
-                <li v-for="(rule, idx) in selectedVenue?.rules" :key="idx" class="flex items-start gap-2">
-                  <span class="text-amber-500 font-bold">•</span>
-                  <span>{{ rule }}</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <!-- Action Buttons -->
-          <div class="flex flex-col sm:flex-row gap-3 border-t border-gray-100 pt-6">
-            <button @click="closeModal" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-xs py-3.5 rounded-xl transition-all text-center">
-              Back to Venues
-            </button>
-            <button @click="handleBookNow" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-3.5 rounded-xl transition-all shadow-md text-center">
-              Proceed to Booking
-            </button>
-          </div>
-
-        </div>
-      </div>
-    </div>
-
-    <!-- DOWNLOAD APP MODAL -->
-    <div v-if="isDownloadModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
-      <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl relative border border-gray-100 animate-scale-up">
-        <button @click="closeDownloadModal" class="absolute top-3 right-3 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-full w-8 h-8 flex items-center justify-center font-bold z-10">
-          ✕
-        </button>
-
-        <div class="w-16 h-16 bg-emerald-100 text-emerald-600 text-3xl rounded-full flex items-center justify-center mx-auto mb-4">
-          📱
-        </div>
-
-        <h3 class="text-xl font-bold text-gray-900 mb-2">Get Mobile App</h3>
-        <p class="text-xs text-gray-600 mb-6 leading-relaxed">
-          Please download the CombolojoSPORT mobile app on your smartphone to complete venue reservations.
-        </p>
-
-        <div class="space-y-3">
-          <button @click="closeDownloadModal" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-xl text-xs flex items-center justify-center gap-2 transition-all">
-            <span>📲</span> Download Mobile App
-          </button>
-          <button @click="closeDownloadModal" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2.5 rounded-xl text-xs transition-all">
-            Cancel
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- UPCOMING EVENTS SECTION -->
-    <section class="bg-slate-900 text-white py-16 px-4 sm:px-6 lg:px-8">
-      <div class="max-w-7xl mx-auto">
-        <div class="grid lg:grid-cols-4 gap-8">
-          <div>
-            <span class="text-emerald-400 font-semibold text-xs uppercase tracking-widest">Upcoming Events</span>
-            <h2 class="text-2xl sm:text-3xl font-extrabold mt-1 mb-3">Don't Miss These Events</h2>
-            <p class="text-gray-400 text-sm mb-6 leading-relaxed">
-              Tournaments, friendly matches, and community events. Be part of the action!
+            <h3 class="mt-3 font-bold text-sm">
+              {{ sport.name }}
+            </h3>
+            <p class="mt-1 text-xs text-gray-500">
+              Find venues →
             </p>
-            <NuxtLink to="/events" class="inline-block bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-xs font-semibold transition-all">
-              View All Events →
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="bg-gray-50 py-10">
+      <div class="mx-auto max-w-7xl px-6 lg:px-8">
+        <div class="text-center">
+          <p class="font-bold uppercase tracking-widest text-green-600 text-xs">
+            Simple process
+          </p>
+          <h2 class="mt-2 text-2xl font-black sm:text-3xl">
+            How CombolojoSPORT works
+          </h2>
+          <p class="mx-auto mt-2 max-w-2xl text-sm text-gray-600">
+            Booking your sports venue is simple.
+          </p>
+        </div>
+
+        <div class="mt-8 grid gap-6 md:grid-cols-4">
+          <div
+            v-for="step in [
+              {
+                number: '01',
+                icon: '👤',
+                title: 'Register',
+                text: 'Create your CombolojoSPORT account.'
+              },
+              {
+                number: '02',
+                icon: '🔎',
+                title: 'Find',
+                text: 'Search for your preferred venue.'
+              },
+              {
+                number: '03',
+                icon: '📅',
+                title: 'Book',
+                text: 'Select your date and available time.'
+              },
+              {
+                number: '04',
+                icon: '💳',
+                title: 'Pay',
+                text: 'Confirm your booking securely.'
+              }
+            ]"
+            :key="step.number"
+            class="relative rounded-2xl bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+          >
+            <span class="absolute right-4 top-4 text-xs font-black text-green-600">
+              {{ step.number }}
+            </span>
+            <div
+              class="flex h-10 w-10 items-center justify-center rounded-xl bg-green-50 text-xl"
+            >
+              {{ step.icon }}
+            </div>
+            <h3 class="mt-4 text-lg font-black">
+              {{ step.title }}
+            </h3>
+            <p class="mt-2 text-sm leading-6 text-gray-600">
+              {{ step.text }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURED VENUES -->
+    <section
+      ref="venueSection"
+      class="scroll-mt-16 bg-white py-10"
+    >
+      <div class="mx-auto max-w-7xl px-6 lg:px-8">
+        <div class="flex flex-col justify-between gap-3 md:flex-row md:items-end">
+          <div>
+            <p class="font-bold uppercase tracking-widest text-green-600 text-xs">
+              Featured venues
+            </p>
+            <h2 class="mt-1 text-2xl font-black sm:text-3xl">
+              Find your perfect field
+            </h2>
+            <p class="mt-1 text-sm text-gray-600">
+              Explore sports venues and book your game.
+            </p>
+          </div>
+          <NuxtLink
+            to="/venues"
+            class="text-sm font-bold text-green-600 hover:text-green-700"
+          >
+            View all venues →
+          </NuxtLink>
+        </div>
+
+        <div
+          v-if="filteredVenues.length"
+          class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4"
+        >
+          <article
+            v-for="venue in filteredVenues.slice(0, 4)"
+            :key="venue.id"
+            class="group overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+          >
+            <div class="relative h-44 overflow-hidden">
+              <img
+                :src="venue.image"
+                :alt="venue.name"
+                class="h-full w-full object-cover transition duration-500 group-hover:scale-110"
+              />
+              <span
+                class="absolute left-3 top-3 rounded-full bg-white px-2.5 py-0.5 text-xs font-bold text-gray-900 shadow"
+              >
+                {{ venue.sport }}
+              </span>
+              <span
+                class="absolute right-3 top-3 rounded-full bg-green-600 px-2.5 py-0.5 text-xs font-bold text-white shadow"
+              >
+                ★ {{ venue.rating }}
+              </span>
+            </div>
+
+            <div class="p-4">
+              <h3 class="truncate text-base font-black">
+                {{ venue.name }}
+              </h3>
+              <p class="mt-1 text-xs text-gray-500">
+                📍 {{ venue.location }}
+              </p>
+              <div class="mt-1 text-xs text-gray-400">
+                {{ venue.reviews }} reviews
+              </div>
+
+              <div class="mt-4 flex items-end justify-between gap-2">
+                <div>
+                  <p class="text-[10px] text-gray-500">Starting from</p>
+                  <p class="text-base font-black text-green-600">
+                    ETB {{ venue.price }}
+                    <span class="text-[10px] font-normal text-gray-500">/ hour</span>
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  @click="openVenue(venue)"
+                  class="rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-green-600"
+                >
+                  View
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div
+          v-else
+          class="mt-8 rounded-2xl border border-dashed border-gray-300 p-8 text-center"
+        >
+          <div class="text-3xl">🔎</div>
+          <h3 class="mt-2 text-lg font-black">No venues found</h3>
+          <p class="mt-1 text-sm text-gray-500">Try another sport or location.</p>
+          <button
+            type="button"
+            @click="clearSearch"
+            class="mt-4 rounded-lg bg-green-600 px-4 py-2 text-sm font-bold text-white hover:bg-green-700"
+          >
+            Clear Search
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- EVENTS -->
+    <section class="bg-slate-950 py-10 text-white">
+      <div class="mx-auto max-w-7xl px-6 lg:px-8">
+        <div class="flex flex-col justify-between gap-3 md:flex-row md:items-end">
+          <div>
+            <p class="font-bold uppercase tracking-widest text-green-400 text-xs">
+              Upcoming events
+            </p>
+            <h2 class="mt-1 text-2xl font-black sm:text-3xl">
+              Play together. Compete together.
+            </h2>
+            <p class="mt-1 text-sm text-gray-400">
+              Discover tournaments, games and community events.
+            </p>
+          </div>
+          <NuxtLink
+            to="/events"
+            class="text-sm font-bold text-green-400 hover:text-green-300"
+          >
+            View all events →
+          </NuxtLink>
+        </div>
+
+        <div class="mt-8 grid gap-6 md:grid-cols-3">
+          <article
+            v-for="event in events"
+            :key="event.id"
+            class="overflow-hidden rounded-2xl border border-white/10 bg-white/5"
+          >
+            <div class="h-40 overflow-hidden">
+              <img
+                :src="event.image"
+                :alt="event.title"
+                class="h-full w-full object-cover transition duration-500 hover:scale-105"
+              />
+            </div>
+            <div class="p-5">
+              <p class="text-xs font-bold text-green-400">
+                {{ event.date }}
+              </p>
+              <h3 class="mt-1 text-lg font-black">
+                {{ event.title }}
+              </h3>
+              <p class="mt-2 text-xs text-gray-400">📍 {{ event.location }}</p>
+              <p class="mt-1 text-xs text-gray-400">🕐 {{ event.time }}</p>
+              <button
+                type="button"
+                @click="goToEvents"
+                class="mt-4 rounded-lg bg-green-600 px-4 py-2 text-xs font-bold transition hover:bg-green-700"
+              >
+                View Event
+              </button>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHY CHOOSE US -->
+    <section class="bg-white py-10">
+      <div class="mx-auto max-w-7xl px-6 lg:px-8">
+        <div class="grid items-center gap-8 lg:grid-cols-2">
+          <div>
+            <p class="font-bold uppercase tracking-widest text-green-600 text-xs">
+              Why CombolojoSPORT?
+            </p>
+            <h2 class="mt-2 text-2xl font-black leading-tight sm:text-4xl">
+              Everything you need
+              <span class="text-green-600">to enjoy sports.</span>
+            </h2>
+            <p class="mt-4 text-sm leading-7 text-gray-600">
+              We connect players, teams, sports communities and
+              venue partners through one simple platform.
+            </p>
+            <NuxtLink
+              to="/about"
+              class="mt-6 inline-flex rounded-xl bg-green-600 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-green-700"
+            >
+              Learn More
             </NuxtLink>
           </div>
 
-          <div class="lg:col-span-3 grid sm:grid-cols-3 gap-4">
-            <div 
-              v-for="event in events" 
-              :key="event.id"
-              class="bg-slate-800/80 hover:bg-slate-800 rounded-2xl overflow-hidden border border-slate-700 p-4 relative flex flex-col justify-between transition-all duration-300 hover:border-emerald-500/50 group"
+          <div class="grid gap-4 sm:grid-cols-2">
+            <div
+              v-for="feature in [
+                { icon: '✓', title: 'Verified Venues', text: 'Discover trusted sports venues.' },
+                { icon: '⚡', title: 'Fast Booking', text: 'Find and reserve your field quickly.' },
+                { icon: '🔒', title: 'Secure Payment', text: 'Book with secure payment options.' },
+                { icon: '🏆', title: 'Community Events', text: 'Join tournaments and sports events.' }
+              ]"
+              :key="feature.title"
+              class="rounded-2xl border border-gray-200 p-5 transition hover:border-green-400 hover:shadow-lg"
             >
-              <div>
-                <div class="relative h-32 rounded-xl overflow-hidden mb-3 bg-slate-700">
-                  <img :src="event.image" :alt="event.title" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                  <span class="absolute top-2 left-2 bg-white text-slate-900 font-bold text-center px-2 py-1 rounded-lg text-xs leading-tight shadow">
-                    <strong class="block text-[10px] text-emerald-600 uppercase">{{ event.month }}</strong>
-                    {{ event.day }}
-                  </span>
-                </div>
-                <h4 class="font-bold text-sm mb-1 text-white truncate">{{ event.title }}</h4>
-                <p class="text-xs text-gray-400 mb-1">📍 {{ event.location }}</p>
-                <p class="text-[11px] text-gray-400 mb-4">⏰ {{ event.time }}</p>
+              <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-green-100 text-lg font-black text-green-700">
+                {{ feature.icon }}
               </div>
-
-              <!-- Redirects to Contact Page -->
-              <NuxtLink to="/contact" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium py-2 rounded-lg text-center transition-all block">
-                Join Event
-              </NuxtLink>
+              <h3 class="mt-3 font-black text-sm">{{ feature.title }}</h3>
+              <p class="mt-1 text-xs leading-5 text-gray-600">{{ feature.text }}</p>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- STATS COUNTER SECTION -->
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-b border-gray-200">
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-        <div class="flex items-center justify-center gap-3">
-          <span class="text-3xl bg-emerald-50 text-emerald-600 p-3 rounded-2xl">⚽</span>
-          <div class="text-left">
-            <h4 class="text-xl font-black text-gray-900">50+</h4>
-            <p class="text-xs text-gray-500 font-medium">Active Venues</p>
+    <!-- JUST PLAY -->
+    <section class="overflow-hidden bg-green-600 py-10">
+      <div class="mx-auto max-w-7xl px-6 lg:px-8">
+        <div class="grid items-center gap-8 lg:grid-cols-2">
+          <div class="text-white">
+            <p class="font-bold uppercase tracking-widest text-green-100 text-xs">
+              Just Play
+            </p>
+            <h2 class="mt-2 text-3xl font-black sm:text-4xl">
+              Don't have a team?<br />Just play.
+            </h2>
+            <p class="mt-4 max-w-xl text-sm leading-6 text-green-50">
+              Connect with other players, discover games and join sports communities around you.
+            </p>
+            <NuxtLink
+              to="/just-play"
+              class="mt-6 inline-flex rounded-xl bg-white px-6 py-3 text-sm font-black text-green-700 shadow-lg transition hover:bg-gray-100"
+            >
+              Explore Just Play →
+            </NuxtLink>
           </div>
-        </div>
 
-        <div class="flex items-center justify-center gap-3">
-          <span class="text-3xl bg-emerald-50 text-emerald-600 p-3 rounded-2xl">👥</span>
-          <div class="text-left">
-            <h4 class="text-xl font-black text-gray-900">10K+</h4>
-            <p class="text-xs text-gray-500 font-medium">Registered Users</p>
-          </div>
-        </div>
-
-        <div class="flex items-center justify-center gap-3">
-          <span class="text-3xl bg-emerald-50 text-emerald-600 p-3 rounded-2xl">🏆</span>
-          <div class="text-left">
-            <h4 class="text-xl font-black text-gray-900">120+</h4>
-            <p class="text-xs text-gray-500 font-medium">Tournaments</p>
-          </div>
-        </div>
-
-        <div class="flex items-center justify-center gap-3">
-          <span class="text-3xl bg-emerald-50 text-emerald-600 p-3 rounded-2xl">⭐</span>
-          <div class="text-left">
-            <h4 class="text-xl font-black text-gray-900">4.9</h4>
-            <p class="text-xs text-gray-500 font-medium">Average Rating</p>
+          <div class="relative h-[260px] overflow-hidden rounded-3xl">
+            <img :src="img1" alt="Football field" class="h-full w-full object-cover" />
           </div>
         </div>
       </div>
     </section>
 
-    <!-- READY TO PLAY? CTA SECTION WITH VENUE IMAGES -->
-    <section class="relative bg-slate-950 text-white py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-      <!-- Background Venue Images Grid with Overlay -->
-      <div class="absolute inset-0 grid grid-cols-2 sm:grid-cols-4 gap-2 opacity-15 pointer-events-none scale-105">
-        <img :src="img1" class="w-full h-full object-cover" />
-        <img :src="img2" class="w-full h-full object-cover" />
-        <img :src="img3" class="w-full h-full object-cover" />
-        <img :src="img4" class="w-full h-full object-cover" />
+    <!-- STATS -->
+    <section class="bg-white py-10">
+      <div class="mx-auto grid max-w-7xl grid-cols-2 gap-6 px-6 md:grid-cols-4 lg:px-8">
+        <div class="text-center">
+          <p class="text-3xl font-black text-green-600">50+</p>
+          <p class="mt-1 text-xs font-semibold text-gray-500">Sports Venues</p>
+        </div>
+        <div class="text-center">
+          <p class="text-3xl font-black text-green-600">10K+</p>
+          <p class="mt-1 text-xs font-semibold text-gray-500">Active Players</p>
+        </div>
+        <div class="text-center">
+          <p class="text-3xl font-black text-green-600">500+</p>
+          <p class="mt-1 text-xs font-semibold text-gray-500">Events</p>
+        </div>
+        <div class="text-center">
+          <p class="text-3xl font-black text-green-600">24/7</p>
+          <p class="mt-1 text-xs font-semibold text-gray-500">Support</p>
+        </div>
       </div>
+    </section>
 
-      <!-- Linear Gradient Overlay to enhance text readability -->
-      <div class="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/90 to-slate-950/80"></div>
+    <!-- TESTIMONIALS -->
+    <section class="bg-gray-50 py-10">
+      <div class="mx-auto max-w-7xl px-6 lg:px-8">
+        <div class="text-center">
+          <p class="font-bold uppercase tracking-widest text-green-600 text-xs">
+            Community
+          </p>
+          <h2 class="mt-2 text-2xl font-black sm:text-3xl">What players say</h2>
+        </div>
 
-      <!-- Main Content -->
-      <div class="relative z-10 max-w-4xl mx-auto text-center space-y-6">
-        <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider inline-block">
-          Join The Community
-        </span>
-        
-        <h2 class="text-3xl sm:text-5xl font-black tracking-tight text-white leading-tight">
-          Ready to Play? <br />
-          <span class="text-emerald-400">Find Players & Matches Nearby</span>
-        </h2>
-        
-        <p class="text-gray-300 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
-          Looking for opponents, extra teammates, or open games? Jump straight into Just Play to organize or join matches instantly!
+        <div class="mt-8 grid gap-6 md:grid-cols-3">
+          <article
+            v-for="review in testimonials"
+            :key="review.name"
+            class="rounded-2xl bg-white p-5 shadow-sm"
+          >
+            <div class="text-base text-yellow-500">★★★★★</div>
+            <p class="mt-3 text-sm leading-6 text-gray-600">“{{ review.text }}”</p>
+            <div class="mt-4 flex items-center gap-3">
+              <div class="flex h-9 w-9 items-center justify-center rounded-full bg-green-100 text-sm font-black text-green-700">
+                {{ review.name.charAt(0) }}
+              </div>
+              <div>
+                <p class="text-sm font-black">{{ review.name }}</p>
+                <p class="text-xs text-gray-500">{{ review.role }}</p>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="bg-white py-10">
+      <div class="mx-auto max-w-4xl px-6 lg:px-8">
+        <div class="text-center">
+          <p class="font-bold uppercase tracking-widest text-green-600 text-xs">
+            FAQ
+          </p>
+          <h2 class="mt-2 text-2xl font-black sm:text-3xl">Frequently asked questions</h2>
+        </div>
+
+        <div class="mt-8 space-y-3">
+          <div
+            v-for="(faq, index) in faqs"
+            :key="faq.question"
+            class="overflow-hidden rounded-2xl border border-gray-200"
+          >
+            <button
+              type="button"
+              @click="toggleFaq(index)"
+              class="flex w-full items-center justify-between gap-4 p-4 text-left text-sm font-bold"
+            >
+              <span>{{ faq.question }}</span>
+              <span class="text-xl text-green-600">{{ openFaq === index ? '−' : '+' }}</span>
+            </button>
+            <div
+              v-if="openFaq === index"
+              class="border-t border-gray-100 px-4 pb-4 pt-3 text-xs leading-6 text-gray-600"
+            >
+              {{ faq.answer }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FINAL CTA -->
+    <section class="bg-slate-950 py-10 text-white">
+      <div class="mx-auto max-w-5xl px-6 text-center lg:px-8">
+        <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-green-600 text-2xl">
+          ⚽
+        </div>
+        <h2 class="mt-4 text-3xl font-black sm:text-4xl">Your game is waiting.</h2>
+        <p class="mx-auto mt-3 max-w-2xl text-sm leading-6 text-gray-400">
+          Find a venue, book your time and get ready to play.
         </p>
 
-        <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <NuxtLink to="/just-play" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm px-8 py-3.5 rounded-xl shadow-lg transition-all">
-            Find Matches Now
+        <div class="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
+          <NuxtLink
+            to="/venues"
+            class="rounded-xl bg-green-600 px-6 py-3 text-sm font-black transition hover:bg-green-700"
+          >
+            Find a Venue
           </NuxtLink>
-          <button @click="isDownloadModalOpen = true" class="w-full sm:w-auto bg-slate-800 hover:bg-slate-700 text-white font-semibold text-sm px-8 py-3.5 rounded-xl border border-slate-700 transition-all">
+          <button
+            type="button"
+            @click="openAppModal"
+            class="rounded-xl border border-white/20 bg-white/5 px-6 py-3 text-sm font-black transition hover:bg-white/10"
+          >
             Get Mobile App
           </button>
         </div>
       </div>
     </section>
 
-   
+    <!-- MODALS -->
+    <Teleport to="body">
+      <!-- VENUE MODAL -->
+      <div
+        v-if="showVenueModal && selectedVenue"
+        class="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
+        @click.self="closeVenue"
+      >
+        <div class="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-3xl bg-white shadow-2xl">
+          <div class="relative h-52">
+            <img
+              :src="selectedVenue.image"
+              :alt="selectedVenue.name"
+              class="h-full w-full object-cover"
+            />
+            <button
+              type="button"
+              @click="closeVenue"
+              class="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-black/60 text-sm font-bold text-white transition hover:bg-black"
+            >
+              ✕
+            </button>
+          </div>
+
+          <div class="p-6">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <span class="inline-block rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-800">
+                  {{ selectedVenue.sport }}
+                </span>
+                <h3 class="mt-2 text-xl font-black text-gray-900">
+                  {{ selectedVenue.name }}
+                </h3>
+                <p class="mt-1 text-xs text-gray-500">
+                  📍 {{ selectedVenue.location }}
+                </p>
+              </div>
+
+              <div class="text-right">
+                <div class="text-lg font-black text-green-600">
+                  ETB {{ selectedVenue.price }}
+                </div>
+                <div class="text-[10px] text-gray-500">per hour</div>
+              </div>
+            </div>
+
+            <p class="mt-4 text-sm leading-6 text-gray-600">
+              {{ selectedVenue.description }}
+            </p>
+
+            <div class="mt-5">
+              <h4 class="text-xs font-bold uppercase tracking-wider text-gray-500">
+                Features & Amenities
+              </h4>
+              <div class="mt-2 flex flex-wrap gap-2">
+                <span
+                  v-for="feature in selectedVenue.features"
+                  :key="feature"
+                  class="rounded-lg bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-700"
+                >
+                  ✓ {{ feature }}
+                </span>
+              </div>
+            </div>
+
+            <div class="mt-6 flex gap-3">
+              <button
+                type="button"
+                @click="closeVenue"
+                class="w-1/2 rounded-xl border border-gray-300 py-2.5 text-sm font-bold text-gray-700 transition hover:bg-gray-50"
+              >
+                Close
+              </button>
+              <button
+                type="button"
+                @click="bookVenue(selectedVenue)"
+                class="w-1/2 rounded-xl bg-green-600 py-2.5 text-sm font-bold text-white shadow-md transition hover:bg-green-700"
+              >
+                Book Now
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- APP MODAL -->
+      <div
+        v-if="showAppModal"
+        class="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
+        @click.self="closeAppModal"
+      >
+        <div class="w-full max-w-sm rounded-3xl bg-white p-6 text-center shadow-2xl">
+          <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-green-100 text-2xl text-green-600">
+            📱
+          </div>
+          <h3 class="mt-3 text-xl font-black text-gray-900">Get CombolojoSPORT App</h3>
+          <p class="mt-1 text-xs text-gray-600">
+            Download our mobile app for faster bookings and instant notifications!
+          </p>
+          <div class="mt-5 flex flex-col gap-2">
+            <button
+              type="button"
+              @click="closeAppModal"
+              class="w-full rounded-xl bg-gray-900 py-2.5 text-sm font-bold text-white hover:bg-gray-800"
+            >
+              Google Play Store
+            </button>
+            <button
+              type="button"
+              @click="closeAppModal"
+              class="w-full rounded-xl border border-gray-300 py-2.5 text-sm font-bold text-gray-800 hover:bg-gray-50"
+            >
+              Apple App Store
+            </button>
+          </div>
+          <button
+            type="button"
+            @click="closeAppModal"
+            class="mt-4 text-xs font-bold text-gray-400 hover:text-gray-600"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </Teleport>
 
   </div>
 </template>
+
+<style scoped>
+.hero-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  animation: imageFade 12s infinite ease-in-out;
+}
+
+.hero-image-1 { animation-delay: 0s; }
+.hero-image-2 { animation-delay: 4s; }
+.hero-image-3 { animation-delay: 8s; }
+
+@keyframes imageFade {
+  0% { opacity: 0; transform: scale(1); }
+  4% { opacity: 1; }
+  29% { opacity: 1; }
+  33% { opacity: 0; transform: scale(1.08); }
+  100% { opacity: 0; }
+}
+</style>

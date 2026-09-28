@@ -1,50 +1,121 @@
+```vue
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-// Import izobrazheniya
 import venueImg from '~/assets/images/venues20.jpg'
 
-// SEO Zagolovok
-useHead({ 
-  title: 'JustPlay Matchmaking - Combolojo',
+useHead({
+  title: 'JustPlay | CombolojoSPORT',
   meta: [
-    { name: 'description', content: 'Find local pickup games, join a team, and play sports instantly with the Combolojo matchmaking system.' }
+    {
+      name: 'description',
+      content:
+        'Find pickup games, connect with players, and discover sports activities in Addis Ababa with CombolojoSPORT.'
+    }
   ]
 })
 
-// Sostoyanie Matchmaking
+/* ---------------------------------------
+   STATE
+--------------------------------------- */
+
 const locationInput = ref('')
 const isSearching = ref(false)
 const searchCompleted = ref(false)
 
-// Navigaciya na Contact
+/* ---------------------------------------
+   NAVIGATION
+--------------------------------------- */
+
 const goToContact = (gameTitle = '') => {
-  router.push({ 
+  router.push({
     path: '/contact',
-    query: gameTitle ? { ref: gameTitle } : {} 
+    query: gameTitle ? { ref: gameTitle } : {}
   })
 }
 
-// Spisok igrokov v ocheredi
+const goToVenues = () => {
+  router.push('/venues')
+}
+
+const goToEvents = () => {
+  router.push('/events')
+}
+
+/* ---------------------------------------
+   MATCHMAKING SEARCH
+--------------------------------------- */
+
+const triggerMatchmaking = () => {
+  if (!locationInput.value.trim()) return
+
+  isSearching.value = true
+  searchCompleted.value = false
+
+  setTimeout(() => {
+    isSearching.value = false
+    searchCompleted.value = true
+  }, 1200)
+}
+
+/* ---------------------------------------
+   PLAYERS
+--------------------------------------- */
+
 const queuePlayers = ref([
-  { id: 1, name: 'Abel T.', level: 'Advanced', position: 'Striker', location: 'Bole', status: 'In Queue', icon: '⚽' },
-  { id: 2, name: 'Sami D.', level: 'Intermediate', position: 'Goalkeeper', location: 'Sarbet', status: 'Ready', icon: '🧤' },
-  { id: 3, name: 'Yonas K.', level: 'Beginner', position: 'Midfielder', location: 'CMC', status: 'In Queue', icon: '👟' },
-  { id: 4, name: 'Sara L.', level: 'Intermediate', position: 'Defender', location: 'Megenagna', status: 'Ready', icon: '🛡️' }
+  {
+    id: 1,
+    name: 'Abel T.',
+    level: 'Advanced',
+    position: 'Striker',
+    location: 'Bole',
+    status: 'In Queue',
+    icon: '⚽'
+  },
+  {
+    id: 2,
+    name: 'Sami D.',
+    level: 'Intermediate',
+    position: 'Goalkeeper',
+    location: 'Sarbet',
+    status: 'Ready',
+    icon: '🧤'
+  },
+  {
+    id: 3,
+    name: 'Yonas K.',
+    level: 'Beginner',
+    position: 'Midfielder',
+    location: 'CMC',
+    status: 'In Queue',
+    icon: '👟'
+  },
+  {
+    id: 4,
+    name: 'Sara L.',
+    level: 'Intermediate',
+    position: 'Defender',
+    location: 'Megenagna',
+    status: 'Ready',
+    icon: '🛡️'
+  }
 ])
 
-// Spisok otkrytykh igr
+/* ---------------------------------------
+   OPEN GAMES
+--------------------------------------- */
+
 const openGames = ref([
   {
     id: 101,
     title: '5v5 Futsal Night',
     venue: 'Sarbet Futsal Field',
     sport: 'Football',
-    time: 'Tonight 06:00 PM',
-    distance: '1.2 km away',
+    time: 'Tonight · 06:00 PM',
+    distance: '1.2 km',
     neededPlayers: 2,
     price: '120 ETB',
     organizer: 'Abel',
@@ -55,250 +126,826 @@ const openGames = ref([
     title: '3v3 Street Hoops',
     venue: 'CMC Arena',
     sport: 'Basketball',
-    time: 'Tomorrow 10:00 AM',
-    distance: '3.5 km away',
+    time: 'Tomorrow · 10:00 AM',
+    distance: '3.5 km',
     neededPlayers: 3,
     price: '80 ETB',
     organizer: 'Timothy',
     image: venueImg
   }
 ])
-
-// Imitaciya poiska
-const triggerMatchmaking = () => {
-  if (!locationInput.value.trim()) return
-  isSearching.value = true
-  searchCompleted.value = false
-  
-  setTimeout(() => {
-    isSearching.value = false
-    searchCompleted.value = true
-  }, 1500)
-}
 </script>
 
 <template>
-  <!-- pt-24 md:pt-32 የነበረው ወደ pt-16 md:pt-20 ተቀንሷል -->
-  <div class="min-h-screen bg-slate-50 text-slate-800 font-sans pb-20 pt-16 md:pt-20 relative overflow-hidden selection:bg-cyan-500 selection:text-white">
+  <div
+    class="min-h-screen bg-[#f6f8f5] text-slate-900 font-sans pt-16 md:pt-20 pb-20 overflow-hidden"
+  >
 
-    <!-- Glowing Background Gradients -->
-    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[500px] bg-gradient-to-b from-cyan-200/40 via-sky-100/20 to-transparent blur-3xl pointer-events-none"></div>
+    <!-- =====================================================
+         HERO
+    ====================================================== -->
 
-    <!-- HERO & QUICK SEARCH (py-8 md:py-12 የነበረው ወደ py-3 md:py-4 ተቀንሷል) -->
-    <header class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 md:py-4 relative z-10">
-      <div class="rounded-[2.5rem] p-6 md:p-12 border border-slate-800 shadow-2xl text-center space-y-6 relative overflow-hidden bg-slate-900">
-        
-        <!-- Bright Full Background Image -->
-        <div class="absolute inset-0 pointer-events-none">
-          <img :src="venueImg" alt="Venue Background" class="w-full h-full object-cover object-center scale-105" />
-          <div class="absolute inset-0 bg-slate-950/45 backdrop-blur-[2px]"></div>
-        </div>
+    <section class="relative overflow-hidden bg-[#0b1f16] shadow-2xl shadow-green-950/30">
 
-        <!-- Content Container -->
-        <div class="relative z-10 space-y-4 max-w-3xl mx-auto">
-          <div class="flex justify-center">
-            <span class="inline-flex items-center gap-2 px-4 py-1.5 bg-slate-900/80 text-cyan-400 rounded-full text-xs font-black uppercase tracking-widest border border-cyan-400/40 shadow-lg backdrop-blur-md">
-              <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-              Instant Matchmaking
-            </span>
+      <!-- Football field markings -->
+      <div class="absolute inset-0 pointer-events-none opacity-20">
+        <div class="absolute left-1/2 top-0 h-full w-px bg-white"></div>
+
+        <div
+          class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
+                 w-48 h-48 md:w-72 md:h-72
+                 rounded-full border border-white"
+        ></div>
+
+        <div
+          class="absolute left-0 top-1/2 -translate-y-1/2
+                 w-32 md:w-56 h-64 md:h-96
+                 border border-white border-l-0"
+        ></div>
+
+        <div
+          class="absolute right-0 top-1/2 -translate-y-1/2
+                 w-32 md:w-56 h-64 md:h-96
+                 border border-white border-r-0"
+        ></div>
+      </div>
+
+      <!-- Background image -->
+      <div class="absolute inset-0">
+        <img
+          :src="venueImg"
+          alt="Addis Ababa sports field"
+          class="h-full w-full object-cover opacity-80"
+        />
+
+        <div class="absolute inset-0 bg-gradient-to-r from-[#07150f]/55 via-[#0b1f16]/30 to-[#0b1f16]/20"></div>
+      </div>
+
+      <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+
+        <div class="max-w-4xl mx-auto text-center">
+
+          <!-- Badge -->
+          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[#a8ff3e]/40 bg-[#a8ff3e]/10 text-[#b8ff52] text-xs font-black uppercase tracking-[0.2em]">
+            <span class="w-2 h-2 rounded-full bg-[#a8ff3e]"></span>
+            Addis Ababa · JustPlay
           </div>
 
-          <h1 class="text-4xl md:text-6xl font-black tracking-tight text-white leading-tight drop-shadow-lg">
-            Just<span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-teal-300">Play</span> Matchmaker
+          <!-- Heading -->
+          <h1
+            class="mt-6 text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tight text-white leading-[0.95]"
+          >
+            Find Players.
+            <span class="block text-[#a8ff3e]">
+              Find Games.
+            </span>
+            <span class="block">
+              Just Play.
+            </span>
           </h1>
 
-          <p class="text-base md:text-lg text-slate-100 font-bold leading-relaxed drop-shadow-md">
-            Short of players? Or looking for a game to join? Enter your location and find matches happening right now.
+          <p
+            class="mt-6 max-w-2xl mx-auto text-base md:text-lg text-slate-200 leading-relaxed"
+          >
+            Connect with players around Addis Ababa, discover pickup games,
+            and get ready for your next match.
           </p>
-        </div>
 
-        <!-- Search Bar -->
-        <div class="relative max-w-2xl mx-auto z-10">
-          <div class="flex flex-col sm:flex-row gap-3 p-2 bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-slate-700/80 focus-within:border-cyan-400 transition-all shadow-2xl">
-            <div class="relative flex-1 flex items-center">
-              <span class="pl-4 text-slate-300 text-lg">📍</span>
-              <input 
-                v-model="locationInput"
-                type="text" 
-                placeholder="Enter location (e.g. Bole, Sarbet...)" 
-                class="w-full px-3 py-3.5 bg-transparent text-white placeholder-slate-300 text-sm focus:outline-none font-semibold"
-                @keyup.enter="triggerMatchmaking"
-              />
-            </div>
-            <button 
-              @click="triggerMatchmaking"
-              :disabled="isSearching"
-              class="px-8 py-3.5 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 text-white font-black rounded-xl shadow-lg shadow-cyan-500/30 transition-all duration-200 active:scale-95 disabled:opacity-50 whitespace-nowrap flex items-center justify-center gap-2 cursor-pointer"
+          <!-- Search -->
+          <div class="mt-10 max-w-3xl mx-auto">
+
+            <div
+              class="bg-white p-2 rounded-2xl flex flex-col sm:flex-row border-4 border-[#a8ff3e]"
             >
-              <span v-if="isSearching" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-              <span>{{ isSearching ? 'Finding Matches...' : 'Find Me a Game' }}</span>
-            </button>
-          </div>
-          
-          <!-- Search Result Hint -->
-          <transition name="fade">
-            <p v-if="searchCompleted" class="mt-4 text-cyan-300 font-black text-sm flex items-center justify-center gap-2 drop-shadow">
-              <span>🎉</span> Found 4 players and 2 open games near <span class="underline decoration-cyan-400">{{ locationInput }}</span>!
-            </p>
-          </transition>
-        </div>
 
-      </div>
-    </header>
+              <div class="flex-1 flex items-center px-4">
+                <span class="text-xl mr-3">📍</span>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 relative z-10">
-
-      <!-- HOW IT WORKS -->
-      <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-white p-8 rounded-3xl border border-slate-200/80 hover:border-cyan-300 transition-all shadow-sm hover:shadow-md space-y-4 group">
-          <div class="w-12 h-12 bg-cyan-50 text-cyan-600 rounded-2xl flex items-center justify-center text-xl font-black border border-cyan-100 group-hover:scale-110 transition-transform">1</div>
-          <h4 class="text-lg font-black uppercase tracking-tight text-slate-900">Set Location</h4>
-          <p class="text-sm text-slate-600 leading-relaxed">Tell us where you are. We'll scan fields and players within a 5km radius.</p>
-        </div>
-        <div class="bg-white p-8 rounded-3xl border border-slate-200/80 hover:border-cyan-300 transition-all shadow-sm hover:shadow-md space-y-4 group">
-          <div class="w-12 h-12 bg-cyan-50 text-cyan-600 rounded-2xl flex items-center justify-center text-xl font-black border border-cyan-100 group-hover:scale-110 transition-transform">2</div>
-          <h4 class="text-lg font-black uppercase tracking-tight text-slate-900">Pick a Team</h4>
-          <p class="text-sm text-slate-600 leading-relaxed">Browse teams looking for players of your skill level (Beginner to Pro).</p>
-        </div>
-        <div class="bg-white p-8 rounded-3xl border border-slate-200/80 hover:border-cyan-300 transition-all shadow-sm hover:shadow-md space-y-4 group">
-          <div class="w-12 h-12 bg-cyan-50 text-cyan-600 rounded-2xl flex items-center justify-center text-xl font-black border border-cyan-100 group-hover:scale-110 transition-transform">3</div>
-          <h4 class="text-lg font-black uppercase tracking-tight text-slate-900">Just Play</h4>
-          <p class="text-sm text-slate-600 leading-relaxed">Show up, play your match, and get rated. Level up your Combolojo rank!</p>
-        </div>
-      </section>
-
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
-        
-        <!-- BROWSE OPEN GAMES -->
-        <section class="lg:col-span-2 space-y-6">
-          <div class="flex justify-between items-end border-b border-slate-200 pb-4">
-            <div>
-              <h2 class="text-2xl font-black uppercase tracking-tight text-slate-900">Open Pickup Games</h2>
-              <p class="text-xs text-slate-500 font-medium mt-1">Join matches created by organizers nearby</p>
-            </div>
-            <button @click="goToContact()" class="text-cyan-600 text-xs font-bold hover:text-cyan-700 transition-colors uppercase tracking-wider cursor-pointer">See All →</button>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div 
-              v-for="game in openGames" 
-              :key="game.id" 
-              class="group bg-white rounded-3xl overflow-hidden border border-slate-200 hover:border-cyan-400 transition-all duration-300 flex flex-col justify-between shadow-sm hover:shadow-xl hover:shadow-cyan-900/5"
-            >
-              <div class="h-36 w-full relative overflow-hidden bg-slate-100">
-                <img :src="game.image" :alt="game.title" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                <span class="absolute top-3 left-3 text-[10px] font-black text-white uppercase tracking-widest bg-cyan-600/90 px-2.5 py-1 rounded-md backdrop-blur-md shadow-sm">
-                  {{ game.sport }}
-                </span>
-                <span class="absolute top-3 right-3 px-3 py-1 bg-amber-500/90 text-white text-[10px] font-black rounded-lg whitespace-nowrap backdrop-blur-md shadow-sm">
-                  {{ game.neededPlayers }} SPOTS LEFT
-                </span>
+                <input
+                  v-model="locationInput"
+                  type="text"
+                  placeholder="Search by area — Bole, Sarbet, CMC..."
+                  class="w-full py-4 bg-transparent text-slate-900 placeholder-slate-400 focus:outline-none font-semibold text-sm"
+                  @keyup.enter="triggerMatchmaking"
+                />
               </div>
 
-              <div class="p-6 space-y-4 flex-1 flex flex-col justify-between">
-                <div>
-                  <h3 class="text-xl font-black text-slate-900 group-hover:text-cyan-600 transition-colors">{{ game.title }}</h3>
-                  <div class="space-y-2 pt-3">
-                    <p class="text-xs text-slate-600 font-bold flex items-center gap-2">
-                      <span class="text-slate-400">📍</span> {{ game.venue }} 
-                      <span class="text-cyan-600 text-[11px] font-semibold">• {{ game.distance }}</span>
-                    </p>
-                    <p class="text-xs text-slate-600 font-bold flex items-center gap-2">
-                      <span class="text-slate-400">⏰</span> {{ game.time }}
-                    </p>
-                  </div>
-                </div>
-
-                <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
-                  <div>
-                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Price / Player</p>
-                    <p class="text-lg font-black text-cyan-600">{{ game.price }}</p>
-                  </div>
-                  <button 
-                    @click="goToContact(game.title)"
-                    class="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600 text-white font-black text-xs rounded-xl shadow-md shadow-cyan-500/20 transition-all active:scale-95 cursor-pointer"
-                  >
-                    JOIN NOW
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- LIVE WAITING QUEUE -->
-        <aside class="space-y-6">
-          <div class="flex items-center justify-between border-b border-slate-200 pb-4">
-            <div class="flex items-center gap-3">
-              <span class="relative flex h-3 w-3">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-3 w-3 bg-cyan-500"></span>
-              </span>
-              <h2 class="text-2xl font-black uppercase tracking-tight text-slate-900">Live Queue</h2>
-            </div>
-            <span class="text-xs text-slate-500 font-bold">{{ queuePlayers.length }} Players</span>
-          </div>
-
-          <div class="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm">
-            <div class="divide-y divide-slate-100">
-              <div 
-                v-for="player in queuePlayers" 
-                :key="player.id" 
-                class="p-4 flex justify-between items-center hover:bg-slate-50 transition-colors"
+              <button
+                @click="triggerMatchmaking"
+                :disabled="isSearching"
+                class="px-8 py-4 bg-[#a8ff3e] hover:bg-[#b8ff52] text-[#0b1f16] font-black uppercase text-xs tracking-wider rounded-xl transition-all disabled:opacity-50"
               >
-                <div class="flex items-center gap-3.5">
-                  <div class="w-10 h-10 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center text-lg">
-                    {{ player.icon }}
-                  </div>
-                  <div>
-                    <p class="text-sm font-black text-slate-900">{{ player.name }}</p>
-                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-tight">{{ player.position }} • <span class="text-cyan-600">{{ player.level }}</span></p>
-                  </div>
-                </div>
-                <div class="text-right">
-                  <span 
-                    class="text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider"
-                    :class="player.status === 'Ready' ? 'bg-cyan-50 text-cyan-700 border border-cyan-200' : 'bg-slate-100 text-slate-600 border border-slate-200'"
-                  >
-                    {{ player.status }}
-                  </span>
-                  <p class="text-[9px] font-bold text-slate-400 mt-1">📍 {{ player.location }}</p>
-                </div>
-              </div>
-            </div>
-            <button 
-              @click="goToContact('Queue Joining')"
-              class="w-full py-3.5 bg-slate-50 hover:bg-slate-100 text-cyan-600 text-xs font-black uppercase tracking-wider transition-colors border-t border-slate-200 cursor-pointer"
-            >
-              + Join the Queue
-            </button>
-          </div>
-        </aside>
-      </div>
-    </main>
+                <span v-if="isSearching">
+                  Finding...
+                </span>
 
-    <!-- APP CALL TO ACTION -->
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20 relative z-10">
-      <div class="bg-gradient-to-r from-cyan-600 via-teal-600 to-cyan-700 rounded-[2.5rem] p-8 md:p-16 text-center space-y-6 relative overflow-hidden shadow-2xl shadow-cyan-900/10">
-        <div class="absolute inset-0 opacity-15 pointer-events-none mix-blend-overlay">
-          <img :src="venueImg" alt="Venue CTA" class="w-full h-full object-cover" />
-        </div>
-        <div class="absolute -right-10 -bottom-10 text-white/10 text-[180px] font-black select-none pointer-events-none leading-none">PLAY</div>
-        <div class="relative z-10 max-w-2xl mx-auto space-y-4 text-center">
-          <h2 class="text-3xl md:text-5xl font-black text-white leading-tight">Matchmaking is faster on Mobile</h2>
-          <p class="text-cyan-100 text-base md:text-lg">Get real-time push notifications when a match starts near you. Download the Combolojo App today.</p>
-          <div class="flex flex-wrap justify-center gap-4 pt-4">
-            <button @click="goToContact('iOS App')" class="bg-slate-900 hover:bg-slate-800 text-white px-7 py-3.5 rounded-2xl font-black text-xs transition-all active:scale-95 shadow-lg flex items-center gap-2 cursor-pointer">
-              <span>🍎</span> DOWNLOAD IOS
-            </button>
-            <button @click="goToContact('Android App')" class="bg-white hover:bg-slate-100 text-slate-900 px-7 py-3.5 rounded-2xl font-black text-xs transition-all active:scale-95 shadow-lg flex items-center gap-2 cursor-pointer">
-              <span>🤖</span> DOWNLOAD ANDROID
-            </button>
+                <span v-else>
+                  Find a Game
+                </span>
+              </button>
+
+            </div>
+
+            <transition name="fade">
+              <div
+                v-if="searchCompleted"
+                class="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#a8ff3e]/10 border border-[#a8ff3e]/30 text-[#c9ff7a] text-sm font-bold"
+              >
+                <span>✓</span>
+                Games and players found near
+                <strong>{{ locationInput }}</strong>
+              </div>
+            </transition>
+
           </div>
+
         </div>
       </div>
     </section>
+
+    <!-- =====================================================
+         MOBILE APP NOTICE
+    ====================================================== -->
+
+    <section class="bg-[#a8ff3e] border-b border-[#86cf27]">
+
+      <div
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5
+               flex flex-col md:flex-row
+               items-center justify-between gap-4"
+      >
+
+        <div class="flex items-center gap-4">
+
+          <div
+            class="w-12 h-12 rounded-xl bg-[#0b1f16] text-[#a8ff3e]
+                   flex items-center justify-center text-xl"
+          >
+            📱
+          </div>
+
+          <div>
+            <p class="text-xs font-black uppercase tracking-widest text-[#24420f]">
+              Mobile App
+            </p>
+
+            <h2 class="text-lg md:text-xl font-black text-[#0b1f16]">
+              Join & play through the CombolojoSPORT app
+            </h2>
+          </div>
+
+        </div>
+
+        <button
+          @click="goToContact('JustPlay Mobile App')"
+          class="px-6 py-3 bg-[#0b1f16] hover:bg-[#132d20] text-white rounded-xl font-black text-xs uppercase tracking-wider transition-all"
+        >
+          Get the App →
+        </button>
+
+      </div>
+
+    </section>
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <!-- =================================================
+           HOW IT WORKS
+      ================================================== -->
+
+      <section class="py-16 md:py-20">
+
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+
+          <div>
+            <p class="text-xs font-black uppercase tracking-[0.2em] text-[#4e8f17]">
+              How JustPlay Works
+            </p>
+
+            <h2 class="mt-2 text-3xl md:text-4xl font-black uppercase tracking-tight">
+              From Search to Kickoff
+            </h2>
+          </div>
+
+          <p class="max-w-xl text-sm text-slate-500 leading-relaxed">
+            Discover the game on the website, then use the mobile app to join
+            and manage your JustPlay activity.
+          </p>
+
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+
+          <!-- Step 1 -->
+          <div
+            class="bg-white border border-slate-200 rounded-2xl p-7
+                   hover:border-[#8fd52f] transition-colors"
+          >
+
+            <div
+              class="w-12 h-12 rounded-xl bg-[#ecfbd7] text-[#4d8b16]
+                     border border-[#c9ee91]
+                     flex items-center justify-center
+                     text-lg font-black"
+            >
+              01
+            </div>
+
+            <h3 class="mt-5 text-lg font-black uppercase">
+              Set Your Location
+            </h3>
+
+            <p class="mt-3 text-sm text-slate-500 leading-relaxed">
+              Search an area in Addis Ababa and discover nearby pickup games
+              and players.
+            </p>
+
+          </div>
+
+          <!-- Step 2 -->
+          <div
+            class="bg-white border border-slate-200 rounded-2xl p-7
+                   hover:border-[#8fd52f] transition-colors"
+          >
+
+            <div
+              class="w-12 h-12 rounded-xl bg-[#ecfbd7] text-[#4d8b16]
+                     border border-[#c9ee91]
+                     flex items-center justify-center
+                     text-lg font-black"
+            >
+              02
+            </div>
+
+            <h3 class="mt-5 text-lg font-black uppercase">
+              Choose Your Game
+            </h3>
+
+            <p class="mt-3 text-sm text-slate-500 leading-relaxed">
+              Find a football, futsal, basketball, or other sports activity
+              that matches your level and location.
+            </p>
+
+          </div>
+
+          <!-- Step 3 -->
+          <div
+            class="bg-white border border-slate-200 rounded-2xl p-7
+                   hover:border-[#8fd52f] transition-colors"
+          >
+
+            <div
+              class="w-12 h-12 rounded-xl bg-[#ecfbd7] text-[#4d8b16]
+                     border border-[#c9ee91]
+                     flex items-center justify-center
+                     text-lg font-black"
+            >
+              03
+            </div>
+
+            <h3 class="mt-5 text-lg font-black uppercase">
+              Join & Play
+            </h3>
+
+            <p class="mt-3 text-sm text-slate-500 leading-relaxed">
+              Open the CombolojoSPORT mobile app to join the game and receive
+              your match information.
+            </p>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- =================================================
+           OPEN GAMES + QUEUE
+      ================================================== -->
+
+      <section class="pb-16 md:pb-20">
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+
+          <!-- OPEN GAMES -->
+
+          <div class="lg:col-span-2">
+
+            <div
+              class="flex flex-col sm:flex-row
+                     sm:items-end justify-between gap-3
+                     border-b border-slate-200 pb-5 mb-6"
+            >
+
+              <div>
+                <p class="text-xs font-black uppercase tracking-[0.2em] text-[#4e8f17]">
+                  Pickup Games
+                </p>
+
+                <h2 class="mt-1 text-2xl md:text-3xl font-black uppercase">
+                  Open Games
+                </h2>
+              </div>
+
+              <button
+                @click="goToEvents"
+                class="text-xs font-black uppercase tracking-wider text-[#4e8f17] hover:text-[#315e0e] transition-colors"
+              >
+                View Events →
+              </button>
+
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+              <article
+                v-for="game in openGames"
+                :key="game.id"
+                class="group bg-white border border-slate-200 rounded-2xl overflow-hidden
+                       hover:border-[#8fd52f] transition-colors"
+              >
+
+                <!-- Image -->
+
+                <div class="relative h-44 overflow-hidden bg-slate-100">
+
+                  <img
+                    :src="game.image"
+                    :alt="game.title"
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
+
+                  <span
+                    class="absolute top-4 left-4 px-3 py-1.5
+                           bg-[#0b1f16] text-[#b8ff52]
+                           border border-[#a8ff3e]/40
+                           rounded-lg text-[10px] font-black uppercase tracking-wider"
+                  >
+                    {{ game.sport }}
+                  </span>
+
+                  <span
+                    class="absolute top-4 right-4 px-3 py-1.5
+                           bg-[#a8ff3e] text-[#0b1f16]
+                           rounded-lg text-[10px] font-black uppercase"
+                  >
+                    {{ game.neededPlayers }} spots
+                  </span>
+
+                  <div class="absolute bottom-4 left-4 text-white">
+
+                    <p class="text-[10px] uppercase tracking-wider font-bold text-slate-300">
+                      Pickup Game
+                    </p>
+
+                    <h3 class="text-xl font-black">
+                      {{ game.title }}
+                    </h3>
+
+                  </div>
+
+                </div>
+
+                <!-- Content -->
+
+                <div class="p-6">
+
+                  <div class="space-y-3">
+
+                    <div class="flex items-start gap-3">
+
+                      <span class="text-[#4e8f17]">
+                        📍
+                      </span>
+
+                      <div>
+                        <p class="text-sm font-black text-slate-800">
+                          {{ game.venue }}
+                        </p>
+
+                        <p class="text-xs text-slate-400 mt-0.5">
+                          {{ game.distance }}
+                        </p>
+                      </div>
+
+                    </div>
+
+                    <div class="flex items-center gap-3">
+
+                      <span class="text-[#4e8f17]">
+                        ⏰
+                      </span>
+
+                      <p class="text-sm font-bold text-slate-600">
+                        {{ game.time }}
+                      </p>
+
+                    </div>
+
+                  </div>
+
+                  <div
+                    class="mt-6 pt-5 border-t border-slate-100
+                           flex items-center justify-between gap-3"
+                  >
+
+                    <div>
+                      <p class="text-[9px] uppercase tracking-wider text-slate-400 font-black">
+                        Per Player
+                      </p>
+
+                      <p class="text-xl font-black text-[#3f7911]">
+                        {{ game.price }}
+                      </p>
+                    </div>
+
+                    <button
+                      @click="goToContact(game.title)"
+                      class="px-5 py-3 bg-[#0b1f16]
+                             hover:bg-[#173522]
+                             text-[#b8ff52]
+                             rounded-xl text-[10px]
+                             font-black uppercase tracking-wider
+                             transition-all"
+                    >
+                      Join in App
+                    </button>
+
+                  </div>
+
+                </div>
+
+              </article>
+
+            </div>
+
+          </div>
+
+          <!-- LIVE QUEUE -->
+
+          <aside>
+
+            <div
+              class="flex items-end justify-between
+                     border-b border-slate-200 pb-5 mb-6"
+            >
+
+              <div>
+
+                <p class="text-xs font-black uppercase tracking-[0.2em] text-[#4e8f17]">
+                  Live Players
+                </p>
+
+                <h2 class="mt-1 text-2xl font-black uppercase">
+                  Queue
+                </h2>
+
+              </div>
+
+              <span
+                class="px-2.5 py-1 rounded-full
+                       bg-[#ecfbd7] text-[#4d8b16]
+                       text-[10px] font-black"
+              >
+                {{ queuePlayers.length }} PLAYERS
+              </span>
+
+            </div>
+
+            <div
+              class="bg-white border border-slate-200
+                     rounded-2xl overflow-hidden"
+            >
+
+              <div
+                v-for="player in queuePlayers"
+                :key="player.id"
+                class="p-4 border-b border-slate-100
+                       last:border-b-0
+                       flex items-center justify-between gap-3
+                       hover:bg-[#f7fbf3] transition-colors"
+              >
+
+                <div class="flex items-center gap-3">
+
+                  <div
+                    class="w-11 h-11 rounded-xl
+                           bg-[#f1f5ef]
+                           border border-slate-200
+                           flex items-center justify-center text-lg"
+                  >
+                    {{ player.icon }}
+                  </div>
+
+                  <div>
+
+                    <p class="text-sm font-black">
+                      {{ player.name }}
+                    </p>
+
+                    <p class="text-[10px] text-slate-400 uppercase font-bold">
+                      {{ player.position }}
+                    </p>
+
+                    <p class="text-[10px] text-[#4e8f17] font-black mt-0.5">
+                      {{ player.level }}
+                    </p>
+
+                  </div>
+
+                </div>
+
+                <div class="text-right">
+
+                  <span
+                    class="inline-block px-2 py-1 rounded-md
+                           text-[8px] uppercase tracking-wider font-black"
+                    :class="
+                      player.status === 'Ready'
+                        ? 'bg-[#ecfbd7] text-[#4d8b16] border border-[#c9ee91]'
+                        : 'bg-slate-100 text-slate-500 border border-slate-200'
+                    "
+                  >
+                    {{ player.status }}
+                  </span>
+
+                  <p class="mt-1 text-[9px] text-slate-400 font-bold">
+                    📍 {{ player.location }}
+                  </p>
+
+                </div>
+
+              </div>
+
+              <button
+                @click="goToContact('JustPlay Queue')"
+                class="w-full py-4
+                       bg-[#0b1f16]
+                       hover:bg-[#173522]
+                       text-[#b8ff52]
+                       text-xs font-black uppercase tracking-wider
+                       transition-colors"
+              >
+                Join Queue in App →
+              </button>
+
+            </div>
+
+          </aside>
+
+        </div>
+
+      </section>
+
+      <!-- =================================================
+           WEBSITE / MOBILE APP DIFFERENCE
+      ================================================== -->
+
+      <section class="pb-16">
+
+        <div
+          class="bg-[#0b1f16] rounded-3xl overflow-hidden
+                 border border-[#203d2b]"
+        >
+
+          <div class="grid grid-cols-1 md:grid-cols-2">
+
+            <!-- WEBSITE -->
+
+            <div class="p-8 md:p-10 border-b md:border-b-0 md:border-r border-[#294633]">
+
+              <div class="flex items-center gap-3">
+
+                <div
+                  class="w-11 h-11 rounded-xl
+                         bg-white/10 border border-white/10
+                         flex items-center justify-center text-xl"
+                >
+                  🌐
+                </div>
+
+                <div>
+
+                  <p class="text-[10px] text-[#a8ff3e] font-black uppercase tracking-widest">
+                    Website
+                  </p>
+
+                  <h3 class="text-xl font-black text-white">
+                    Discover
+                  </h3>
+
+                </div>
+
+              </div>
+
+              <ul class="mt-6 space-y-3 text-sm text-slate-300">
+
+                <li class="flex gap-3">
+                  <span class="text-[#a8ff3e]">✓</span>
+                  Discover sports venues
+                </li>
+
+                <li class="flex gap-3">
+                  <span class="text-[#a8ff3e]">✓</span>
+                  Explore pickup games
+                </li>
+
+                <li class="flex gap-3">
+                  <span class="text-[#a8ff3e]">✓</span>
+                  Read sports news and insights
+                </li>
+
+                <li class="flex gap-3">
+                  <span class="text-[#a8ff3e]">✓</span>
+                  Discover events and activities
+                </li>
+
+              </ul>
+
+            </div>
+
+            <!-- APP -->
+
+            <div class="p-8 md:p-10">
+
+              <div class="flex items-center gap-3">
+
+                <div
+                  class="w-11 h-11 rounded-xl
+                         bg-[#a8ff3e]
+                         flex items-center justify-center text-xl"
+                >
+                  📱
+                </div>
+
+                <div>
+
+                  <p class="text-[10px] text-[#a8ff3e] font-black uppercase tracking-widest">
+                    Mobile App
+                  </p>
+
+                  <h3 class="text-xl font-black text-white">
+                    Join & Play
+                  </h3>
+
+                </div>
+
+              </div>
+
+              <ul class="mt-6 space-y-3 text-sm text-slate-300">
+
+                <li class="flex gap-3">
+                  <span class="text-[#a8ff3e]">✓</span>
+                  Join JustPlay matches
+                </li>
+
+                <li class="flex gap-3">
+                  <span class="text-[#a8ff3e]">✓</span>
+                  Join player queues
+                </li>
+
+                <li class="flex gap-3">
+                  <span class="text-[#a8ff3e]">✓</span>
+                  Receive match notifications
+                </li>
+
+                <li class="flex gap-3">
+                  <span class="text-[#a8ff3e]">✓</span>
+                  Manage your games and bookings
+                </li>
+
+              </ul>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- =================================================
+           APP CTA
+      ================================================== -->
+
+      <section class="pb-16 md:pb-24">
+
+        <div
+          class="relative overflow-hidden
+                 rounded-3xl
+                 bg-[#a8ff3e]
+                 border border-[#8bce2c]"
+        >
+
+          <!-- Field markings -->
+
+          <div class="absolute inset-0 pointer-events-none opacity-20">
+
+            <div
+              class="absolute right-[-80px] top-[-80px]
+                     w-72 h-72 rounded-full
+                     border-[2px] border-[#0b1f16]"
+            ></div>
+
+            <div
+              class="absolute right-10 bottom-[-100px]
+                     w-64 h-64 rounded-full
+                     border-[2px] border-[#0b1f16]"
+            ></div>
+
+          </div>
+
+          <div
+            class="relative z-10
+                   px-7 py-12 md:px-16 md:py-16
+                   text-center"
+          >
+
+            <p class="text-xs uppercase tracking-[0.25em] font-black text-[#315e0e]">
+              Ready to play?
+            </p>
+
+            <h2
+              class="mt-3 text-3xl md:text-5xl
+                     font-black uppercase
+                     text-[#0b1f16]"
+            >
+              Your next game is waiting.
+            </h2>
+
+            <p
+              class="max-w-2xl mx-auto mt-5
+                     text-[#294b18]
+                     text-sm md:text-base
+                     leading-relaxed"
+            >
+              Explore CombolojoSPORT on the web, then use the mobile app
+              to join your game, connect with players, and manage your
+              JustPlay activity.
+            </p>
+
+            <div
+              class="mt-8 flex flex-col sm:flex-row
+                     justify-center gap-3"
+            >
+
+              <button
+                @click="goToContact('Android App')"
+                class="px-7 py-4
+                       bg-[#0b1f16]
+                       hover:bg-[#173522]
+                       text-[#b8ff52]
+                       rounded-xl
+                       font-black text-xs
+                       uppercase tracking-wider
+                       transition-all"
+              >
+                Android App →
+              </button>
+
+              <button
+                @click="goToContact('iOS App')"
+                class="px-7 py-4
+                       bg-white
+                       hover:bg-slate-50
+                       text-[#0b1f16]
+                       rounded-xl
+                       font-black text-xs
+                       uppercase tracking-wider
+                       transition-all"
+              >
+                iOS App →
+              </button>
+
+              <button
+                @click="goToVenues"
+                class="px-7 py-4
+                       border-2 border-[#0b1f16]
+                       hover:bg-[#0b1f16]
+                       hover:text-[#b8ff52]
+                       text-[#0b1f16]
+                       rounded-xl
+                       font-black text-xs
+                       uppercase tracking-wider
+                       transition-all"
+              >
+                Explore Venues
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
 
   </div>
 </template>
@@ -306,11 +953,18 @@ const triggerMatchmaking = () => {
 <style scoped>
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.25s ease;
 }
 
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
 }
+
+/* Prevent accidental horizontal overflow */
+:global(html),
+:global(body) {
+  overflow-x: hidden;
+}
 </style>
+```
