@@ -1,47 +1,81 @@
 // middleware/auth.ts
-export default defineNuxtRouteMiddleware((to, from) => {
+export default defineNuxtRouteMiddleware(async (to, from) => {
+  // ✅ SSR ላይ skip
+  if (import.meta.server) return
+
   const authStore = useAuthStore()
-  const token = useCookie('auth_token')
-  
-  // Initialize auth store
+
+  // ✅ 1. Store ን initialize (token ከ localStorage/cookie ይመጣል)
   authStore.init()
-  
-  // Public routes (no auth required)
-  const publicRoutes = ['/auth/login', '/auth/register', '/auth/otp', '/']
-  const isPublicRoute = publicRoutes.includes(to.path) || to.path.startsWith('/auth/')
-  
-  // If not authenticated and trying to access protected route
-  if (!token.value && !isPublicRoute) {
+
+  // ✅ 2. Token ን ከ STORE አንብብ
+  let token = authStore.token
+
+  // ✅ 3. Token አለ ግን user ከሌለ → user ን ከ API አምጣ
+  if (token && !authStore.user) {
+    try {
+      await authStore.fetchUser?.()
+    } catch {
+      // fetchUser ሳይሳካ → token ጠፍቷል
+      authStore.logout?.()
+      token = null
+    }
+  }
+
+  // Public routes
+  const publicRoutes = ['/auth', '/auth/login', '/auth/register', '/auth/otp', '/']
+  const isPublicRoute =
+    publicRoutes.includes(to.path) || to.path.startsWith('/auth/')
+
+  // ═══════════════════════════════════════════
+  // NOT authenticated → redirect to login
+  // ═══════════════════════════════════════════
+  if (!token && !isPublicRoute) {
     return navigateTo({
       path: '/auth',
-      query: { redirect: to.fullPath }
+      query: { redirect: to.fullPath },
     })
   }
-  
-  // If authenticated and trying to access auth pages
-  if (token.value && isPublicRoute && to.path !== '/') {
+
+  // ═══════════════════════════════════════════
+  // Authenticated → don't show auth pages
+  // ═══════════════════════════════════════════
+  if (token && isPublicRoute && to.path !== '/') {
     const role = String(authStore.user?.role || '').trim().toLowerCase()
-    
+
     if (role === 'admin') return navigateTo('/admin')
-    if (role === 'partner' || role === 'owner') return navigateTo('/partner/dashboard')
+    if (role === 'partner' || role === 'owner') return navigateTo('/partner')
     return navigateTo('/')
   }
-  
-  // Role-based access for admin routes
+
+  // ═══════════════════════════════════════════
+  // Admin routes — admin only
+  // ═══════════════════════════════════════════
   if (to.path.startsWith('/admin')) {
-    if (!token.value) {
-      return navigateTo('/auth/login')
+    if (!token) {
+      return navigateTo({
+        path: '/auth',
+        query: { redirect: to.fullPath },
+      })
     }
-    if (String(authStore.user?.role || '').trim().toLowerCase() !== 'admin') {
+
+    const role = String(authStore.user?.role || '').trim().toLowerCase()
+    if (role !== 'admin') {
       return navigateTo('/')
     }
   }
-  
-  // Role-based access for partner routes
+
+  // ═══════════════════════════════════════════
+  // Partner routes — partner/owner only
+  // ═══════════════════════════════════════════
   if (to.path.startsWith('/partner')) {
-    if (!token.value) {
-      return navigateTo('/auth/login')
+    if (!token) {
+      return navigateTo({
+        path: '/auth',
+        query: { redirect: to.fullPath },
+      })
     }
+
     const role = String(authStore.user?.role || '').trim().toLowerCase()
     if (!['partner', 'owner'].includes(role)) {
       return navigateTo('/')

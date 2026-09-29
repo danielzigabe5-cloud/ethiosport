@@ -315,7 +315,7 @@ import { useAuthStore } from '~/stores/auth'
    PAGE META — ሁሉም role ይጠቀምበታል
    ═══════════════════════════════════════════ */
 definePageMeta({
-  layout: 'partner',
+  layout: 'default',
   middleware: 'auth',
 })
 

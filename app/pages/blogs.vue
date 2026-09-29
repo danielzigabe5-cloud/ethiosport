@@ -377,9 +377,9 @@ const categoryIcon = (category: string) => {
                    sm:text-5xl
                    lg:text-7xl
                    font-black
-                   leading-[1.02]
+                   leading-tight
                    tracking-tight
-                   drop-shadow-[0_4px_10px_rgba(0,0,0,0.55)]"
+                   drop-shadow-lg"
           >
 
             CombolojoSPORT
@@ -395,7 +395,7 @@ const categoryIcon = (category: string) => {
                    text-sm
                    md:text-base
                    leading-8
-                   drop-shadow-[0_2px_6px_rgba(0,0,0,0.6)]"
+                   drop-shadow-md"
           >
             Stay connected with Ethiopian sports news, expert
             insights, fitness tips and stories from the

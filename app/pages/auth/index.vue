@@ -10,34 +10,57 @@ const isLogin = ref(true)
 const loading = ref(false)
 const showPassword = ref(false)
 
-// ለAlert መልዕክት የሚሆኑ
+/* ═══════════════════════════════════════════
+   REDIRECT TARGET — ከ query ወይም role ጀምሮ
+   ═══════════════════════════════════════════ */
+const dashboardLink = computed(() => {
+  const role = String(authStore.user?.role || '').trim().toLowerCase()
+  if (role === 'admin') return '/admin'
+  if (role === 'partner' || role === 'owner') return '/partner'
+  return '/'
+})
+
+// ✅ redirect query ካለ → ወደዚያ፣ አለበለዚያ ወደ role dashboard
+const resolveRedirect = (): string => {
+  const q = route.query.redirect
+  if (q && typeof q === 'string') return q
+  return dashboardLink.value
+}
+
+/* ═══════════════════════════════════════════
+   FEEDBACK
+   ═══════════════════════════════════════════ */
 const feedback = reactive({
   show: false,
   message: '',
-  type: 'success' as 'success' | 'error'
+  type: 'success' as 'success' | 'error',
 })
 
 const showAlert = (msg: string, type: 'success' | 'error' = 'success') => {
   feedback.message = msg
   feedback.type = type
   feedback.show = true
-  // ከ 5 ሰከንድ በኋላ በራሱ እንዲጠፋ
   setTimeout(() => { feedback.show = false }, 5000)
 }
 
+/* ═══════════════════════════════════════════
+   FORM
+   ═══════════════════════════════════════════ */
 const form = reactive({
   email: '',
   phone: '',
-  password: ''
+  password: '',
 })
 
 const errors = reactive({
   email: '',
   phone: '',
-  password: ''
+  password: '',
 })
 
-// Validation Functions
+/* ═══════════════════════════════════════════
+   VALIDATION
+   ═══════════════════════════════════════════ */
 const validateEmail = () => {
   if (!form.email) {
     errors.email = 'Email is required'
@@ -99,47 +122,57 @@ const toggleMode = () => {
   form.password = ''
   errors.password = ''
   errors.phone = ''
-  feedback.show = false // mode ሲቀየር alert እንዲጠፋ
+  feedback.show = false
 }
 
-const dashboardLink = computed(() => {
-  const role = String(authStore.user?.role || '').trim().toLowerCase()
-  if (role === 'admin') return '/admin'
-  if (role === 'partner') return '/partner'
-  return '/' 
-})
-
+/* ═══════════════════════════════════════════
+   ON MOUNT — አስቀድሞ ከተገባ ወደ redirect ሂድ
+   ═══════════════════════════════════════════ */
 onMounted(() => {
   authStore.init()
   if (authStore.token) {
-    const redirectTo = route.query.redirect as string || dashboardLink.value
-    router.push(redirectTo)
+    router.push(resolveRedirect())
   }
 })
+
+/* ═══════════════════════════════════════════
+   SUBMIT
+   ═══════════════════════════════════════════ */
 const handleSubmit = async () => {
   if (!validateAll()) return
   loading.value = true
-  feedback.show = false 
+  feedback.show = false
 
   try {
     if (isLogin.value) {
-      const res = await authStore.login({ email: form.email, password: form.password })
+      const res = await authStore.login({
+        email: form.email,
+        password: form.password,
+      })
+
       if (res.success) {
         showAlert('Login successful!', 'success')
-        setTimeout(() => { router.push(dashboardLink.value) }, 1500)
+
+        // ✅ ከ store የተመለሰውን user role በመጠቀም redirect ወስን
+        // (dashboardLink computed አሁን authStore.user ስለተሞላ ትክክለኛ ዋጋ ይሰጣል)
+        setTimeout(() => {
+          router.push(resolveRedirect())
+        }, 800)
       }
     } else {
-      const res = await authStore.sendOTP({ email: form.email, phone: form.phone })
+      const res = await authStore.sendOTP({
+        email: form.email,
+        phone: form.phone,
+      })
       if (res.success) {
         showAlert('OTP sent!', 'success')
         router.push({ path: '/auth/otp', query: { email: form.email } })
       }
     }
   } catch (error: any) {
-    // 👈 እዚህ ጋር ትክክለኛውን የቤክኤንድ መልዕክት ያሳያል
     const msg = error.message || 'Connection error. Check if backend is running.'
-     showAlert(error.message, 'error')
-    console.error("Login Error Details:", error)
+    showAlert(msg, 'error')
+    console.error('Login Error Details:', error)
   } finally {
     loading.value = false
   }
@@ -163,14 +196,26 @@ const handleSubmit = async () => {
         <p class="text-gray-500 text-center mt-2">
           {{ isLogin ? 'Sign in to your account' : 'Enter details to receive OTP' }}
         </p>
+
+        <!-- ✅ ማሳያ — redirect ካለ ተጠቃሚው ወዴት እንደሚሄድ ያሳያል -->
+        <p
+          v-if="route.query.redirect"
+          class="mt-2 text-xs text-blue-600 bg-blue-50 px-3 py-1 rounded-full"
+        >
+          → {{ route.query.redirect }}
+        </p>
       </div>
 
-      <!-- Alert Messages (Success/Error) -->
-      <div v-if="feedback.show" 
-           :class="[
-             'mb-6 p-4 rounded-xl text-sm font-medium flex items-center gap-3 animate-pulse',
-             feedback.type === 'success' ? 'bg-green-50 text-green-700 border border-green-100' : 'bg-red-50 text-red-700 border border-red-100'
-           ]">
+      <!-- Alert -->
+      <div
+        v-if="feedback.show"
+        :class="[
+          'mb-6 p-4 rounded-xl text-sm font-medium flex items-center gap-3',
+          feedback.type === 'success'
+            ? 'bg-green-50 text-green-700 border border-green-100'
+            : 'bg-red-50 text-red-700 border border-red-100',
+        ]"
+      >
         <span>{{ feedback.type === 'success' ? '✅' : '⚠️' }}</span>
         <p>{{ feedback.message }}</p>
       </div>
@@ -244,20 +289,41 @@ const handleSubmit = async () => {
           :disabled="loading || !isFormValid"
           class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 transition disabled:bg-blue-300 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
-          <svg v-if="loading" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          <svg
+            v-if="loading"
+            class="animate-spin h-5 w-5 text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            ></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
           </svg>
           <span>{{ loading ? 'PROCESSING...' : (isLogin ? 'LOGIN' : 'REGISTER & GET OTP') }}</span>
         </button>
 
       </form>
 
-      <!-- Toggle Login / Register -->
+      <!-- Toggle -->
       <div class="mt-6 text-center">
         <p class="text-gray-600">
           {{ isLogin ? "Don't have an account?" : "Already have an account?" }}
-          <button type="button" @click="toggleMode" class="text-blue-600 font-semibold ml-1 underline">
+          <button
+            type="button"
+            @click="toggleMode"
+            class="text-blue-600 font-semibold ml-1 underline"
+          >
             {{ isLogin ? 'Register here' : 'Login here' }}
           </button>
         </p>

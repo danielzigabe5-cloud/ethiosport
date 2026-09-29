@@ -1,4 +1,3 @@
-```vue
 <template>
   <div class="flex h-screen overflow-hidden bg-slate-50">
 
@@ -61,13 +60,8 @@
             :class="isActive('/partner') ? 'sidebar-active' : ''"
             @click="mobileOpen = false"
           >
-            <span class="sidebar-icon">
-              ▣
-            </span>
-
-            <span class="flex-1">
-              Dashboard
-            </span>
+            <span class="sidebar-icon">▣</span>
+            <span class="flex-1">Dashboard</span>
           </NuxtLink>
         </div>
 
@@ -83,28 +77,18 @@
             :class="isActive('/partner/my-venue') ? 'sidebar-active' : ''"
             @click="mobileOpen = false"
           >
-            <span class="sidebar-icon">
-              ⚽
-            </span>
-
-            <span class="flex-1">
-              My Venue
-            </span>
+            <span class="sidebar-icon">⚽</span>
+            <span class="flex-1">My Venue</span>
           </NuxtLink>
 
           <NuxtLink
-            to="/partner/slots"
+            to="/partner/schedule"
             class="sidebar-link"
             :class="isActive('/partner/slots') ? 'sidebar-active' : ''"
             @click="mobileOpen = false"
           >
-            <span class="sidebar-icon">
-              ◷
-            </span>
-
-            <span class="flex-1">
-              Manage Slots
-            </span>
+            <span class="sidebar-icon">◷</span>
+            <span class="flex-1">Manage Slots</span>
           </NuxtLink>
 
           <NuxtLink
@@ -113,13 +97,8 @@
             :class="isActive('/partner/bookings') ? 'sidebar-active' : ''"
             @click="mobileOpen = false"
           >
-            <span class="sidebar-icon">
-              📅
-            </span>
-
-            <span class="flex-1">
-              Bookings
-            </span>
+            <span class="sidebar-icon">📅</span>
+            <span class="flex-1">Bookings</span>
 
             <span
               v-if="bookingCount > 0"
@@ -130,42 +109,11 @@
           </NuxtLink>
         </div>
 
-        <!-- MANAGEMENT -->
-        <div class="mb-6">
-          <p class="mb-2 px-3 text-[10px] font-extrabold uppercase tracking-[0.16em] text-slate-400">
-            Management
-          </p>
+       
+       
 
-          <NuxtLink
-            to="/partner/events"
-            class="sidebar-link"
-            :class="isActive('/partner/events') ? 'sidebar-active' : ''"
-            @click="mobileOpen = false"
-          >
-            <span class="sidebar-icon">
-              🎯
-            </span>
-
-            <span class="flex-1">
-              Events
-            </span>
-          </NuxtLink>
-
-          <NuxtLink
-            to="/partner/games"
-            class="sidebar-link"
-            :class="isActive('/partner/games') ? 'sidebar-active' : ''"
-            @click="mobileOpen = false"
-          >
-            <span class="sidebar-icon">
-              🏆
-            </span>
-
-            <span class="flex-1">
-              Games
-            </span>
-          </NuxtLink>
-        </div>
+         
+    
 
         <!-- FINANCE -->
         <div class="mb-6">
@@ -179,13 +127,8 @@
             :class="isActive('/partner/earnings') ? 'sidebar-active' : ''"
             @click="mobileOpen = false"
           >
-            <span class="sidebar-icon">
-              💰
-            </span>
-
-            <span class="flex-1">
-              Earnings
-            </span>
+            <span class="sidebar-icon">💰</span>
+            <span class="flex-1">Earnings</span>
           </NuxtLink>
 
           <NuxtLink
@@ -194,13 +137,8 @@
             :class="isActive('/partner/payouts') ? 'sidebar-active' : ''"
             @click="mobileOpen = false"
           >
-            <span class="sidebar-icon">
-              💳
-            </span>
-
-            <span class="flex-1">
-              Payouts & Wallet
-            </span>
+            <span class="sidebar-icon">💳</span>
+            <span class="flex-1">Payouts & Wallet</span>
 
             <span
               v-if="pendingPayouts > 0"
@@ -217,19 +155,15 @@
             Account
           </p>
 
+          <!-- ✅ Profile — role-aware link -->
           <NuxtLink
-            to="/partner/profile"
+            :to="profileLink"
             class="sidebar-link"
-            :class="isActive('/partner/profile') ? 'sidebar-active' : ''"
+            :class="isActive(profileLink) ? 'sidebar-active' : ''"
             @click="mobileOpen = false"
           >
-            <span class="sidebar-icon">
-              👤
-            </span>
-
-            <span class="flex-1">
-              Profile
-            </span>
+            <span class="sidebar-icon">👤</span>
+            <span class="flex-1">Profile</span>
           </NuxtLink>
 
           <NuxtLink
@@ -238,98 +172,12 @@
             :class="isActive('/partner/settings') ? 'sidebar-active' : ''"
             @click="mobileOpen = false"
           >
-            <span class="sidebar-icon">
-              ⚙
-            </span>
-
-            <span class="flex-1">
-              Settings
-            </span>
+            <span class="sidebar-icon">⚙</span>
+            <span class="flex-1">Settings</span>
           </NuxtLink>
         </div>
 
       </nav>
-
-      <!-- =========================
-           VENUE STATUS
-      ========================== -->
-      <div class="shrink-0 border-t border-slate-100 p-4">
-
-        <div class="rounded-2xl bg-slate-900 p-4 text-white">
-
-          <!-- Title -->
-          <div class="mb-3 flex items-center justify-between">
-
-            <p class="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">
-              Venue Status
-            </p>
-
-            <div class="flex items-center gap-1.5">
-              <span class="h-2 w-2 rounded-full bg-emerald-400" />
-
-              <span class="text-[10px] font-bold text-emerald-400">
-                Active
-              </span>
-            </div>
-
-          </div>
-
-          <!-- Venue -->
-          <div class="flex items-center gap-3">
-
-            <div
-              class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 text-lg"
-            >
-              ⚽
-            </div>
-
-            <div class="min-w-0">
-
-              <p class="truncate text-sm font-bold text-white">
-                {{ venueName }}
-              </p>
-
-              <p class="mt-0.5 truncate text-[11px] text-slate-400">
-                📍 {{ venueLocation }}
-              </p>
-
-            </div>
-
-          </div>
-
-          <!-- Manage -->
-          <NuxtLink
-            to="/partner/my-venue"
-            class="mt-3 flex w-full items-center justify-center rounded-xl bg-white/10 py-2 text-xs font-bold text-white transition hover:bg-white/15"
-            @click="mobileOpen = false"
-          >
-            Manage Venue
-          </NuxtLink>
-
-        </div>
-
-      </div>
-
-      <!-- =========================
-           BACK TO WEBSITE
-      ========================== -->
-      <div class="shrink-0 border-t border-slate-100 p-4">
-
-        <NuxtLink
-          to="/"
-          class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
-          @click="mobileOpen = false"
-        >
-          <span class="text-lg">
-            ←
-          </span>
-
-          <span>
-            Back to Website
-          </span>
-        </NuxtLink>
-
-      </div>
 
     </aside>
 
@@ -346,17 +194,11 @@
         <!-- LEFT -->
         <div class="flex items-center gap-3">
 
-          <!-- Mobile Menu -->
           <button
             class="flex h-10 w-10 items-center justify-center rounded-xl text-slate-600 hover:bg-slate-100 lg:hidden"
             @click="mobileOpen = true"
           >
-            <svg
-              class="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -370,7 +212,6 @@
             <p class="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">
               Partner Dashboard
             </p>
-
             <h2 class="text-base font-bold text-slate-900">
               {{ pageTitle }}
             </h2>
@@ -381,7 +222,6 @@
         <!-- RIGHT -->
         <div class="flex items-center gap-2">
 
-          <!-- View Site -->
           <NuxtLink
             to="/"
             class="hidden items-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 md:flex"
@@ -390,16 +230,10 @@
             View Site
           </NuxtLink>
 
-          <!-- Notification -->
           <button
             class="relative flex h-10 w-10 items-center justify-center rounded-xl text-slate-500 hover:bg-slate-100"
           >
-            <svg
-              class="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -416,27 +250,34 @@
             </span>
           </button>
 
-          <!-- Profile -->
-          <div class="relative">
+          <!-- Profile dropdown -->
+          <div ref="profileRef" class="relative">
 
             <button
               class="flex items-center gap-2 rounded-xl p-1.5 hover:bg-slate-100"
               @click.stop="profileOpen = !profileOpen"
             >
 
+              <!-- ✅ Avatar with image + fallback -->
               <div
-                class="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-100 font-bold text-emerald-700"
+                class="relative flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-emerald-100 font-bold text-emerald-700"
               >
-                {{ partnerInitials }}
+                <img
+                  v-if="userAvatar"
+                  :src="userAvatar"
+                  :alt="partnerName"
+                  class="h-full w-full object-cover"
+                  @error="onAvatarError"
+                />
+                <span v-else>{{ partnerInitials }}</span>
               </div>
 
               <div class="hidden text-left sm:block">
                 <p class="max-w-[120px] truncate text-xs font-bold text-slate-900">
                   {{ partnerName }}
                 </p>
-
                 <p class="text-[10px] text-slate-500">
-                  Partner
+                  {{ partnerRole }}
                 </p>
               </div>
 
@@ -453,21 +294,19 @@
             >
 
               <div class="border-b border-slate-100 p-4">
-
                 <p class="font-bold text-slate-900">
                   {{ partnerName }}
                 </p>
-
                 <p class="mt-1 truncate text-xs text-slate-500">
                   {{ partnerEmail }}
                 </p>
-
               </div>
 
               <div class="p-2">
 
+                <!-- ✅ Role-aware profile link -->
                 <NuxtLink
-                  to="/partner/profile"
+                  :to="profileLink"
                   class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-slate-600 hover:bg-slate-50"
                   @click="profileOpen = false"
                 >
@@ -487,7 +326,6 @@
               </div>
 
               <div class="border-t border-slate-100 p-2">
-
                 <button
                   class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-50"
                   @click="logout"
@@ -495,7 +333,6 @@
                   ↪
                   Logout
                 </button>
-
               </div>
 
             </div>
@@ -528,50 +365,49 @@ defineOptions({
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
+const config = useRuntimeConfig()
 
-/*
-|--------------------------------------------------------------------------
-| UI State
-|--------------------------------------------------------------------------
-*/
-
+/* ═══════════════════════════════════════════
+   UI State
+   ═══════════════════════════════════════════ */
 const mobileOpen = ref(false)
 const profileOpen = ref(false)
+const profileRef = ref<HTMLElement | null>(null)
 
 const bookingCount = ref(3)
 const pendingPayouts = ref(1)
 const notifications = ref(3)
 
-/*
-|--------------------------------------------------------------------------
-| Partner Information
-|--------------------------------------------------------------------------
-*/
+/* ═══════════════════════════════════════════
+   API BASE — ለ avatar URL
+   ═══════════════════════════════════════════ */
+const apiBase = computed(() => {
+  const base = String(config.public.apiBase || 'http://127.0.0.1:8000')
+    .replace(/\/+$/, '')
+  return base.endsWith('/api') ? base.replace(/\/api$/, '') : base
+})
 
+/* ═══════════════════════════════════════════
+   PARTNER INFO
+   ═══════════════════════════════════════════ */
 const partnerName = computed(() => {
   const user = authStore.user as any
-
-  return (
-    user?.name ||
-    user?.full_name ||
-    user?.fullName ||
-    'Partner'
-  )
+  return user?.name || user?.full_name || user?.fullName || 'Partner'
 })
 
 const partnerEmail = computed(() => {
   const user = authStore.user as any
-
   return user?.email || 'partner@combolojo.com'
+})
+
+const partnerRole = computed(() => {
+  const role = String(authStore.user?.role || 'partner').toLowerCase()
+  return role.charAt(0).toUpperCase() + role.slice(1)
 })
 
 const partnerInitials = computed(() => {
   const name = partnerName.value.trim()
-
-  if (!name) {
-    return 'P'
-  }
-
+  if (!name) return 'P'
   return name
     .split(' ')
     .slice(0, 2)
@@ -580,134 +416,113 @@ const partnerInitials = computed(() => {
     .toUpperCase()
 })
 
-/*
-|--------------------------------------------------------------------------
-| Venue
-|--------------------------------------------------------------------------
-*/
+/* ✅ Avatar — full URL + fallback */
+const userAvatar = computed(() => {
+  const user = authStore.user as any
+  const raw = user?.avatar || user?.avatar_url
+  if (!raw) return null
 
+  if (
+    raw.startsWith('http://') ||
+    raw.startsWith('https://') ||
+    raw.startsWith('data:')
+  ) {
+    return raw
+  }
+
+  return `${apiBase.value}/storage/${raw.replace(/^\/+/, '')}`
+})
+
+const onAvatarError = (e: Event) => {
+  (e.target as HTMLImageElement).style.display = 'none'
+}
+
+/* ═══════════════════════════════════════════
+   ✅ PROFILE LINK (role-aware)
+   ═══════════════════════════════════════════ */
+const profileLink = computed(() => {
+  const role = String(authStore.user?.role || '').toLowerCase()
+  if (role === 'admin') return '/admin/profile'
+  if (role === 'partner' || role === 'owner') return '/partner/profile'
+  return '/profile'
+})
+
+/* ═══════════════════════════════════════════
+   VENUE
+   ═══════════════════════════════════════════ */
 const venueName = computed(() => {
   const user = authStore.user as any
-
-  return (
-    user?.venue?.name ||
-    user?.venue_name ||
-    'Sarbet Futsal Arena'
-  )
+  return user?.venue?.name || user?.venue_name || 'Sarbet Futsal Arena'
 })
 
 const venueLocation = computed(() => {
   const user = authStore.user as any
-
-  return (
-    user?.venue?.location ||
-    user?.venue_location ||
-    'Bole, Addis Ababa'
-  )
+  return user?.venue?.location || user?.venue_location || 'Bole, Addis Ababa'
 })
 
-/*
-|--------------------------------------------------------------------------
-| Page Title
-|--------------------------------------------------------------------------
-*/
-
+/* ═══════════════════════════════════════════
+   PAGE TITLE
+   ═══════════════════════════════════════════ */
 const pageTitle = computed(() => {
   const path = route.path
 
-  if (path === '/partner') {
-    return 'Dashboard'
-  }
-
-  if (path.includes('/my-venue')) {
-    return 'My Venue'
-  }
-
-  if (path.includes('/slots')) {
-    return 'Manage Slots'
-  }
-
-  if (path.includes('/bookings')) {
-    return 'Bookings'
-  }
-
-  if (path.includes('/events')) {
-    return 'Events'
-  }
-
-  if (path.includes('/games')) {
-    return 'Games'
-  }
-
-  if (path.includes('/earnings')) {
-    return 'Earnings'
-  }
-
-  if (path.includes('/payouts')) {
-    return 'Payouts & Wallet'
-  }
-
-  if (path.includes('/profile')) {
-    return 'Profile'
-  }
-
-  if (path.includes('/settings')) {
-    return 'Settings'
-  }
+  if (path === '/partner') return 'Dashboard'
+  if (path.includes('/my-venue')) return 'My Venue'
+  if (path.includes('/schedule')) return 'Manage Slots'
+  if (path.includes('/bookings')) return 'Bookings'
+  if (path.includes('/earnings')) return 'Earnings'
+  if (path.includes('/payouts')) return 'Payouts & Wallet'
+  if (path.includes('/profile')) return 'Profile'
+  if (path.includes('/settings')) return 'Settings'
 
   return 'Partner Dashboard'
 })
 
-/*
-|--------------------------------------------------------------------------
-| Active Sidebar
-|--------------------------------------------------------------------------
-*/
-
+/* ═══════════════════════════════════════════
+   ACTIVE SIDEBAR
+   ═══════════════════════════════════════════ */
 function isActive(path: string) {
   if (path === '/partner') {
     return route.path === '/partner'
   }
-
-  return (
-    route.path === path ||
-    route.path.startsWith(`${path}/`)
-  )
+  return route.path === path || route.path.startsWith(`${path}/`)
 }
 
-/*
-|--------------------------------------------------------------------------
-| Logout
-|--------------------------------------------------------------------------
-*/
-
+/* ═══════════════════════════════════════════
+   ✅ LOGOUT — ወደ /auth ሂድ (ከ /login ይልቅ)
+   ═══════════════════════════════════════════ */
 async function logout() {
   profileOpen.value = false
-
   try {
     await authStore.logout()
   } catch {
-    // Continue to login page
+    // continue
   }
-
-  await router.push('/login')
+  await router.push('/auth')
 }
 
-/*
-|--------------------------------------------------------------------------
-| Close Dropdown
-|--------------------------------------------------------------------------
-*/
-
+/* ═══════════════════════════════════════════
+   CLOSE DROPDOWN
+   ═══════════════════════════════════════════ */
 function closeDropdown(event: MouseEvent) {
   const target = event.target as HTMLElement
-
-  if (!target.closest('.relative')) {
+  if (profileRef.value && !profileRef.value.contains(target)) {
     profileOpen.value = false
   }
 }
 
+/* ═══════════════════════════════════════════
+   LIFECYCLE — ✅ init + fetchUser አስፈጽም
+   ═══════════════════════════════════════════ */
 onMounted(() => {
+  // ✅ Token + user ከ localStorage/cookie መልስ
+  authStore.init()
+
+  // ✅ የቅርብ ጊዜ user data (avatar ወዘተ) አድስ
+  if (authStore.token && authStore.fetchUser) {
+    authStore.fetchUser().catch(() => {})
+  }
+
   document.addEventListener('click', closeDropdown)
 })
 
@@ -729,10 +544,7 @@ onBeforeUnmount(() => {
   color: #64748b;
   font-size: 0.875rem;
   font-weight: 600;
-  transition:
-    background-color 0.18s ease,
-    color 0.18s ease,
-    transform 0.18s ease;
+  transition: background-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
 }
 
 .sidebar-link:hover {
@@ -782,4 +594,3 @@ onBeforeUnmount(() => {
   background: #94a3b8;
 }
 </style>
-```

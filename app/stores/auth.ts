@@ -7,61 +7,91 @@ export const useAuthStore = defineStore('auth', {
     tempEmail: '',
     tempPhone: '',
   }),
-  
+
+  getters: {
+    isLoggedIn: (state) => !!state.token,
+    isAdmin: (state) =>
+      String(state.user?.role || '').toLowerCase() === 'admin',
+    isPartner: (state) => {
+      const role = String(state.user?.role || '').toLowerCase()
+      return role === 'partner' || role === 'owner'
+    },
+  },
+
   actions: {
     getApiUrl(path: string) {
       const config = useRuntimeConfig()
-      // መጨረሻው ላይ /api መኖሩን ያረጋግጣል
-      const base = config.public.apiBase.endsWith('/') 
-        ? config.public.apiBase.slice(0, -1) 
+      const base = config.public.apiBase.endsWith('/')
+        ? config.public.apiBase.slice(0, -1)
         : config.public.apiBase
       return `${base}${path}`
     },
 
+    /* ═══════════════════════════════════════════
+       SAVE AUTH — token + user በአንድ ቦታ
+       ═══════════════════════════════════════════ */
+    saveAuth(token: string, user: any) {
+      this.token = token
+      this.user = user
+
+      if (import.meta.client) {
+        // ✅ localStorage
+        localStorage.setItem('auth_token', token)
+        localStorage.setItem('auth_user', JSON.stringify(user))
+        localStorage.setItem('userRole', user?.role || 'user')
+
+        // ✅ COOKIE — ለ middleware እና SSR
+        const cookie = useCookie<string | null>('auth_token', {
+          maxAge: 60 * 60 * 24 * 7, // 7 days
+          path: '/',
+          sameSite: 'lax',
+        })
+        cookie.value = token
+
+        // ✅ Role state
+        const roleState = useState('userRole')
+        roleState.value = user?.role || 'user'
+      }
+    },
+
+    /* ═══════════════════════════════════════════
+       LOGIN
+       ═══════════════════════════════════════════ */
     async login(payload: { email: string; password: string }) {
       try {
         const res: any = await $fetch(this.getApiUrl('/auth/login'), {
           method: 'POST',
           body: payload,
-          timeout: 30000, // 30 ሰከንድ እንዲጠብቅ (መዘግየት ቢኖር እንኳ እንዳይቋረጥ)
-          headers: {
-            'Accept': 'application/json',
-          }
+          timeout: 30000,
+          headers: { Accept: 'application/json' },
         })
 
         if (res.success) {
-          this.token = res.data?.token || res.token
-          this.user = res.data?.user || res.user
-          
-          if (this.token) localStorage.setItem('auth_token', this.token)
-          if (this.user) {
-            localStorage.setItem('auth_user', JSON.stringify(this.user))
-            localStorage.setItem('userRole', this.user.role || 'user')
-            const roleState = useState('userRole')
-            roleState.value = this.user.role || 'user'
-          }
+          const token = res.data?.token || res.token
+          const user = res.data?.user || res.user
+          if (token) this.saveAuth(token, user)
         }
         return res
       } catch (error: any) {
-    // 👈 እዚህ ጋር ነው ስህተቱን የምንቀይረው
-    if (error.status === 404) {
-      // ሰርቨሩ 404 ካለ፣ ወይ አድራሻው ተሳስቷል ወይም ኢሜይሉ የለም
-      throw { message: 'user not found ፤ please first register' }
-    }
-    if (error.status === 401) {
-       throw { message: 'invalid credintial' }
-    }
-    // ሌላ ማንኛውም ስህተት ሲመጣ
-    throw error.data || { message: 'server error!' }
-  }
+        if (error.status === 404) {
+          throw { message: 'user not found ፤ please first register' }
+        }
+        if (error.status === 401) {
+          throw { message: 'invalid credintial' }
+        }
+        throw error.data || { message: 'server error!' }
+      }
     },
 
+    /* ═══════════════════════════════════════════
+       SEND OTP
+       ═══════════════════════════════════════════ */
     async sendOTP(payload: { email: string; phone: string }) {
       try {
         const res: any = await $fetch(this.getApiUrl('/auth/send-otp'), {
           method: 'POST',
           body: payload,
-          timeout: 600000
+          timeout: 600000,
         })
         this.tempEmail = payload.email
         this.tempPhone = payload.phone
@@ -70,25 +100,21 @@ export const useAuthStore = defineStore('auth', {
         throw error.data || { message: 'Failed to send OTP' }
       }
     },
+
+    /* ═══════════════════════════════════════════
+       VERIFY OTP
+       ═══════════════════════════════════════════ */
     async verifyOTP(email: string, otp: string) {
       try {
         const res: any = await $fetch(this.getApiUrl('/auth/verify-otp'), {
           method: 'POST',
-          body: { email, otp }
+          body: { email, otp },
         })
-        
+
         if (res.success) {
-          this.token = res.data?.token || res.token
-          this.user = res.data?.user || res.user
-          
-          if (this.token) localStorage.setItem('auth_token', this.token)
-          if (this.user) {
-            localStorage.setItem('auth_user', JSON.stringify(this.user))
-            localStorage.setItem('userRole', this.user.role || 'user')
-            
-            const roleState = useState('userRole')
-            roleState.value = this.user.role || 'user'
-          }
+          const token = res.data?.token || res.token
+          const user = res.data?.user || res.user
+          if (token) this.saveAuth(token, user)
         }
         return res
       } catch (error: any) {
@@ -96,64 +122,119 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
-    async completeProfile(payload: { 
-      name: string; 
-      password: string; 
-      password_confirmation: string 
+    /* ═══════════════════════════════════════════
+       COMPLETE PROFILE
+       ═══════════════════════════════════════════ */
+    async completeProfile(payload: {
+      name: string
+      password: string
+      password_confirmation: string
     }) {
       try {
-        const res: any = await $fetch(this.getApiUrl('/auth/complete-profile'), {
-          method: 'POST',
-          headers: { 
-            Authorization: `Bearer ${this.token}`,
-            'Content-Type': 'application/json'
-          },
-          body: payload
-        })
-        
+        const res: any = await $fetch(
+          this.getApiUrl('/auth/complete-profile'),
+          {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${this.token}`,
+              'Content-Type': 'application/json',
+            },
+            body: payload,
+          }
+        )
+
         if (res.success) {
-          if (res.data?.user) {
-            this.user = res.data.user
-            localStorage.setItem('auth_user', JSON.stringify(res.data.user))
-            localStorage.setItem('userRole', res.data.user.role || 'user')
-            
-            const roleState = useState('userRole')
-            roleState.value = res.data.user.role || 'user'
-          }
-          if (res.data?.token) {
-            this.token = res.data.token
-            localStorage.setItem('auth_token', res.data.token)
-          }
+          const newToken = res.data?.token || this.token
+          const newUser = res.data?.user || this.user
+          if (newToken) this.saveAuth(newToken, newUser)
         }
         return res
       } catch (error: any) {
         throw error.data || error
       }
     },
-    
-    init() {
-      if (process.client) {
-        const token = localStorage.getItem('auth_token')
-        const user = localStorage.getItem('auth_user')
-        const role = localStorage.getItem('userRole')
-        if (token) this.token = token
-        if (user) this.user = JSON.parse(user)
-        if (role) {
-          const roleState = useState('userRole')
-          roleState.value = role
+
+    /* ═══════════════════════════════════════════
+       FETCH USER — ከ API አድስ (avatar ወዘተ)
+       ═══════════════════════════════════════════ */
+    async fetchUser() {
+      if (!import.meta.client) return null
+      if (!this.token) this.init()
+      if (!this.token) return null
+
+      try {
+        const res: any = await $fetch(this.getApiUrl('/auth/me'), {
+          headers: {
+            Authorization: `Bearer ${this.token}`,
+            Accept: 'application/json',
+          },
+        })
+
+        const user = res?.user ?? res?.data ?? null
+        if (user) {
+          this.user = user
+          localStorage.setItem('auth_user', JSON.stringify(user))
         }
+        return user
+      } catch (error: any) {
+        if (error?.status === 401) this.logout()
+        return null
       }
     },
-    
+
+    /* ═══════════════════════════════════════════
+       INIT — ገጹ ሲጫን ከ localStorage/cookie መልስ
+       ═══════════════════════════════════════════ */
+    init() {
+      if (!import.meta.client) return
+
+      // 1️⃣ localStorage
+      let token = localStorage.getItem('auth_token') || localStorage.getItem('token')
+
+      // 2️⃣ cookie (fallback)
+      if (!token) {
+        const cookie = useCookie<string | null>('auth_token')
+        if (cookie.value) token = cookie.value
+      }
+
+      if (token) this.token = token
+
+      const user = localStorage.getItem('auth_user')
+      if (user) {
+        try {
+          this.user = JSON.parse(user)
+        } catch {
+          this.user = null
+        }
+      }
+
+      const role = localStorage.getItem('userRole')
+      if (role) {
+        const roleState = useState('userRole')
+        roleState.value = role
+      }
+    },
+
+    /* ═══════════════════════════════════════════
+       LOGOUT
+       ═══════════════════════════════════════════ */
     logout() {
       this.token = null
       this.user = null
-      localStorage.removeItem('auth_token')
-      localStorage.removeItem('auth_user')
-      localStorage.removeItem('userRole')
-      const roleState = useState('userRole')
-      roleState.value = null
-    }
-  }
-  
+
+      if (import.meta.client) {
+        localStorage.removeItem('auth_token')
+        localStorage.removeItem('token')
+        localStorage.removeItem('auth_user')
+        localStorage.removeItem('userRole')
+
+        // ✅ Cookie ን አጥፋ
+        const cookie = useCookie<string | null>('auth_token')
+        cookie.value = null
+
+        const roleState = useState('userRole')
+        roleState.value = null
+      }
+    },
+  },
 })

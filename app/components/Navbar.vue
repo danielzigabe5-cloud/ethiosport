@@ -45,14 +45,14 @@
             class="relative px-3 xl:px-4 py-2 text-sm font-semibold
                    transition-all duration-200 whitespace-nowrap"
             :class="
-              route.path === item.path
+              isActivePath(item.path)
                 ? 'text-[#16A34A]'
                 : 'text-slate-600 hover:text-[#16A34A]'
             "
           >
             {{ item.label }}
             <span
-              v-if="route.path === item.path"
+              v-if="isActivePath(item.path)"
               class="absolute left-3 right-3 -bottom-[17px]
                      h-[3px] rounded-full bg-[#16A34A]"
             />
@@ -62,9 +62,9 @@
         <!-- ══════════════ RIGHT ACTIONS ══════════════ -->
         <div class="flex items-center gap-2">
 
-          <!-- ✅ ADD VENUE — HIDDEN FOR ADMIN -->
+          <!-- ADD VENUE (hidden for admin + partner + owner) -->
           <NuxtLink
-            v-if="!isAdmin"
+            v-if="canAddVenue"
             :to="isLoggedIn ? '/venues/create' : '/auth?redirect=/venues/create'"
             class="hidden md:flex items-center gap-2
                    bg-[#16A34A] hover:bg-[#15803D] text-white
@@ -75,6 +75,7 @@
             <Icon name="lucide:plus" class="w-4 h-4" />
             Add Venue
           </NuxtLink>
+
           <!-- ══════════════ LOGGED USER DROPDOWN ══════════════ -->
           <div
             v-if="isLoggedIn"
@@ -86,7 +87,6 @@
               class="flex items-center gap-2 p-1.5 rounded-full
                      hover:bg-slate-100 transition-all"
             >
-              <!-- ✅ AVATAR WITH FULL URL + FALLBACK -->
               <div
                 class="relative w-9 h-9 rounded-full overflow-hidden
                        bg-gradient-to-br from-[#16A34A] to-emerald-600
@@ -130,7 +130,7 @@
                        bg-white border border-slate-200
                        rounded-xl shadow-xl p-2"
               >
-                <!-- USER INFO WITH AVATAR -->
+                <!-- USER INFO -->
                 <div class="px-3 py-3 border-b border-slate-100 mb-1">
                   <div class="flex items-center gap-3">
                     <div
@@ -175,9 +175,9 @@
                   {{ dashboardLabel }}
                 </NuxtLink>
 
-                <!-- PROFILE -->
+                <!-- PROFILE — role-aware -->
                 <NuxtLink
-                  to="/profile"
+                  :to="profileLink"
                   @click="isDropdownOpen = false"
                   class="flex items-center gap-3 px-3 py-2.5 rounded-lg
                          text-sm font-semibold text-slate-700
@@ -187,8 +187,6 @@
                   My Profile
                 </NuxtLink>
 
-                <!-- Admin dashboard -->
-               
                 <div class="my-1 border-t border-slate-100"></div>
 
                 <!-- SIGN OUT -->
@@ -239,9 +237,10 @@
       enter-to-class="opacity-100 translate-y-0"
     >
       <div v-if="isOpen" class="lg:hidden bg-white border-t border-slate-200 shadow-xl p-4">
-        <!-- ADD VENUE (hidden for admin) -->
+
+        <!-- ADD VENUE (hidden for admin + partner + owner) -->
         <NuxtLink
-          v-if="!isAdmin"
+          v-if="canAddVenue"
           :to="isLoggedIn ? '/venues/create' : '/auth?redirect=/venues/create'"
           @click="isOpen = false"
           class="flex items-center justify-center gap-2
@@ -264,7 +263,7 @@
           Admin Panel
         </NuxtLink>
 
-        <!-- PARTNER PANEL (only for partner) -->
+        <!-- PARTNER PANEL (only for partner + owner) -->
         <NuxtLink
           v-if="isPartner"
           to="/partner"
@@ -286,7 +285,7 @@
             @click="isOpen = false"
             class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold"
             :class="
-              route.path === item.path
+              isActivePath(item.path)
                 ? 'bg-green-50 text-[#16A34A]'
                 : 'text-slate-700 hover:bg-slate-50'
             "
@@ -339,6 +338,17 @@
             </div>
           </div>
 
+          <!-- MOBILE PROFILE LINK -->
+          <NuxtLink
+            :to="profileLink"
+            @click="isOpen = false"
+            class="flex items-center gap-3 px-4 py-3 rounded-lg
+                   text-slate-700 hover:bg-green-50 hover:text-[#16A34A] font-bold"
+          >
+            <Icon name="lucide:user" class="w-5 h-5" />
+            My Profile
+          </NuxtLink>
+
           <button
             @click="handleLogout(); isOpen = false"
             class="w-full flex items-center gap-3 px-4 py-3 rounded-lg
@@ -353,7 +363,7 @@
   </nav>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '~/stores/auth'
@@ -365,7 +375,7 @@ const config = useRuntimeConfig()
 
 const isOpen = ref(false)
 const isDropdownOpen = ref(false)
-const dropdownRef = ref(null)
+const dropdownRef = ref<HTMLElement | null>(null)
 
 /* ═══════════════════════════════════════════
    AUTH STATE
@@ -382,6 +392,12 @@ const isPartner = computed(() => {
   return role === 'partner' || role === 'owner'
 })
 
+// 🔑 'Add Venue' ቁልፍ ማሳየት ወይም መደበቅ
+const canAddVenue = computed(() => {
+  const role = userProfile.value?.role?.toLowerCase()
+  return role !== 'admin' && role !== 'partner' && role !== 'owner'
+})
+
 /* ═══════════════════════════════════════════
    API BASE
    ═══════════════════════════════════════════ */
@@ -392,13 +408,12 @@ const apiBase = computed(() => {
 })
 
 /* ═══════════════════════════════════════════
-   ✅ AVATAR — Full URL builder + fallback
+   AVATAR
    ═══════════════════════════════════════════ */
 const userAvatar = computed(() => {
-  const raw = userProfile.value?.avatar || userProfile.value?.avatar_url
+  const raw = userProfile.value?.avatar_url || userProfile.value?.avatar
   if (!raw) return null
 
-  // Already a full URL
   if (
     raw.startsWith('http://') ||
     raw.startsWith('https://') ||
@@ -407,7 +422,6 @@ const userAvatar = computed(() => {
     return raw
   }
 
-  // Relative path → build full storage URL
   return `${apiBase.value}/storage/${raw.replace(/^\/+/, '')}`
 })
 
@@ -416,17 +430,17 @@ const userInitials = computed(() => {
   return String(name)
     .split(' ')
     .slice(0, 2)
-    .map(n => n.charAt(0))
+    .map((n: string) => n.charAt(0))
     .join('')
     .toUpperCase() || 'U'
 })
 
-const onAvatarError = (e) => {
-  e.target.style.display = 'none'
+const onAvatarError = (e: Event) => {
+  (e.target as HTMLImageElement).style.display = 'none'
 }
 
 /* ═══════════════════════════════════════════
-   DASHBOARD LINK (role-aware)
+   DASHBOARD LINK
    ═══════════════════════════════════════════ */
 const dashboardLink = computed(() => {
   if (!isLoggedIn.value) return '/auth'
@@ -449,15 +463,27 @@ const dashboardLabel = computed(() => {
 })
 
 /* ═══════════════════════════════════════════
+   PROFILE LINK
+   ═══════════════════════════════════════════ */
+const profileLink = computed(() => {
+  const role = userProfile.value?.role?.toLowerCase()
+
+  if (role === 'admin') return '/admin/profile'
+  if (role === 'partner' || role === 'owner') return '/partner/profile'
+
+  return '/profile'
+})
+
+/* ═══════════════════════════════════════════
    NAV ITEMS
    ═══════════════════════════════════════════ */
 const navItems = [
-  { path: '/',          label: 'Home',      icon: 'lucide:home' },
-  { path: '/about',     label: 'About',     icon: 'lucide:info' },
-  { path: '/venues',    label: 'Venues',    icon: 'lucide:stadium' },
-  { path: '/blogs',     label: 'Blogs',     icon: 'lucide:newspaper' },
-  { path: '/justplay',  label: 'Just Play', icon: 'lucide:play-circle' },
-  { path: '/contact',   label: 'Contact',   icon: 'lucide:phone' },
+  { path: '/',         label: 'Home',      icon: 'lucide:home' },
+  { path: '/about',    label: 'About',     icon: 'lucide:info' },
+  { path: '/venues',   label: 'Venues',    icon: 'lucide:stadium' },
+  { path: '/blogs',    label: 'Blogs',     icon: 'lucide:newspaper' },
+  { path: '/justplay', label: 'Just Play', icon: 'lucide:play-circle' },
+  { path: '/contact',  label: 'Contact',   icon: 'lucide:phone' },
 ]
 
 /* ═══════════════════════════════════════════
@@ -473,8 +499,8 @@ const handleLogout = async () => {
   router.push('/')
 }
 
-const handleClickOutside = (event) => {
-  if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
+const handleClickOutside = (event: MouseEvent) => {
+  if (dropdownRef.value && !dropdownRef.value.contains(event.target as Node)) {
     isDropdownOpen.value = false
   }
 }
@@ -485,7 +511,6 @@ const handleClickOutside = (event) => {
 onMounted(() => {
   if (authStore?.init) authStore.init()
 
-  // 🆕 Refresh user data to get the latest avatar
   if (authStore?.fetchUser) {
     authStore.fetchUser().catch(() => {})
   }
@@ -504,4 +529,14 @@ watch(
     isDropdownOpen.value = false
   }
 )
+
+/* ═══════════════════════════════════════════
+   ACTIVE PATH
+   ═══════════════════════════════════════════ */
+const isActivePath = (path: string): boolean => {
+  if (path === '/') {
+    return route.path === '/'
+  }
+  return route.path === path || route.path.startsWith(`${path}/`)
+}
 </script>

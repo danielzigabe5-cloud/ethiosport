@@ -1,4 +1,3 @@
-
 <template>
   <div
     class="flex h-screen w-full flex-col overflow-hidden bg-slate-50 text-slate-800 antialiased dark:bg-[#070b12] dark:text-slate-100"
@@ -75,7 +74,6 @@
         <!-- View Public Site -->
         <NuxtLink
           to="/"
-          target="_blank"
           class="hidden items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold text-slate-500 transition hover:bg-slate-100 hover:text-emerald-600 dark:text-slate-400 dark:hover:bg-slate-800 sm:flex"
         >
           <Icon name="lucide:external-link" class="h-4 w-4" />
@@ -115,27 +113,27 @@
             @click="toggleDropdown"
             class="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-1.5 pr-2 transition hover:border-emerald-300 hover:shadow-sm dark:border-slate-800 dark:bg-slate-900"
           >
-           <!-- Avatar -->
-<div class="relative h-10 w-10 shrink-0">
-  <img
-    v-if="userAvatar"
-    :src="userAvatar"
-    alt="Admin"
-    class="h-10 w-10 rounded-xl object-cover ring-1 ring-slate-200 dark:ring-slate-700"
-    @error="onAvatarError"
-  />
-  <div
-    v-else
-    class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500 font-black text-white"
-  >
-    {{ userInitials }}
-  </div>
-</div>
- 
-         <span
+            <!-- Avatar -->
+            <div class="relative h-10 w-10 shrink-0">
+              <img
+                v-if="userAvatar"
+                :src="userAvatar"
+                alt="Admin"
+                class="h-10 w-10 rounded-xl object-cover ring-1 ring-slate-200 dark:ring-slate-700"
+                @error="onAvatarError"
+              />
+              <div
+                v-else
+                class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500 font-black text-white"
+              >
+                {{ userInitials }}
+              </div>
+
+              <!-- ✅ Online indicator ከ avatar ውስጥ መሆን አለበት -->
+              <span
                 class="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-emerald-500 dark:border-slate-900"
               ></span>
-                 
+            </div>
 
             <div class="hidden text-left lg:block">
               <p class="max-w-[110px] truncate text-xs font-bold text-slate-800 dark:text-slate-100">
@@ -171,10 +169,21 @@
                 class="mb-1 rounded-xl bg-slate-50 p-3 dark:bg-slate-800/60"
               >
                 <div class="flex items-center gap-3">
-                  <div
-                    class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500 font-black text-white"
-                  >
-                    A
+                  <!-- ✅ Avatar with image + fallback (hardcoded "A" ተቀይሯል) -->
+                  <div class="relative h-10 w-10 shrink-0">
+                    <img
+                      v-if="userAvatar"
+                      :src="userAvatar"
+                      :alt="adminName"
+                      class="h-10 w-10 rounded-xl object-cover ring-1 ring-slate-200 dark:ring-slate-700"
+                      @error="onAvatarError"
+                    />
+                    <div
+                      v-else
+                      class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500 font-black text-white"
+                    >
+                      {{ userInitials }}
+                    </div>
                   </div>
 
                   <div class="min-w-0">
@@ -570,6 +579,7 @@
     </div>
   </div>
 </template>
+
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -605,15 +615,10 @@ const apiBase = computed(() => {
    USER — Avatar URL builder
 ========================================================= */
 
-/**
- * Full URL for the admin's avatar.
- * Handles: null, relative paths, full URLs, data URIs.
- */
 const userAvatar = computed<string | null>(() => {
   const raw = authStore.user?.avatar || (authStore.user as any)?.avatar_url
   if (!raw) return null
 
-  // Already a full URL or data URI
   if (
     raw.startsWith('http://') ||
     raw.startsWith('https://') ||
@@ -622,22 +627,14 @@ const userAvatar = computed<string | null>(() => {
     return raw
   }
 
-  // Relative path → build full storage URL
   return `${apiBase.value}/storage/${raw.replace(/^\/+/, '')}`
 })
 
-/**
- * Fallback avatar error handler — hides broken images so
- * the initial-letter fallback shows.
- */
 const onAvatarError = (e: Event) => {
   const img = e.target as HTMLImageElement
   img.style.display = 'none'
 }
 
-/**
- * User initials for the fallback avatar.
- */
 const userInitials = computed(() => {
   const name = authStore.user?.name || 'Admin'
   return String(name)
@@ -783,16 +780,22 @@ const handleLogout = async () => {
 ========================================================= */
 
 onMounted(() => {
-  document.addEventListener('click', handleClickOutside)
+  // ✅ 1. Token ከ localStorage/cookie መልስ
+  authStore.init()
 
-  // 🔄 Refresh user data on mount to pick up any avatar changes
-  authStore.fetchUser?.()?.catch(() => {})
+  // ✅ 2. የቅርብ ጊዜ user data (avatar ወዘተ) አድስ
+  if (authStore.token && authStore.fetchUser) {
+    authStore.fetchUser().catch(() => {})
+  }
+
+  document.addEventListener('click', handleClickOutside)
 })
 
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
 })
 </script>
+
 <style scoped>
 .custom-scrollbar::-webkit-scrollbar {
   width: 5px;
@@ -817,4 +820,3 @@ onUnmounted(() => {
   scrollbar-color: rgba(100, 116, 139, 0.3) transparent;
 }
 </style>
-```

@@ -1,3 +1,4 @@
+```vue
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 
@@ -9,6 +10,10 @@ import img5 from '~/assets/images/venue5.jpg'
 import venue20Image from '~/assets/images/venues20.jpg'
 import venue11Image from '~/assets/images/venuess11.jpg'
 import venue12Image from '~/assets/images/venuess12.png'
+
+/* =========================================================
+   TYPES
+========================================================= */
 
 interface Venue {
   id: number
@@ -30,7 +35,15 @@ interface SportEvent {
   time: string
   location: string
   image: string
+  description: string
+  organizer: string
+  sport: string
+  participants: string
 }
+
+/* =========================================================
+   STATE
+========================================================= */
 
 const venueSection = ref<HTMLElement | null>(null)
 
@@ -38,15 +51,16 @@ const searchSport = ref('All Sports')
 const searchLocation = ref('')
 
 const selectedVenue = ref<Venue | null>(null)
+const selectedEvent = ref<SportEvent | null>(null)
 
 const showVenueModal = ref(false)
-const showAppModal = ref(false)
+const showEventModal = ref(false)
 
 const openFaq = ref<number | null>(null)
 
-/* =========================
+/* =========================================================
    VENUES
-========================= */
+========================================================= */
 
 const venues: Venue[] = [
   {
@@ -59,7 +73,7 @@ const venues: Venue[] = [
     price: 500,
     image: img1,
     description:
-      'Modern futsal field suitable for competitive and friendly games.',
+      'Modern futsal field suitable for competitive and friendly games. The venue is designed for football players, teams and sports communities.',
     features: ['Parking', 'Changing Room', 'Night Lighting']
   },
   {
@@ -72,7 +86,7 @@ const venues: Venue[] = [
     price: 600,
     image: img2,
     description:
-      'Premium football venue with a quality playing surface.',
+      'Premium football venue with a quality playing surface for training, friendly matches and competitive games.',
     features: ['Parking', 'Flood Lights', 'Refreshments']
   },
   {
@@ -85,7 +99,7 @@ const venues: Venue[] = [
     price: 350,
     image: img3,
     description:
-      'Professional basketball court for training and games.',
+      'Professional basketball court for training, friendly games, tournaments and community activities.',
     features: ['Changing Room', 'Night Lighting', 'Seating']
   },
   {
@@ -98,7 +112,7 @@ const venues: Venue[] = [
     price: 300,
     image: img4,
     description:
-      'Comfortable volleyball venue for teams and communities.',
+      'Comfortable volleyball venue suitable for teams, schools, communities and weekend competitions.',
     features: ['Parking', 'Seating', 'Equipment']
   },
   {
@@ -111,14 +125,14 @@ const venues: Venue[] = [
     price: 550,
     image: img5,
     description:
-      'Spacious sports venue designed for an enjoyable game day.',
+      'Spacious sports venue designed for an enjoyable game day with friends, teams and sports communities.',
     features: ['Parking', 'Flood Lights', 'Changing Room']
   }
 ]
 
-/* =========================
+/* =========================================================
    EVENTS
-========================= */
+========================================================= */
 
 const events: SportEvent[] = [
   {
@@ -127,7 +141,12 @@ const events: SportEvent[] = [
     date: 'Oct 05, 2026',
     time: '09:00 AM',
     location: 'Sarbet Football Field',
-    image: img1
+    image: img1,
+    description:
+      'A community football tournament bringing players and teams together for a competitive and enjoyable game day.',
+    organizer: 'CombolojoSPORT',
+    sport: 'Football',
+    participants: 'Teams and football players'
   },
   {
     id: 2,
@@ -135,7 +154,12 @@ const events: SportEvent[] = [
     date: 'Oct 12, 2026',
     time: '02:00 PM',
     location: 'City Basketball Court',
-    image: img3
+    image: img3,
+    description:
+      'A basketball community event where players can meet, play and enjoy a friendly sports environment.',
+    organizer: 'CombolojoSPORT Community',
+    sport: 'Basketball',
+    participants: 'Basketball players and communities'
   },
   {
     id: 3,
@@ -143,13 +167,18 @@ const events: SportEvent[] = [
     date: 'Oct 18, 2026',
     time: '10:00 AM',
     location: 'Unity Volleyball Center',
-    image: img4
+    image: img4,
+    description:
+      'A weekend volleyball challenge for teams and players looking for an active and enjoyable competition.',
+    organizer: 'Unity Volleyball Center',
+    sport: 'Volleyball',
+    participants: 'Volleyball teams'
   }
 ]
 
-/* =========================
+/* =========================================================
    TESTIMONIALS
-========================= */
+========================================================= */
 
 const testimonials = [
   {
@@ -172,20 +201,20 @@ const testimonials = [
   }
 ]
 
-/* =========================
+/* =========================================================
    FAQ
-========================= */
+========================================================= */
 
 const faqs = [
   {
     question: 'How can I book a sports venue?',
     answer:
-      'Choose your sport and location, select a venue, choose an available time slot, and complete your booking.'
+      'Choose your sport and location, select a venue, then use the mobile app to choose an available time slot and complete your booking.'
   },
   {
     question: 'Can I book a venue from my phone?',
     answer:
-      'Yes. CombolojoSPORT is designed to work on mobile devices.'
+      'Yes. CombolojoSPORT booking is designed around the mobile app so users can search venues, choose slots and complete bookings from their phone.'
   },
   {
     question: 'Can venue owners join CombolojoSPORT?',
@@ -199,9 +228,20 @@ const faqs = [
   }
 ]
 
-/* =========================
+/* =========================================================
+   SPORTS
+========================================================= */
+
+const sports = [
+  { name: 'Football', icon: '⚽' },
+  { name: 'Basketball', icon: '🏀' },
+  { name: 'Volleyball', icon: '🏐' },
+  { name: 'Tennis', icon: '🎾' }
+]
+
+/* =========================================================
    SEARCH
-========================= */
+========================================================= */
 
 const filteredVenues = computed(() => {
   return venues.filter((venue) => {
@@ -222,9 +262,9 @@ const filteredVenues = computed(() => {
   })
 })
 
-/* =========================
-   FUNCTIONS
-========================= */
+/* =========================================================
+   VENUE FUNCTIONS
+========================================================= */
 
 function searchVenues() {
   venueSection.value?.scrollIntoView({
@@ -248,28 +288,43 @@ function closeVenue() {
   selectedVenue.value = null
 }
 
-function bookVenue(venue: Venue) {
+/* =========================================================
+   BOOKING
+========================================================= */
+
+function bookVenue() {
   closeVenue()
+  navigateTo('/download-app')
+}
+
+/* =========================================================
+   EVENT FUNCTIONS
+========================================================= */
+
+function openEvent(event: SportEvent) {
+  selectedEvent.value = event
+  showEventModal.value = true
+}
+
+function closeEvent() {
+  showEventModal.value = false
+  selectedEvent.value = null
+}
+
+function joinEvent() {
+  closeEvent()
 
   navigateTo({
-    path: '/booking',
+    path: '/download-app',
     query: {
-      venue: venue.id
+      type: 'event'
     }
   })
 }
 
-function goToEvents() {
-  navigateTo('/events')
-}
-
-function openAppModal() {
-  showAppModal.value = true
-}
-
-function closeAppModal() {
-  showAppModal.value = false
-}
+/* =========================================================
+   FAQ
+========================================================= */
 
 function toggleFaq(index: number) {
   openFaq.value = openFaq.value === index ? null : index
@@ -282,58 +337,163 @@ function clearSearch() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50 text-gray-900">
+  <div class="min-h-screen bg-[#f8faf9] text-slate-900">
 
-    <!-- HERO -->
-    <section class="relative min-h-[500px] overflow-hidden">
-      <div class="absolute inset-0 bg-gray-900">
-        <img :src="venue20Image" alt="" aria-hidden="true" class="hero-image hero-image-1" />
-        <img :src="venue11Image" alt="" aria-hidden="true" class="hero-image hero-image-2" />
-        <img :src="venue12Image" alt="" aria-hidden="true" class="hero-image hero-image-3" />
-        <div class="absolute inset-0 bg-gradient-to-r from-black/45 via-black/15 to-transparent"></div>
+    <!-- =====================================================
+         HERO
+    ====================================================== -->
+
+    <section class="relative min-h-[650px] overflow-hidden bg-[#07150f]">
+
+      <!-- Background -->
+      <div class="absolute inset-0">
+
+        <img
+          :src="venue20Image"
+          alt=""
+          aria-hidden="true"
+          class="hero-image hero-image-1"
+        />
+
+        <img
+          :src="venue11Image"
+          alt=""
+          aria-hidden="true"
+          class="hero-image hero-image-2"
+        />
+
+        <img
+          :src="venue12Image"
+          alt=""
+          aria-hidden="true"
+          class="hero-image hero-image-3"
+        />
+
+        <div class="absolute inset-0 bg-[#06130c]/55"></div>
+
+        <div
+          class="absolute inset-0 bg-gradient-to-r from-[#06130c]/95 via-[#06130c]/65 to-transparent"
+        ></div>
+
+        <div
+          class="absolute inset-0 bg-gradient-to-t from-[#06130c] via-transparent to-[#06130c]/20"
+        ></div>
       </div>
 
+      <!-- Football decoration -->
+      <div class="pointer-events-none absolute inset-0 overflow-hidden">
+
+        <div
+          class="absolute right-[-180px] top-1/2 hidden h-[620px] w-[620px] -translate-y-1/2 rounded-full border border-white/10 lg:block"
+        ></div>
+
+        <div
+          class="absolute right-[130px] top-1/2 hidden h-[230px] w-[230px] -translate-y-1/2 rounded-full border border-white/10 lg:block"
+        ></div>
+
+        <div
+          class="absolute right-0 top-1/2 hidden h-px w-[500px] bg-white/10 lg:block"
+        ></div>
+
+        <div
+          class="absolute bottom-[-120px] left-[-100px] h-[350px] w-[350px] rounded-full border border-lime-400/10"
+        ></div>
+
+      </div>
+
+      <!-- Hero content -->
       <div
-        class="relative mx-auto flex min-h-[500px] max-w-7xl items-center px-6 py-12 lg:px-8"
+        class="relative z-10 mx-auto flex min-h-[650px] max-w-7xl items-center justify-center px-6 py-20 lg:px-8"
       >
-        <div class="max-w-4xl">
+
+        <div class="mx-auto w-full max-w-5xl text-center">
+
+          <!-- Brand -->
           <div
-            class="mb-4 inline-flex items-center gap-2 rounded-full border border-white/60 bg-white/90 px-3 py-1 text-xs font-bold text-green-700 shadow-lg backdrop-blur-sm"
+            class="mx-auto mb-7 inline-flex items-center gap-3 rounded-full border border-white/20 bg-white/10 px-4 py-2 backdrop-blur-md"
           >
-            <span class="h-2 w-2 animate-pulse rounded-full bg-green-600"></span>
-            Find • Book • Play
+
+            <span
+              class="flex h-7 w-7 items-center justify-center rounded-full bg-lime-400 text-sm"
+            >
+              ⚽
+            </span>
+
+            <span
+              class="text-[10px] font-black uppercase tracking-[0.25em] text-white sm:text-xs"
+            >
+              Ethiopia's Sports Venue Platform
+            </span>
+
           </div>
 
+          <!-- Heading -->
           <h1
-            class="text-3xl font-black leading-tight text-white drop-shadow-[0_3px_8px_rgba(0,0,0,0.8)] sm:text-4xl lg:text-6xl"
+            class="mx-auto max-w-5xl text-4xl font-black leading-tight tracking-tight text-white sm:text-5xl lg:text-7xl"
           >
-            WELL COME TO ETHIOPIAN COMBOLOJOS
-            <span class="text-green-400">
-              starts here.
+            Book better
+
+            <span class="mt-2 block font-black text-lime-400">
+              sports venues
+            </span>
+
+            <span class="mt-1 block">
+              across Ethiopia.
             </span>
           </h1>
 
+          <!-- Accent -->
+          <div class="mt-7 flex items-center justify-center gap-3">
+
+            <div class="h-1 w-16 rounded-full bg-lime-400"></div>
+
+            <div class="h-1 w-6 rounded-full bg-white/40"></div>
+
+          </div>
+
+          <!-- Description -->
           <p
-            class="mt-4 max-w-2xl text-base leading-7 text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)] sm:text-lg"
+            class="mx-auto mt-6 max-w-2xl text-base leading-7 text-white/75 sm:text-lg"
           >
-            Discover sports venues, book your favorite field,
-            join events and enjoy the game with
-            <strong>CombolojoSPORT.</strong>
+            Discover premium sports venues, join community events, and book your
+            next match with ease through the
+            <span class="font-bold text-white">
+              CombolojoSPORT
+            </span>
+            experience.
           </p>
 
-          <div
-            class="mt-6 rounded-2xl bg-white p-3 shadow-2xl lg:p-4"
-          >
+          <!-- Search -->
+          <div class="mx-auto mt-9 max-w-4xl text-left">
+
+            <div
+              class="mb-3 flex items-center justify-center gap-2"
+            >
+              <span class="text-lg">🔎</span>
+
+              <p
+                class="text-xs font-black uppercase tracking-wider text-white"
+              >
+                Find your sports venue
+              </p>
+            </div>
+
             <div class="grid gap-3 md:grid-cols-3">
-              <div class="rounded-xl bg-gray-100 px-4 py-2">
+
+              <!-- Sport -->
+              <div
+                class="rounded-xl border border-white/20 bg-white/95 px-4 py-3 transition focus-within:border-lime-500 focus-within:bg-white"
+              >
+
                 <label
-                  class="mb-1 block text-xs font-bold uppercase tracking-wide text-gray-500"
+                  class="mb-1 block text-[10px] font-black uppercase tracking-wider text-slate-400"
                 >
                   Sport
                 </label>
+
                 <select
                   v-model="searchSport"
-                  class="w-full border-none bg-transparent font-semibold text-gray-900 outline-none"
+                  class="w-full border-none bg-transparent text-sm font-bold text-slate-900 outline-none"
                 >
                   <option>All Sports</option>
                   <option>Football</option>
@@ -341,638 +501,1384 @@ function clearSearch() {
                   <option>Volleyball</option>
                   <option>Tennis</option>
                 </select>
+
               </div>
 
-              <div class="rounded-xl bg-gray-100 px-4 py-2">
+              <!-- Location -->
+              <div
+                class="rounded-xl border border-white/20 bg-white/95 px-4 py-3 transition focus-within:border-lime-500 focus-within:bg-white"
+              >
+
                 <label
-                  class="mb-1 block text-xs font-bold uppercase tracking-wide text-gray-500"
+                  class="mb-1 block text-[10px] font-black uppercase tracking-wider text-slate-400"
                 >
                   Location
                 </label>
+
                 <input
                   v-model="searchLocation"
                   type="text"
                   placeholder="Search venue or location"
-                  class="w-full bg-transparent font-semibold text-gray-900 outline-none placeholder:text-gray-400"
+                  class="w-full bg-transparent text-sm font-bold text-slate-900 outline-none placeholder:text-slate-400"
                   @keyup.enter="searchVenues"
                 />
+
               </div>
 
+              <!-- Search -->
               <button
                 type="button"
                 @click="searchVenues"
-                class="flex items-center justify-center gap-2 rounded-xl bg-green-600 px-6 py-3 font-bold text-white transition hover:bg-green-700"
+                class="flex items-center justify-center gap-3 rounded-xl bg-[#064e3b] px-6 py-3 text-sm font-black text-white transition hover:bg-[#022c22]"
               >
-                <span>Search Venues</span>
-                <span class="text-lg">→</span>
+                Search Venues
+
+                <span class="text-lg text-lime-400">
+                  →
+                </span>
               </button>
+
             </div>
+
           </div>
 
+          <!-- Trust -->
           <div
-            class="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-xs font-semibold text-white drop-shadow-md"
+            class="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs font-bold text-white/70"
           >
             <span>✓ Verified venues</span>
             <span>✓ Easy booking</span>
-            <span>✓ Secure payment</span>
+            <span>✓ Mobile app</span>
             <span>✓ Sports events</span>
           </div>
+
         </div>
+
       </div>
+
+      <!-- Bottom label -->
+      <div
+        class="absolute bottom-0 left-0 right-0 z-10 border-t border-white/10 bg-black/20 backdrop-blur-sm"
+      >
+
+        <div
+          class="mx-auto flex max-w-7xl items-center justify-between px-6 py-3 text-[10px] font-bold uppercase tracking-wider text-white/50 lg:px-8"
+        >
+          <span>
+            Addis Ababa • Ethiopia
+          </span>
+
+          <span>
+            Play • Book • Connect
+          </span>
+        </div>
+
+      </div>
+
     </section>
 
-    <!-- SPORTS CATEGORIES -->
-    <section class="bg-white py-10">
+
+    <!-- =====================================================
+         SPORTS
+    ====================================================== -->
+
+    <section class="bg-white py-14">
+
       <div class="mx-auto max-w-7xl px-6 lg:px-8">
-        <div class="text-center">
-          <p class="font-bold uppercase tracking-widest text-green-600 text-xs">
-            Choose your sport
-          </p>
-          <h2 class="mt-2 text-2xl font-black sm:text-3xl">
-            What do you want to play?
-          </h2>
-          <p class="mx-auto mt-2 max-w-2xl text-sm text-gray-600">
-            Choose your favorite sport and discover available venues.
-          </p>
+
+        <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+
+          <div>
+
+            <p
+              class="text-[11px] font-black uppercase tracking-[0.2em] text-emerald-700"
+            >
+              Sports categories
+            </p>
+
+            <h2
+              class="mt-2 text-3xl font-black tracking-tight text-slate-900"
+            >
+              Choose your game.
+            </h2>
+
+            <p
+              class="mt-2 max-w-xl text-sm leading-6 text-slate-500"
+            >
+              Explore the sport that matches your energy and find the perfect
+              venue for your next session.
+            </p>
+
+          </div>
+
+          <div class="hidden h-px flex-1 bg-slate-200 sm:ml-10 sm:block"></div>
+
         </div>
 
         <div class="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
+
           <button
-            v-for="sport in [
-              { name: 'Football', icon: '⚽' },
-              { name: 'Basketball', icon: '🏀' },
-              { name: 'Volleyball', icon: '🏐' },
-              { name: 'Tennis', icon: '🎾' }
-            ]"
+            v-for="sport in sports"
             :key="sport.name"
             type="button"
             @click="selectSport(sport.name)"
-            class="group rounded-2xl border border-gray-200 bg-gray-50 p-5 text-center transition duration-300 hover:-translate-y-1 hover:border-green-500 hover:bg-green-50 hover:shadow-lg"
+            class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 text-left transition hover:-translate-y-1 hover:border-emerald-200 hover:bg-emerald-50/30"
           >
+
             <div
-              class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-white text-3xl shadow-sm transition group-hover:scale-110"
-            >
-              {{ sport.icon }}
+              class="absolute right-0 top-0 h-20 w-20 rounded-bl-full bg-emerald-50 transition group-hover:bg-lime-100"
+            ></div>
+
+            <div class="relative">
+
+              <div
+                class="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-50 text-3xl"
+              >
+                {{ sport.icon }}
+              </div>
+
+              <h3
+                class="mt-5 text-base font-black text-slate-900"
+              >
+                {{ sport.name }}
+              </h3>
+
+              <p
+                class="mt-1 text-xs font-bold text-slate-400 transition group-hover:text-emerald-700"
+              >
+                Find venues →
+              </p>
+
             </div>
-            <h3 class="mt-3 font-bold text-sm">
-              {{ sport.name }}
-            </h3>
-            <p class="mt-1 text-xs text-gray-500">
-              Find venues →
-            </p>
+
           </button>
+
         </div>
+
       </div>
+
     </section>
 
-    <!-- HOW IT WORKS -->
-    <section class="bg-gray-50 py-10">
+
+    <!-- =====================================================
+         HOW IT WORKS
+    ====================================================== -->
+
+    <section class="bg-[#f0f5f2] py-14">
+
       <div class="mx-auto max-w-7xl px-6 lg:px-8">
+
         <div class="text-center">
-          <p class="font-bold uppercase tracking-widest text-green-600 text-xs">
+
+          <p
+            class="text-[11px] font-black uppercase tracking-[0.2em] text-emerald-700"
+          >
             Simple process
           </p>
-          <h2 class="mt-2 text-2xl font-black sm:text-3xl">
+
+          <h2
+            class="mt-2 text-3xl font-black tracking-tight text-slate-900"
+          >
             How CombolojoSPORT works
           </h2>
-          <p class="mx-auto mt-2 max-w-2xl text-sm text-gray-600">
-            Booking your sports venue is simple.
+
+          <p
+            class="mx-auto mt-3 max-w-2xl text-sm leading-6 text-slate-500"
+          >
+            Find your venue on the website and complete the booking from the
+            mobile application.
           </p>
+
         </div>
 
-        <div class="mt-8 grid gap-6 md:grid-cols-4">
+        <div class="mt-10 grid gap-5 md:grid-cols-4">
+
           <div
             v-for="step in [
               {
                 number: '01',
-                icon: '👤',
-                title: 'Register',
-                text: 'Create your CombolojoSPORT account.'
+                icon: '🔎',
+                title: 'Find',
+                text: 'Search for your preferred sports venue.'
               },
               {
                 number: '02',
-                icon: '🔎',
-                title: 'Find',
-                text: 'Search for your preferred venue.'
+                icon: '👁️',
+                title: 'View Details',
+                text: 'Check the venue information, facilities and price.'
               },
               {
                 number: '03',
-                icon: '📅',
-                title: 'Book',
-                text: 'Select your date and available time.'
+                icon: '📱',
+                title: 'Get App',
+                text: 'Download the CombolojoSPORT mobile application.'
               },
               {
                 number: '04',
-                icon: '💳',
-                title: 'Pay',
-                text: 'Confirm your booking securely.'
+                icon: '📅',
+                title: 'Book',
+                text: 'Choose your date and available time slot in the app.'
               }
             ]"
             :key="step.number"
-            class="relative rounded-2xl bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+            class="group relative rounded-2xl border border-slate-200 bg-white p-6 transition hover:-translate-y-1 hover:border-emerald-200"
           >
-            <span class="absolute right-4 top-4 text-xs font-black text-green-600">
+
+            <span
+              class="absolute right-5 top-5 text-[10px] font-black text-emerald-300"
+            >
               {{ step.number }}
             </span>
+
             <div
-              class="flex h-10 w-10 items-center justify-center rounded-xl bg-green-50 text-xl"
+              class="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100 text-xl transition group-hover:bg-emerald-50"
             >
               {{ step.icon }}
             </div>
-            <h3 class="mt-4 text-lg font-black">
+
+            <h3
+              class="mt-5 text-base font-black text-slate-900"
+            >
               {{ step.title }}
             </h3>
-            <p class="mt-2 text-sm leading-6 text-gray-600">
+
+            <p
+              class="mt-2 text-sm leading-6 text-slate-500"
+            >
               {{ step.text }}
             </p>
+
           </div>
+
         </div>
+
       </div>
+
     </section>
 
-    <!-- FEATURED VENUES -->
+
+    <!-- =====================================================
+         VENUES
+    ====================================================== -->
+
     <section
       ref="venueSection"
-      class="scroll-mt-16 bg-white py-10"
+      class="scroll-mt-16 bg-[#f8faf9] py-14"
     >
+
       <div class="mx-auto max-w-7xl px-6 lg:px-8">
-        <div class="flex flex-col justify-between gap-3 md:flex-row md:items-end">
-          <div>
-            <p class="font-bold uppercase tracking-widest text-green-600 text-xs">
-              Featured venues
-            </p>
-            <h2 class="mt-1 text-2xl font-black sm:text-3xl">
-              Find your perfect field
-            </h2>
-            <p class="mt-1 text-sm text-gray-600">
-              Explore sports venues and book your game.
-            </p>
-          </div>
-          <NuxtLink
-            to="/venues"
-            class="text-sm font-bold text-green-600 hover:text-green-700"
-          >
-            View all venues →
-          </NuxtLink>
-        </div>
 
         <div
-          v-if="filteredVenues.length"
-          class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4"
+          class="flex flex-col justify-between gap-4 md:flex-row md:items-end"
         >
+
+          <div>
+
+            <p
+              class="text-[11px] font-black uppercase tracking-[0.2em] text-emerald-700"
+            >
+              Featured venues
+            </p>
+
+            <h2
+              class="mt-2 text-3xl font-black tracking-tight text-slate-900"
+            >
+              Find your perfect field
+            </h2>
+
+            <p class="mt-2 text-sm text-slate-500">
+              Explore sports venues and check their complete information.
+            </p>
+
+          </div>
+
+          <NuxtLink
+            to="/venues"
+            class="inline-flex items-center gap-2 text-sm font-black text-emerald-700 hover:text-lime-600"
+          >
+            View all venues
+            <span>→</span>
+          </NuxtLink>
+
+        </div>
+
+        <!-- Venue cards -->
+        <div
+          v-if="filteredVenues.length"
+          class="mt-9 grid gap-6 sm:grid-cols-2 lg:grid-cols-4"
+        >
+
           <article
             v-for="venue in filteredVenues.slice(0, 4)"
             :key="venue.id"
-            class="group overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+            class="group overflow-hidden rounded-2xl border border-slate-200 bg-white transition hover:-translate-y-1 hover:border-emerald-200"
           >
-            <div class="relative h-44 overflow-hidden">
+
+            <div class="relative h-48 overflow-hidden">
+
               <img
                 :src="venue.image"
                 :alt="venue.name"
                 class="h-full w-full object-cover transition duration-500 group-hover:scale-110"
               />
+
+              <div
+                class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"
+              ></div>
+
               <span
-                class="absolute left-3 top-3 rounded-full bg-white px-2.5 py-0.5 text-xs font-bold text-gray-900 shadow"
+                class="absolute left-3 top-3 rounded-lg bg-white/95 px-2.5 py-1 text-[10px] font-black text-slate-900"
               >
                 {{ venue.sport }}
               </span>
+
               <span
-                class="absolute right-3 top-3 rounded-full bg-green-600 px-2.5 py-0.5 text-xs font-bold text-white shadow"
+                class="absolute right-3 top-3 rounded-lg bg-[#064e3b] px-2.5 py-1 text-[10px] font-black text-white"
               >
                 ★ {{ venue.rating }}
               </span>
+
             </div>
 
-            <div class="p-4">
-              <h3 class="truncate text-base font-black">
+            <div class="p-5">
+
+              <h3
+                class="truncate text-base font-black text-slate-900"
+              >
                 {{ venue.name }}
               </h3>
-              <p class="mt-1 text-xs text-gray-500">
+
+              <p class="mt-2 text-xs text-slate-500">
                 📍 {{ venue.location }}
               </p>
-              <div class="mt-1 text-xs text-gray-400">
-                {{ venue.reviews }} reviews
-              </div>
 
-              <div class="mt-4 flex items-end justify-between gap-2">
+              <p class="mt-1 text-[11px] text-slate-400">
+                {{ venue.reviews }} reviews
+              </p>
+
+              <div class="my-4 h-px bg-slate-100"></div>
+
+              <div class="flex items-end justify-between gap-2">
+
                 <div>
-                  <p class="text-[10px] text-gray-500">Starting from</p>
-                  <p class="text-base font-black text-green-600">
-                    ETB {{ venue.price }}
-                    <span class="text-[10px] font-normal text-gray-500">/ hour</span>
+
+                  <p
+                    class="text-[10px] font-bold uppercase text-slate-400"
+                  >
+                    Starting from
                   </p>
+
+                  <p
+                    class="mt-1 text-base font-black text-emerald-700"
+                  >
+                    ETB {{ venue.price }}
+
+                    <span
+                      class="text-[10px] font-normal text-slate-400"
+                    >
+                      / hour
+                    </span>
+                  </p>
+
                 </div>
+
                 <button
                   type="button"
                   @click="openVenue(venue)"
-                  class="rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-green-600"
+                  class="rounded-lg bg-slate-900 px-3 py-2 text-xs font-black text-white transition hover:bg-emerald-700"
                 >
-                  View
+                  View Details
                 </button>
+
               </div>
+
             </div>
+
           </article>
+
         </div>
 
+        <!-- Empty -->
         <div
           v-else
-          class="mt-8 rounded-2xl border border-dashed border-gray-300 p-8 text-center"
+          class="mt-8 rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center"
         >
-          <div class="text-3xl">🔎</div>
-          <h3 class="mt-2 text-lg font-black">No venues found</h3>
-          <p class="mt-1 text-sm text-gray-500">Try another sport or location.</p>
+
+          <div class="text-3xl">
+            🔎
+          </div>
+
+          <h3 class="mt-3 text-lg font-black">
+            No venues found
+          </h3>
+
+          <p class="mt-1 text-sm text-slate-500">
+            Try another sport or location.
+          </p>
+
           <button
             type="button"
             @click="clearSearch"
-            class="mt-4 rounded-lg bg-green-600 px-4 py-2 text-sm font-bold text-white hover:bg-green-700"
+            class="mt-4 rounded-lg bg-emerald-700 px-4 py-2 text-sm font-black text-white hover:bg-emerald-800"
           >
             Clear Search
           </button>
+
         </div>
+
       </div>
+
     </section>
 
-    <!-- EVENTS -->
-    <section class="bg-slate-950 py-10 text-white">
-      <div class="mx-auto max-w-7xl px-6 lg:px-8">
-        <div class="flex flex-col justify-between gap-3 md:flex-row md:items-end">
+
+    <!-- =====================================================
+         EVENTS
+    ====================================================== -->
+
+    <section
+      class="relative overflow-hidden bg-[#07150f] py-14 text-white"
+    >
+
+      <div
+        class="pointer-events-none absolute right-[-200px] top-1/2 h-[600px] w-[600px] -translate-y-1/2 rounded-full border border-white/5"
+      ></div>
+
+      <div class="relative mx-auto max-w-7xl px-6 lg:px-8">
+
+        <div
+          class="flex flex-col justify-between gap-4 md:flex-row md:items-end"
+        >
+
           <div>
-            <p class="font-bold uppercase tracking-widest text-green-400 text-xs">
+
+            <p
+              class="text-[11px] font-black uppercase tracking-[0.2em] text-lime-400"
+            >
               Upcoming events
             </p>
-            <h2 class="mt-1 text-2xl font-black sm:text-3xl">
+
+            <h2 class="mt-2 text-3xl font-black tracking-tight">
               Play together. Compete together.
             </h2>
-            <p class="mt-1 text-sm text-gray-400">
+
+            <p class="mt-2 text-sm text-white/50">
               Discover tournaments, games and community events.
             </p>
+
           </div>
+
           <NuxtLink
             to="/events"
-            class="text-sm font-bold text-green-400 hover:text-green-300"
+            class="text-sm font-black text-lime-400 hover:text-lime-300"
           >
             View all events →
           </NuxtLink>
+
         </div>
 
-        <div class="mt-8 grid gap-6 md:grid-cols-3">
+        <div class="mt-9 grid gap-6 md:grid-cols-3">
+
           <article
             v-for="event in events"
             :key="event.id"
-            class="overflow-hidden rounded-2xl border border-white/10 bg-white/5"
+            class="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.05] transition hover:border-lime-400/30 hover:bg-white/[0.07]"
           >
-            <div class="h-40 overflow-hidden">
+
+            <div class="relative h-44 overflow-hidden">
+
               <img
                 :src="event.image"
                 :alt="event.title"
                 class="h-full w-full object-cover transition duration-500 hover:scale-105"
               />
+
+              <div
+                class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"
+              ></div>
+
+              <span
+                class="absolute bottom-3 left-3 rounded-lg bg-lime-400 px-2.5 py-1 text-[10px] font-black text-[#07150f]"
+              >
+                {{ event.sport }}
+              </span>
+
             </div>
+
             <div class="p-5">
-              <p class="text-xs font-bold text-green-400">
+
+              <p class="text-xs font-bold text-lime-400">
                 {{ event.date }}
               </p>
-              <h3 class="mt-1 text-lg font-black">
+
+              <h3 class="mt-2 text-lg font-black">
                 {{ event.title }}
               </h3>
-              <p class="mt-2 text-xs text-gray-400">📍 {{ event.location }}</p>
-              <p class="mt-1 text-xs text-gray-400">🕐 {{ event.time }}</p>
+
+              <p class="mt-2 text-xs text-white/50">
+                📍 {{ event.location }}
+              </p>
+
+              <p class="mt-1 text-xs text-white/50">
+                🕐 {{ event.time }}
+              </p>
+
               <button
                 type="button"
-                @click="goToEvents"
-                class="mt-4 rounded-lg bg-green-600 px-4 py-2 text-xs font-bold transition hover:bg-green-700"
+                @click="openEvent(event)"
+                class="mt-5 rounded-lg bg-white px-4 py-2 text-xs font-black text-slate-900 transition hover:bg-lime-400"
               >
-                View Event
+                View Details
               </button>
+
             </div>
+
           </article>
+
         </div>
+
       </div>
+
     </section>
 
-    <!-- WHY CHOOSE US -->
-    <section class="bg-white py-10">
+
+    <!-- =====================================================
+         WHY CHOOSE US
+    ====================================================== -->
+
+    <section class="bg-[#f0f5f2] py-14">
+
       <div class="mx-auto max-w-7xl px-6 lg:px-8">
-        <div class="grid items-center gap-8 lg:grid-cols-2">
+
+        <div class="grid items-center gap-10 lg:grid-cols-2">
+
           <div>
-            <p class="font-bold uppercase tracking-widest text-green-600 text-xs">
+
+            <p
+              class="text-[11px] font-black uppercase tracking-[0.2em] text-emerald-700"
+            >
               Why CombolojoSPORT?
             </p>
-            <h2 class="mt-2 text-2xl font-black leading-tight sm:text-4xl">
+
+            <h2
+              class="mt-2 text-3xl font-black leading-tight text-slate-900 sm:text-4xl"
+            >
               Everything you need
-              <span class="text-green-600">to enjoy sports.</span>
+
+              <span class="text-emerald-700">
+                to enjoy sports.
+              </span>
             </h2>
-            <p class="mt-4 text-sm leading-7 text-gray-600">
-              We connect players, teams, sports communities and
-              venue partners through one simple platform.
+
+            <p
+              class="mt-4 max-w-xl text-sm leading-7 text-slate-500"
+            >
+              We connect players, teams, sports communities and venue partners
+              through one simple platform.
             </p>
+
             <NuxtLink
               to="/about"
-              class="mt-6 inline-flex rounded-xl bg-green-600 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-green-700"
+              class="mt-6 inline-flex rounded-xl bg-[#064e3b] px-5 py-3 text-sm font-black text-white transition hover:bg-[#022c22]"
             >
-              Learn More
+              Learn More →
             </NuxtLink>
+
           </div>
 
           <div class="grid gap-4 sm:grid-cols-2">
+
             <div
               v-for="feature in [
-                { icon: '✓', title: 'Verified Venues', text: 'Discover trusted sports venues.' },
-                { icon: '⚡', title: 'Fast Booking', text: 'Find and reserve your field quickly.' },
-                { icon: '🔒', title: 'Secure Payment', text: 'Book with secure payment options.' },
-                { icon: '🏆', title: 'Community Events', text: 'Join tournaments and sports events.' }
+                {
+                  icon: '✓',
+                  title: 'Verified Venues',
+                  text: 'Discover trusted sports venues.'
+                },
+                {
+                  icon: '⚡',
+                  title: 'Fast Booking',
+                  text: 'Find your venue quickly and book through the mobile app.'
+                },
+                {
+                  icon: '🔒',
+                  title: 'Secure Payment',
+                  text: 'Complete booking payments through supported mobile options.'
+                },
+                {
+                  icon: '🏆',
+                  title: 'Community Events',
+                  text: 'Join tournaments and sports events.'
+                }
               ]"
               :key="feature.title"
-              class="rounded-2xl border border-gray-200 p-5 transition hover:border-green-400 hover:shadow-lg"
+              class="rounded-2xl border border-slate-200 bg-white p-5 transition hover:-translate-y-1 hover:border-emerald-200"
             >
-              <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-green-100 text-lg font-black text-green-700">
+
+              <div
+                class="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-50 text-lg font-black text-emerald-700"
+              >
                 {{ feature.icon }}
               </div>
-              <h3 class="mt-3 font-black text-sm">{{ feature.title }}</h3>
-              <p class="mt-1 text-xs leading-5 text-gray-600">{{ feature.text }}</p>
+
+              <h3
+                class="mt-4 text-sm font-black text-slate-900"
+              >
+                {{ feature.title }}
+              </h3>
+
+              <p
+                class="mt-1 text-xs leading-5 text-slate-500"
+              >
+                {{ feature.text }}
+              </p>
+
             </div>
+
           </div>
+
         </div>
+
       </div>
+
     </section>
 
-    <!-- JUST PLAY -->
-    <section class="overflow-hidden bg-green-600 py-10">
+
+    <!-- =====================================================
+         JUST PLAY
+    ====================================================== -->
+
+    <section class="bg-[#f0fdf4] py-14">
+
       <div class="mx-auto max-w-7xl px-6 lg:px-8">
-        <div class="grid items-center gap-8 lg:grid-cols-2">
-          <div class="text-white">
-            <p class="font-bold uppercase tracking-widest text-green-100 text-xs">
-              Just Play
-            </p>
-            <h2 class="mt-2 text-3xl font-black sm:text-4xl">
-              Don't have a team?<br />Just play.
-            </h2>
-            <p class="mt-4 max-w-xl text-sm leading-6 text-green-50">
-              Connect with other players, discover games and join sports communities around you.
-            </p>
-            <NuxtLink
-              to="/just-play"
-              class="mt-6 inline-flex rounded-xl bg-white px-6 py-3 text-sm font-black text-green-700 shadow-lg transition hover:bg-gray-100"
-            >
-              Explore Just Play →
-            </NuxtLink>
+
+        <div
+          class="overflow-hidden rounded-3xl border border-emerald-100 bg-white"
+        >
+
+          <div class="grid items-center lg:grid-cols-2">
+
+            <div class="p-8 sm:p-10 lg:p-14">
+
+              <p
+                class="text-[11px] font-black uppercase tracking-[0.2em] text-emerald-700"
+              >
+                Just Play
+              </p>
+
+              <h2
+                class="mt-3 text-3xl font-black leading-tight text-slate-900 sm:text-4xl"
+              >
+                Don't have a team?
+
+                <br />
+
+                <span class="text-emerald-700">
+                  Just play.
+                </span>
+              </h2>
+
+              <p
+                class="mt-4 max-w-xl text-sm leading-7 text-slate-500"
+              >
+                Connect with other players, discover games and join sports
+                communities around you.
+              </p>
+
+              <NuxtLink
+                to="/justplay"
+                class="mt-7 inline-flex rounded-xl bg-[#064e3b] px-6 py-3 text-sm font-black text-white transition hover:bg-[#022c22]"
+              >
+                Explore Just Play →
+              </NuxtLink>
+
+            </div>
+
+            <div class="relative h-[340px] overflow-hidden lg:h-full">
+
+              <img
+                :src="img1"
+                alt="Football field"
+                class="h-full w-full scale-105 object-cover"
+              />
+
+              <div
+                class="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent"
+              ></div>
+
+              <div
+                class="absolute bottom-5 left-5 rounded-xl bg-black/60 px-4 py-2 backdrop-blur-md"
+              >
+                <p class="text-xs font-black text-white">
+                  FIND YOUR GAME
+                </p>
+              </div>
+
+            </div>
+
           </div>
 
-          <div class="relative h-[260px] overflow-hidden rounded-3xl">
-            <img :src="img1" alt="Football field" class="h-full w-full object-cover" />
-          </div>
         </div>
+
       </div>
+
     </section>
 
-    <!-- STATS -->
-    <section class="bg-white py-10">
-      <div class="mx-auto grid max-w-7xl grid-cols-2 gap-6 px-6 md:grid-cols-4 lg:px-8">
+
+    <!-- =====================================================
+         STATS
+    ====================================================== -->
+
+    <section class="bg-[#07150f] py-14 text-white">
+
+      <div
+        class="mx-auto grid max-w-7xl grid-cols-2 gap-8 px-6 md:grid-cols-4 lg:px-8"
+      >
+
         <div class="text-center">
-          <p class="text-3xl font-black text-green-600">50+</p>
-          <p class="mt-1 text-xs font-semibold text-gray-500">Sports Venues</p>
+
+          <p class="text-4xl font-black text-lime-400">
+            50+
+          </p>
+
+          <p
+            class="mt-2 text-xs font-bold uppercase tracking-wider text-white/50"
+          >
+            Sports Venues
+          </p>
+
         </div>
+
         <div class="text-center">
-          <p class="text-3xl font-black text-green-600">10K+</p>
-          <p class="mt-1 text-xs font-semibold text-gray-500">Active Players</p>
+
+          <p class="text-4xl font-black text-lime-400">
+            10K+
+          </p>
+
+          <p
+            class="mt-2 text-xs font-bold uppercase tracking-wider text-white/50"
+          >
+            Active Players
+          </p>
+
         </div>
+
         <div class="text-center">
-          <p class="text-3xl font-black text-green-600">500+</p>
-          <p class="mt-1 text-xs font-semibold text-gray-500">Events</p>
+
+          <p class="text-4xl font-black text-lime-400">
+            500+
+          </p>
+
+          <p
+            class="mt-2 text-xs font-bold uppercase tracking-wider text-white/50"
+          >
+            Events
+          </p>
+
         </div>
+
         <div class="text-center">
-          <p class="text-3xl font-black text-green-600">24/7</p>
-          <p class="mt-1 text-xs font-semibold text-gray-500">Support</p>
+
+          <p class="text-4xl font-black text-lime-400">
+            24/7
+          </p>
+
+          <p
+            class="mt-2 text-xs font-bold uppercase tracking-wider text-white/50"
+          >
+            Support
+          </p>
+
         </div>
+
       </div>
+
     </section>
 
-    <!-- TESTIMONIALS -->
-    <section class="bg-gray-50 py-10">
+
+    <!-- =====================================================
+         TESTIMONIALS
+    ====================================================== -->
+
+    <section class="bg-white py-14">
+
       <div class="mx-auto max-w-7xl px-6 lg:px-8">
+
         <div class="text-center">
-          <p class="font-bold uppercase tracking-widest text-green-600 text-xs">
+
+          <p
+            class="text-[11px] font-black uppercase tracking-[0.2em] text-emerald-700"
+          >
             Community
           </p>
-          <h2 class="mt-2 text-2xl font-black sm:text-3xl">What players say</h2>
+
+          <h2 class="mt-2 text-3xl font-black text-slate-900">
+            What players say
+          </h2>
+
         </div>
 
-        <div class="mt-8 grid gap-6 md:grid-cols-3">
+        <div class="mt-9 grid gap-6 md:grid-cols-3">
+
           <article
             v-for="review in testimonials"
             :key="review.name"
-            class="rounded-2xl bg-white p-5 shadow-sm"
+            class="rounded-2xl border border-slate-200 bg-[#f8faf9] p-6 transition hover:-translate-y-1 hover:bg-white"
           >
-            <div class="text-base text-yellow-500">★★★★★</div>
-            <p class="mt-3 text-sm leading-6 text-gray-600">“{{ review.text }}”</p>
-            <div class="mt-4 flex items-center gap-3">
-              <div class="flex h-9 w-9 items-center justify-center rounded-full bg-green-100 text-sm font-black text-green-700">
+
+            <div class="text-sm tracking-widest text-amber-500">
+              ★★★★★
+            </div>
+
+            <p
+              class="mt-4 text-sm leading-7 text-slate-600"
+            >
+              “{{ review.text }}”
+            </p>
+
+            <div class="mt-5 flex items-center gap-3">
+
+              <div
+                class="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100 text-sm font-black text-emerald-700"
+              >
                 {{ review.name.charAt(0) }}
               </div>
+
               <div>
-                <p class="text-sm font-black">{{ review.name }}</p>
-                <p class="text-xs text-gray-500">{{ review.role }}</p>
+
+                <p class="text-sm font-black text-slate-900">
+                  {{ review.name }}
+                </p>
+
+                <p class="text-xs text-slate-400">
+                  {{ review.role }}
+                </p>
+
               </div>
+
             </div>
+
           </article>
+
         </div>
+
       </div>
+
     </section>
 
-    <!-- FAQ -->
-    <section class="bg-white py-10">
+
+    <!-- =====================================================
+         FAQ
+    ====================================================== -->
+
+    <section class="bg-[#f0f5f2] py-14">
+
       <div class="mx-auto max-w-4xl px-6 lg:px-8">
+
         <div class="text-center">
-          <p class="font-bold uppercase tracking-widest text-green-600 text-xs">
+
+          <p
+            class="text-[11px] font-black uppercase tracking-[0.2em] text-emerald-700"
+          >
             FAQ
           </p>
-          <h2 class="mt-2 text-2xl font-black sm:text-3xl">Frequently asked questions</h2>
+
+          <h2 class="mt-2 text-3xl font-black text-slate-900">
+            Frequently asked questions
+          </h2>
+
         </div>
 
-        <div class="mt-8 space-y-3">
+        <div class="mt-9 space-y-3">
+
           <div
             v-for="(faq, index) in faqs"
             :key="faq.question"
-            class="overflow-hidden rounded-2xl border border-gray-200"
+            class="overflow-hidden rounded-2xl border border-slate-200 bg-white transition hover:border-emerald-200"
           >
+
             <button
               type="button"
               @click="toggleFaq(index)"
-              class="flex w-full items-center justify-between gap-4 p-4 text-left text-sm font-bold"
+              class="flex w-full items-center justify-between gap-4 p-5 text-left text-sm font-black text-slate-900"
             >
-              <span>{{ faq.question }}</span>
-              <span class="text-xl text-green-600">{{ openFaq === index ? '−' : '+' }}</span>
+
+              <span>
+                {{ faq.question }}
+              </span>
+
+              <span class="text-xl text-emerald-700">
+                {{ openFaq === index ? '−' : '+' }}
+              </span>
+
             </button>
+
             <div
               v-if="openFaq === index"
-              class="border-t border-gray-100 px-4 pb-4 pt-3 text-xs leading-6 text-gray-600"
+              class="border-t border-slate-100 px-5 pb-5 pt-4 text-xs leading-6 text-slate-500"
             >
               {{ faq.answer }}
             </div>
+
           </div>
+
         </div>
+
       </div>
+
     </section>
 
-    <!-- FINAL CTA -->
-    <section class="bg-slate-950 py-10 text-white">
-      <div class="mx-auto max-w-5xl px-6 text-center lg:px-8">
-        <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-green-600 text-2xl">
+
+    <!-- =====================================================
+         CTA
+    ====================================================== -->
+
+    <section
+      class="relative overflow-hidden bg-[#022c22] py-16 text-white"
+    >
+
+      <div
+        class="pointer-events-none absolute right-[-100px] top-1/2 h-96 w-96 -translate-y-1/2 rounded-full border border-lime-400/10"
+      ></div>
+
+      <div
+        class="relative mx-auto max-w-5xl px-6 text-center lg:px-8"
+      >
+
+        <div
+          class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-lime-400 text-2xl"
+        >
           ⚽
         </div>
-        <h2 class="mt-4 text-3xl font-black sm:text-4xl">Your game is waiting.</h2>
-        <p class="mx-auto mt-3 max-w-2xl text-sm leading-6 text-gray-400">
-          Find a venue, book your time and get ready to play.
+
+        <p
+          class="mt-6 text-[11px] font-black uppercase tracking-[0.25em] text-lime-400"
+        >
+          Your next game starts here
         </p>
 
-        <div class="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
+        <h2 class="mt-3 text-3xl font-black sm:text-5xl">
+          Your game is waiting.
+        </h2>
+
+        <p
+          class="mx-auto mt-4 max-w-2xl text-sm leading-7 text-white/55"
+        >
+          Find a venue, download the app and book your time.
+        </p>
+
+        <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+
           <NuxtLink
             to="/venues"
-            class="rounded-xl bg-green-600 px-6 py-3 text-sm font-black transition hover:bg-green-700"
+            class="rounded-xl bg-lime-400 px-7 py-3 text-sm font-black text-[#022c22] transition hover:bg-lime-300"
           >
             Find a Venue
           </NuxtLink>
-          <button
-            type="button"
-            @click="openAppModal"
-            class="rounded-xl border border-white/20 bg-white/5 px-6 py-3 text-sm font-black transition hover:bg-white/10"
+
+          <NuxtLink
+            to="/download-app"
+            class="rounded-xl border border-white/20 bg-white/5 px-7 py-3 text-sm font-black text-white transition hover:bg-white/10"
           >
-            Get Mobile App
-          </button>
+            Download Mobile App
+          </NuxtLink>
+
         </div>
+
       </div>
+
     </section>
 
-    <!-- MODALS -->
+
+    <!-- =====================================================
+         MODALS
+    ====================================================== -->
+
     <Teleport to="body">
+
       <!-- VENUE MODAL -->
       <div
         v-if="showVenueModal && selectedVenue"
         class="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
         @click.self="closeVenue"
       >
-        <div class="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-3xl bg-white shadow-2xl">
-          <div class="relative h-52">
+
+        <div
+          class="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-3xl bg-white"
+        >
+
+          <!-- Image -->
+          <div class="relative h-64">
+
             <img
               :src="selectedVenue.image"
               :alt="selectedVenue.name"
               class="h-full w-full object-cover"
             />
+
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"
+            ></div>
+
             <button
               type="button"
               @click="closeVenue"
-              class="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-black/60 text-sm font-bold text-white transition hover:bg-black"
+              class="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white transition hover:bg-black"
             >
               ✕
             </button>
+
+            <div
+              class="absolute bottom-5 left-5 right-5 text-white"
+            >
+
+              <span
+                class="inline-block rounded-full bg-emerald-600 px-3 py-1 text-xs font-bold"
+              >
+                {{ selectedVenue.sport }}
+              </span>
+
+              <h3 class="mt-2 text-2xl font-black">
+                {{ selectedVenue.name }}
+              </h3>
+
+              <p class="mt-1 text-sm text-white/80">
+                📍 {{ selectedVenue.location }}
+              </p>
+
+            </div>
+
           </div>
 
           <div class="p-6">
-            <div class="flex items-start justify-between gap-4">
-              <div>
-                <span class="inline-block rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-800">
-                  {{ selectedVenue.sport }}
-                </span>
-                <h3 class="mt-2 text-xl font-black text-gray-900">
-                  {{ selectedVenue.name }}
-                </h3>
-                <p class="mt-1 text-xs text-gray-500">
-                  📍 {{ selectedVenue.location }}
+
+            <!-- Stats -->
+            <div class="grid gap-4 sm:grid-cols-3">
+
+              <div class="rounded-2xl bg-slate-50 p-4">
+
+                <p class="text-xs text-slate-500">
+                  Rating
                 </p>
+
+                <p
+                  class="mt-1 text-xl font-black text-amber-500"
+                >
+                  ★ {{ selectedVenue.rating }}
+                </p>
+
+                <p class="text-xs text-slate-500">
+                  {{ selectedVenue.reviews }} reviews
+                </p>
+
               </div>
 
-              <div class="text-right">
-                <div class="text-lg font-black text-green-600">
+              <div class="rounded-2xl bg-slate-50 p-4">
+
+                <p class="text-xs text-slate-500">
+                  Price
+                </p>
+
+                <p
+                  class="mt-1 text-xl font-black text-emerald-700"
+                >
                   ETB {{ selectedVenue.price }}
-                </div>
-                <div class="text-[10px] text-gray-500">per hour</div>
+                </p>
+
+                <p class="text-xs text-slate-500">
+                  per hour
+                </p>
+
               </div>
+
+              <div class="rounded-2xl bg-slate-50 p-4">
+
+                <p class="text-xs text-slate-500">
+                  Sport
+                </p>
+
+                <p
+                  class="mt-1 text-xl font-black text-slate-900"
+                >
+                  {{ selectedVenue.sport }}
+                </p>
+
+              </div>
+
             </div>
 
-            <p class="mt-4 text-sm leading-6 text-gray-600">
-              {{ selectedVenue.description }}
-            </p>
+            <!-- About -->
+            <div class="mt-6">
 
-            <div class="mt-5">
-              <h4 class="text-xs font-bold uppercase tracking-wider text-gray-500">
-                Features & Amenities
+              <h4 class="text-sm font-black text-slate-900">
+                About this venue
               </h4>
-              <div class="mt-2 flex flex-wrap gap-2">
+
+              <p
+                class="mt-2 text-sm leading-7 text-slate-600"
+              >
+                {{ selectedVenue.description }}
+              </p>
+
+            </div>
+
+            <!-- Facilities -->
+            <div class="mt-6">
+
+              <h4 class="text-sm font-black text-slate-900">
+                Facilities & Amenities
+              </h4>
+
+              <div class="mt-3 flex flex-wrap gap-2">
+
                 <span
                   v-for="feature in selectedVenue.features"
                   :key="feature"
-                  class="rounded-lg bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-700"
+                  class="rounded-xl bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700"
                 >
                   ✓ {{ feature }}
                 </span>
+
               </div>
+
             </div>
 
+            <!-- Mobile App -->
+            <div class="mt-7 rounded-2xl bg-emerald-50 p-4">
+
+              <div class="flex gap-3">
+
+                <div
+                  class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-700 text-xl text-white"
+                >
+                  📱
+                </div>
+
+                <div>
+
+                  <h4
+                    class="text-sm font-black text-emerald-950"
+                  >
+                    Booking is available in the mobile app
+                  </h4>
+
+                  <p
+                    class="mt-1 text-xs leading-5 text-emerald-800"
+                  >
+                    Download CombolojoSPORT and choose your date and available
+                    time slot from the mobile application.
+                  </p>
+
+                </div>
+
+              </div>
+
+            </div>
+
+            <!-- Buttons -->
             <div class="mt-6 flex gap-3">
+
               <button
                 type="button"
                 @click="closeVenue"
-                class="w-1/2 rounded-xl border border-gray-300 py-2.5 text-sm font-bold text-gray-700 transition hover:bg-gray-50"
+                class="w-1/2 rounded-xl border border-slate-300 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
               >
                 Close
               </button>
+
               <button
                 type="button"
-                @click="bookVenue(selectedVenue)"
-                class="w-1/2 rounded-xl bg-green-600 py-2.5 text-sm font-bold text-white shadow-md transition hover:bg-green-700"
+                @click="bookVenue"
+                class="w-1/2 rounded-xl bg-[#064e3b] py-3 text-sm font-bold text-white transition hover:bg-[#022c22]"
               >
-                Book Now
+                Book Now →
               </button>
+
             </div>
+
           </div>
+
         </div>
+
       </div>
 
-      <!-- APP MODAL -->
+
+      <!-- EVENT MODAL -->
       <div
-        v-if="showAppModal"
+        v-if="showEventModal && selectedEvent"
         class="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
-        @click.self="closeAppModal"
+        @click.self="closeEvent"
       >
-        <div class="w-full max-w-sm rounded-3xl bg-white p-6 text-center shadow-2xl">
-          <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-green-100 text-2xl text-green-600">
-            📱
-          </div>
-          <h3 class="mt-3 text-xl font-black text-gray-900">Get CombolojoSPORT App</h3>
-          <p class="mt-1 text-xs text-gray-600">
-            Download our mobile app for faster bookings and instant notifications!
-          </p>
-          <div class="mt-5 flex flex-col gap-2">
+
+        <div
+          class="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-3xl bg-white"
+        >
+
+          <!-- Image -->
+          <div class="relative h-64">
+
+            <img
+              :src="selectedEvent.image"
+              :alt="selectedEvent.title"
+              class="h-full w-full object-cover"
+            />
+
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"
+            ></div>
+
             <button
               type="button"
-              @click="closeAppModal"
-              class="w-full rounded-xl bg-gray-900 py-2.5 text-sm font-bold text-white hover:bg-gray-800"
+              @click="closeEvent"
+              class="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white transition hover:bg-black"
             >
-              Google Play Store
+              ✕
             </button>
-            <button
-              type="button"
-              @click="closeAppModal"
-              class="w-full rounded-xl border border-gray-300 py-2.5 text-sm font-bold text-gray-800 hover:bg-gray-50"
+
+            <div
+              class="absolute bottom-5 left-5 right-5"
             >
-              Apple App Store
-            </button>
+
+              <span
+                class="rounded-full bg-emerald-600 px-3 py-1 text-xs font-bold text-white"
+              >
+                {{ selectedEvent.sport }}
+              </span>
+
+              <h3
+                class="mt-2 text-2xl font-black text-white"
+              >
+                {{ selectedEvent.title }}
+              </h3>
+
+            </div>
+
           </div>
-          <button
-            type="button"
-            @click="closeAppModal"
-            class="mt-4 text-xs font-bold text-gray-400 hover:text-gray-600"
-          >
-            Cancel
-          </button>
+
+          <div class="p-6">
+
+            <!-- Event info -->
+            <div class="grid gap-3 sm:grid-cols-2">
+
+              <div class="rounded-2xl bg-slate-50 p-4">
+
+                <p class="text-xs text-slate-500">
+                  Date
+                </p>
+
+                <p class="mt-1 text-sm font-black">
+                  📅 {{ selectedEvent.date }}
+                </p>
+
+              </div>
+
+              <div class="rounded-2xl bg-slate-50 p-4">
+
+                <p class="text-xs text-slate-500">
+                  Time
+                </p>
+
+                <p class="mt-1 text-sm font-black">
+                  🕐 {{ selectedEvent.time }}
+                </p>
+
+              </div>
+
+              <div class="rounded-2xl bg-slate-50 p-4">
+
+                <p class="text-xs text-slate-500">
+                  Location
+                </p>
+
+                <p class="mt-1 text-sm font-black">
+                  📍 {{ selectedEvent.location }}
+                </p>
+
+              </div>
+
+              <div class="rounded-2xl bg-slate-50 p-4">
+
+                <p class="text-xs text-slate-500">
+                  Organizer
+                </p>
+
+                <p class="mt-1 text-sm font-black">
+                  {{ selectedEvent.organizer }}
+                </p>
+
+              </div>
+
+            </div>
+
+            <!-- About -->
+            <div class="mt-6">
+
+              <h4 class="text-sm font-black">
+                About this event
+              </h4>
+
+              <p
+                class="mt-2 text-sm leading-7 text-slate-600"
+              >
+                {{ selectedEvent.description }}
+              </p>
+
+            </div>
+
+            <!-- Participants -->
+            <div class="mt-5 rounded-2xl bg-emerald-50 p-4">
+
+              <p
+                class="text-xs font-bold uppercase tracking-wide text-emerald-700"
+              >
+                Participants
+              </p>
+
+              <p
+                class="mt-1 text-sm font-semibold text-emerald-950"
+              >
+                {{ selectedEvent.participants }}
+              </p>
+
+            </div>
+
+            <!-- Buttons -->
+            <div class="mt-6 flex gap-3">
+
+              <button
+                type="button"
+                @click="closeEvent"
+                class="w-1/2 rounded-xl border border-slate-300 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50"
+              >
+                Close
+              </button>
+
+              <button
+                type="button"
+                @click="joinEvent"
+                class="w-1/2 rounded-xl bg-[#064e3b] py-3 text-sm font-bold text-white hover:bg-[#022c22]"
+              >
+                Join / Get App →
+              </button>
+
+            </div>
+
+          </div>
+
         </div>
+
       </div>
+
     </Teleport>
 
   </div>
 </template>
 
+
 <style scoped>
+/* =========================================================
+   HERO IMAGE SLIDESHOW
+========================================================= */
+
 .hero-image {
   position: absolute;
   inset: 0;
@@ -983,15 +1889,55 @@ function clearSearch() {
   animation: imageFade 12s infinite ease-in-out;
 }
 
-.hero-image-1 { animation-delay: 0s; }
-.hero-image-2 { animation-delay: 4s; }
-.hero-image-3 { animation-delay: 8s; }
+.hero-image-1 {
+  animation-delay: 0s;
+}
+
+.hero-image-2 {
+  animation-delay: 4s;
+}
+
+.hero-image-3 {
+  animation-delay: 8s;
+}
 
 @keyframes imageFade {
-  0% { opacity: 0; transform: scale(1); }
-  4% { opacity: 1; }
-  29% { opacity: 1; }
-  33% { opacity: 0; transform: scale(1.08); }
-  100% { opacity: 0; }
+  0% {
+    opacity: 0;
+    transform: scale(1);
+  }
+
+  4% {
+    opacity: 1;
+  }
+
+  29% {
+    opacity: 1;
+  }
+
+  33% {
+    opacity: 0;
+    transform: scale(1.08);
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+/* =========================================================
+   ACCESSIBILITY
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-image {
+    animation: none;
+    opacity: 0;
+  }
+
+  .hero-image-1 {
+    opacity: 1;
+  }
 }
 </style>
+```

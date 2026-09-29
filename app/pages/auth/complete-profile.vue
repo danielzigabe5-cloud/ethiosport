@@ -64,7 +64,7 @@
         <button 
           :disabled="loading || !isFormValid" 
           type="submit"
-          class="w-full bg-lime-400 text-black py-4 rounded-xl font-black text-sm uppercase tracking-wider mt-6 transition hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
+          class="w-full bg-lime-400 text-black py-4 rounded-xl font-black text-sm uppercase tracking-wider mt-6 transition hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {{ loading ? 'PROCESSING...' : 'FINISH & START EXPLORING' }}
         </button>
