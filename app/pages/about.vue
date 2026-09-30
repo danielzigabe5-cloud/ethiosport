@@ -160,16 +160,23 @@ const subCities = [
   'Bahir Dar',
 ]
 
+/*
+|--------------------------------------------------------------------------
+| Navigation
+|--------------------------------------------------------------------------
+| All booking/download actions now go to the mobile app download page.
+*/
+
 function exploreVenues() {
   navigateTo('/venues')
 }
 
 function findGames() {
-  navigateTo('/just-play')
+  navigateTo('/download-app')
 }
 
 function registerVenue() {
-  navigateTo('/business/register')
+  navigateTo('/download-app')
 }
 </script>
 
@@ -180,17 +187,29 @@ function registerVenue() {
     <!-- 1. HERO SECTION -->
     <!-- ===================================================== -->
 
-    <section class="relative min-h-[500px] overflow-hidden flex items-center">
+    <section class="relative flex min-h-[500px] items-center overflow-hidden">
 
       <!-- Background image -->
       <img
         :src="venueImg"
-        alt="CombolojoS venue"
+        alt="Combolojo sports venue"
         class="absolute inset-0 h-full w-full object-cover object-center"
       />
 
-      <!-- Overlay for text readability -->
-      <div class="absolute inset-0 bg-black/40"></div>
+      <!-- Main overlay -->
+      <div
+        class="absolute inset-0 bg-gradient-to-r from-slate-950/80 via-slate-950/55 to-slate-950/30"
+      ></div>
+
+      <!-- Bottom overlay -->
+      <div
+        class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-slate-950/50 to-transparent"
+      ></div>
+
+      <!-- Green glow -->
+      <div
+        class="absolute -left-24 top-20 h-64 w-64 rounded-full bg-emerald-500/10 blur-3xl"
+      ></div>
 
       <div
         class="relative z-10 mx-auto w-full max-w-7xl px-5 py-16 sm:px-8 lg:px-10"
@@ -199,7 +218,7 @@ function registerVenue() {
 
           <!-- Badge -->
           <div
-            class="inline-flex items-center gap-3 rounded-full border border-emerald-400/40 bg-black/50 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.18em] text-emerald-300 shadow-lg backdrop-blur-md"
+            class="inline-flex items-center gap-3 rounded-full border border-emerald-400/40 bg-slate-950/60 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.18em] text-emerald-300 shadow-lg shadow-black/20 backdrop-blur-md"
           >
             <span class="relative flex h-2.5 w-2.5">
               <span
@@ -216,7 +235,7 @@ function registerVenue() {
 
           <!-- Title -->
           <h1
-            class="mt-5 text-4xl font-black leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-6xl"
+            class="mt-5 text-4xl font-black leading-tight tracking-tight text-white drop-shadow-2xl sm:text-5xl lg:text-6xl"
           >
             Connecting
             <span class="text-emerald-400">Players</span>,
@@ -228,7 +247,7 @@ function registerVenue() {
 
           <!-- Description -->
           <p
-            class="mt-5 max-w-2xl text-base leading-7 text-slate-200 sm:text-lg"
+            class="mt-5 max-w-2xl text-base leading-7 text-slate-200 drop-shadow-lg sm:text-lg"
           >
             Combolojo is a digital sports platform designed to make
             finding, booking and enjoying sports venues easier for players,
@@ -237,24 +256,28 @@ function registerVenue() {
 
           <!-- Buttons -->
           <div class="mt-7 flex flex-wrap gap-4">
+
+            <!-- Explore Venues -->
             <button
               type="button"
-              class="rounded-xl bg-emerald-600 px-6 py-3 font-bold text-white shadow-xl shadow-black/40 transition duration-300 hover:-translate-y-1 hover:bg-emerald-500"
+              class="rounded-xl bg-emerald-600 px-6 py-3 font-bold text-white shadow-xl shadow-emerald-950/40 transition duration-300 hover:-translate-y-1 hover:bg-emerald-500 hover:shadow-emerald-900/50"
               @click="exploreVenues"
             >
               ⚽ Explore Venues
             </button>
 
+            <!-- Download App -->
             <button
               type="button"
-              class="rounded-xl border border-white/30 bg-white/10 px-6 py-3 font-bold text-white shadow-xl backdrop-blur-md transition duration-300 hover:-translate-y-1 hover:bg-white/20"
+              class="rounded-xl border border-white/30 bg-white/10 px-6 py-3 font-bold text-white shadow-xl shadow-black/30 backdrop-blur-md transition duration-300 hover:-translate-y-1 hover:bg-white/20"
               @click="findGames"
             >
-              🎮 Find Games
+              📱 Download App
             </button>
+
           </div>
 
-          <!-- Small trust information -->
+          <!-- Trust information -->
           <div
             class="mt-7 flex flex-wrap items-center gap-6 text-sm text-slate-300"
           >
@@ -279,10 +302,12 @@ function registerVenue() {
     </section>
 
     <!-- ===================================================== -->
-    <!-- 2. STATS (FIXED OVERLAP & PADDING) -->
+    <!-- 2. STATS -->
     <!-- ===================================================== -->
 
-    <section class="relative z-20 py-10 px-4 sm:px-6 lg:px-8 bg-slate-100/60 border-b border-slate-200">
+    <section
+      class="relative z-20 border-b border-slate-200 bg-slate-100/80 px-4 py-10 sm:px-6 lg:px-8"
+    >
       <div class="mx-auto max-w-7xl">
 
         <div class="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
@@ -293,9 +318,9 @@ function registerVenue() {
             class="group rounded-2xl border border-slate-200 bg-white p-5 text-center shadow-md transition duration-300 hover:-translate-y-1 hover:border-emerald-300 hover:shadow-xl"
           >
 
-            <!-- MODERN ICON -->
+            <!-- Modern Icon -->
             <div
-              class="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 transition duration-300 group-hover:scale-110 group-hover:bg-emerald-100"
+              class="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 shadow-sm transition duration-300 group-hover:scale-110 group-hover:bg-emerald-100"
             >
 
               <!-- Users -->
@@ -391,6 +416,7 @@ function registerVenue() {
             <div class="mt-0.5 text-xs text-slate-500">
               {{ stat.description }}
             </div>
+
           </div>
 
         </div>
@@ -408,6 +434,7 @@ function registerVenue() {
 
         <!-- Text -->
         <div>
+
           <p
             class="text-xs font-bold uppercase tracking-[0.18em] text-emerald-600"
           >
@@ -437,19 +464,19 @@ function registerVenue() {
           <div class="mt-6 flex flex-wrap gap-3">
 
             <div
-              class="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-300"
+              class="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-md"
             >
               ⚽ Players
             </div>
 
             <div
-              class="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-300"
+              class="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-md"
             >
               🏟️ Venues
             </div>
 
             <div
-              class="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-300"
+              class="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-md"
             >
               🤝 Communities
             </div>
@@ -507,6 +534,7 @@ function registerVenue() {
       <div class="mx-auto max-w-6xl">
 
         <div class="mx-auto max-w-2xl text-center">
+
           <p
             class="text-xs font-bold uppercase tracking-[0.18em] text-emerald-600"
           >
@@ -519,10 +547,11 @@ function registerVenue() {
             Our Mission & Vision
           </h2>
 
-          <p class="mt-2 leading-6 text-slate-500 text-sm">
+          <p class="mt-2 text-sm leading-6 text-slate-500">
             We are building a connected digital sports ecosystem for players,
             venues and communities.
           </p>
+
         </div>
 
         <div class="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -531,8 +560,9 @@ function registerVenue() {
           <div
             class="group rounded-2xl border border-slate-200 bg-slate-50 p-6 transition duration-300 hover:-translate-y-1 hover:border-emerald-300 hover:shadow-lg"
           >
+
             <div
-              class="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-2xl"
+              class="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-2xl shadow-sm"
             >
               🎯
             </div>
@@ -541,19 +571,21 @@ function registerVenue() {
               Our Mission
             </h3>
 
-            <p class="mt-3 leading-7 text-sm text-slate-600">
+            <p class="mt-3 text-sm leading-7 text-slate-600">
               To make sports venue discovery and booking easier while
               connecting players, teams, venue partners and communities
               through one accessible digital platform.
             </p>
+
           </div>
 
           <!-- Vision -->
           <div
             class="group rounded-2xl border border-slate-200 bg-slate-50 p-6 transition duration-300 hover:-translate-y-1 hover:border-amber-300 hover:shadow-lg"
           >
+
             <div
-              class="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100 text-2xl"
+              class="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100 text-2xl shadow-sm"
             >
               🚀
             </div>
@@ -562,11 +594,12 @@ function registerVenue() {
               Our Vision
             </h3>
 
-            <p class="mt-3 leading-7 text-sm text-slate-600">
+            <p class="mt-3 text-sm leading-7 text-slate-600">
               To build a connected sports ecosystem where people can easily
               discover places to play, organize games and grow active sports
               communities across Ethiopia.
             </p>
+
           </div>
 
         </div>
@@ -581,6 +614,7 @@ function registerVenue() {
       <div class="mx-auto max-w-7xl">
 
         <div class="mx-auto max-w-2xl text-center">
+
           <p
             class="text-xs font-bold uppercase tracking-[0.18em] text-emerald-600"
           >
@@ -593,10 +627,11 @@ function registerVenue() {
             Everything starts with a game.
           </h2>
 
-          <p class="mt-2 leading-6 text-slate-500 text-sm">
+          <p class="mt-2 text-sm leading-6 text-slate-500">
             Simple digital tools designed to make sports venue discovery,
             booking and community activities easier.
           </p>
+
         </div>
 
         <div
@@ -608,8 +643,9 @@ function registerVenue() {
             :key="index"
             class="group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-emerald-300 hover:shadow-lg"
           >
+
             <div
-              class="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-2xl transition duration-300 group-hover:scale-110 group-hover:bg-emerald-100"
+              class="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-2xl shadow-sm transition duration-300 group-hover:scale-110 group-hover:bg-emerald-100"
             >
               {{ feature.icon }}
             </div>
@@ -625,6 +661,7 @@ function registerVenue() {
             <div
               class="mt-4 h-1 w-8 rounded-full bg-emerald-500 transition-all duration-300 group-hover:w-16"
             ></div>
+
           </div>
 
         </div>
@@ -641,6 +678,7 @@ function registerVenue() {
       <div class="mx-auto max-w-6xl">
 
         <div class="mx-auto max-w-2xl text-center">
+
           <p
             class="text-xs font-bold uppercase tracking-[0.18em] text-emerald-600"
           >
@@ -657,6 +695,7 @@ function registerVenue() {
             Players, venue owners and sports communities all have a place
             on CombolojoSPORT.
           </p>
+
         </div>
 
         <!-- Tabs -->
@@ -709,6 +748,7 @@ function registerVenue() {
         >
 
           <div>
+
             <div
               class="inline-flex rounded-lg bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700"
             >
@@ -732,6 +772,7 @@ function registerVenue() {
                 :key="index"
                 class="flex items-center gap-3"
               >
+
                 <span
                   class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-xs font-black text-emerald-700"
                 >
@@ -741,6 +782,7 @@ function registerVenue() {
                 <span class="text-xs font-semibold text-slate-700">
                   {{ point }}
                 </span>
+
               </li>
 
             </ul>
@@ -770,17 +812,19 @@ function registerVenue() {
                 ></div>
 
                 <div
-                  class="absolute bottom-4 left-4 right-4 rounded-xl border border-white/20 bg-slate-950/70 p-4 text-white backdrop-blur-md"
+                  class="absolute bottom-4 left-4 right-4 rounded-xl border border-white/20 bg-slate-950/70 p-4 text-white shadow-xl backdrop-blur-md"
                 >
+
                   <div class="flex items-center gap-3">
 
                     <div
-                      class="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-600 text-lg"
+                      class="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-600 text-lg shadow-lg shadow-emerald-950/30"
                     >
                       ⚡
                     </div>
 
                     <div>
+
                       <div class="text-sm font-bold">
                         Fast & Simple
                       </div>
@@ -788,9 +832,11 @@ function registerVenue() {
                       <div class="text-[11px] text-slate-300">
                         Designed for an easy sports experience.
                       </div>
+
                     </div>
 
                   </div>
+
                 </div>
 
               </div>
@@ -809,6 +855,7 @@ function registerVenue() {
       <div class="mx-auto max-w-6xl">
 
         <div class="text-center">
+
           <p
             class="text-xs font-bold uppercase tracking-[0.18em] text-emerald-600"
           >
@@ -824,6 +871,7 @@ function registerVenue() {
           <p class="mt-2 text-xs text-slate-500">
             Explore sports opportunities in different locations.
           </p>
+
         </div>
 
         <div
@@ -836,6 +884,7 @@ function registerVenue() {
             to="/venues"
             class="group rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-emerald-400 hover:shadow-md"
           >
+
             <div
               class="mx-auto flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-50 text-lg transition group-hover:bg-emerald-100"
             >
@@ -847,6 +896,7 @@ function registerVenue() {
             >
               {{ city }}
             </div>
+
           </NuxtLink>
 
         </div>
@@ -861,6 +911,7 @@ function registerVenue() {
       <div class="mx-auto max-w-6xl">
 
         <div class="mx-auto max-w-2xl text-center">
+
           <p
             class="text-xs font-bold uppercase tracking-[0.18em] text-emerald-600"
           >
@@ -876,6 +927,7 @@ function registerVenue() {
           <p class="mt-2 text-xs text-slate-500">
             See how CombolojoS can make sports activities easier.
           </p>
+
         </div>
 
         <div class="mt-10 grid grid-cols-1 gap-5 md:grid-cols-3">
@@ -885,7 +937,8 @@ function registerVenue() {
             :key="index"
             class="rounded-2xl border border-slate-200 bg-slate-50 p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg"
           >
-            <div class="text-emerald-600 text-3xl">
+
+            <div class="text-3xl text-emerald-600">
               “
             </div>
 
@@ -896,6 +949,7 @@ function registerVenue() {
             <div
               class="mt-5 flex items-center gap-3 border-t border-slate-200 pt-4"
             >
+
               <div
                 class="flex h-10 w-10 items-center justify-center rounded-full bg-white text-xl shadow-sm"
               >
@@ -903,6 +957,7 @@ function registerVenue() {
               </div>
 
               <div>
+
                 <div class="text-xs font-bold text-slate-900">
                   {{ review.name }}
                 </div>
@@ -912,7 +967,9 @@ function registerVenue() {
                 >
                   {{ review.role }}
                 </div>
+
               </div>
+
             </div>
           </div>
 
@@ -969,6 +1026,7 @@ function registerVenue() {
 
             <div class="mt-7 flex flex-wrap justify-center gap-4">
 
+              <!-- Explore Venues -->
               <button
                 type="button"
                 class="rounded-xl bg-emerald-600 px-6 py-3 text-xs font-bold text-white shadow-xl shadow-emerald-950/40 transition duration-300 hover:-translate-y-0.5 hover:bg-emerald-500"
@@ -977,12 +1035,13 @@ function registerVenue() {
                 ⚽ Explore Venues
               </button>
 
+              <!-- Book Now -> Download App -->
               <button
                 type="button"
-                class="rounded-xl border border-white/20 bg-white/10 px-6 py-3 text-xs font-bold text-white backdrop-blur-sm transition duration-300 hover:-translate-y-0.5 hover:bg-white/20"
+                class="rounded-xl border border-white/20 bg-white/10 px-6 py-3 text-xs font-bold text-white shadow-lg shadow-black/20 backdrop-blur-sm transition duration-300 hover:-translate-y-0.5 hover:bg-white/20"
                 @click="registerVenue"
               >
-                🏟️ Become a Partner
+                📱 Book Now
               </button>
 
             </div>

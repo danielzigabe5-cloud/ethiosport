@@ -193,7 +193,7 @@ const openGames = ref([
 
           <!-- Heading -->
           <h1
-            class="mt-6 text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tight text-white leading-[0.95]"
+            class="mt-6 text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tight text-white leading-tight"
           >
             Find Players.
             <span class="block text-[#a8ff3e]">

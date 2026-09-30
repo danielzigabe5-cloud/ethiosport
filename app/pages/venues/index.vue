@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-slate-50 text-slate-800">
 
     <!-- ═══════════════════════════════════════════════════
-         HERO — SIDE IMAGES + GLASS MORPHISM
+         HERO — CLEAN SEARCH CARD (NO SIDE IMAGES)
     ═══════════════════════════════════════════════════ -->
     <section class="relative overflow-hidden bg-gradient-to-br from-emerald-900 via-green-800 to-teal-950">
 
@@ -24,7 +24,7 @@
         <div class="absolute -bottom-40 -left-40 h-96 w-96 rounded-full bg-teal-500/20 blur-3xl"></div>
       </div>
 
-      <div class="relative mx-auto max-w-7xl px-5 pb-24 pt-32 sm:px-8 lg:px-10">
+      <div class="relative mx-auto max-w-7xl px-5 pb-20 pt-28 sm:px-8 lg:px-10">
         <div class="grid items-center gap-12 lg:grid-cols-2">
 
           <!-- LEFT — TEXT -->
@@ -75,38 +75,8 @@
             </div>
           </div>
 
-          <!-- RIGHT — SIDE IMAGES + SEARCH CARD -->
+          <!-- RIGHT — CLEAN SEARCH CARD (NO SIDE IMAGES) -->
           <div class="relative">
-
-            <!-- ✅ Side Image 1 — top right -->
-            <div class="absolute -top-10 -right-6 z-20 hidden lg:block">
-              <div class="relative">
-                <div class="absolute -inset-2 rounded-[2rem] bg-gradient-to-br from-emerald-400/40 to-teal-500/30 blur-xl"></div>
-                <img
-                  :src="sideImage1"
-                  alt="Football action"
-                  loading="lazy"
-                  class="relative h-44 w-44 rotate-6 transform rounded-3xl object-cover shadow-2xl shadow-emerald-900/60 ring-4 ring-white/40 transition-all duration-500 hover:rotate-3 hover:scale-105"
-                  @error="onSideImageError"
-                />
-              </div>
-            </div>
-
-            <!-- ✅ Side Image 2 — bottom left -->
-            <div class="absolute -bottom-10 -left-6 z-20 hidden lg:block">
-              <div class="relative">
-                <div class="absolute -inset-2 rounded-[2rem] bg-gradient-to-br from-teal-400/40 to-emerald-500/30 blur-xl"></div>
-                <img
-                  :src="sideImage2"
-                  alt="Basketball court"
-                  loading="lazy"
-                  class="relative h-36 w-36 -rotate-6 transform rounded-3xl object-cover shadow-2xl shadow-emerald-900/60 ring-4 ring-white/40 transition-all duration-500 hover:-rotate-3 hover:scale-105"
-                  @error="onSideImageError"
-                />
-              </div>
-            </div>
-
-            <!-- Search Card -->
             <div class="relative z-10 rounded-[2rem] border border-white/25 bg-white/15 p-2 shadow-2xl shadow-emerald-950/50 backdrop-blur-xl">
               <div class="rounded-[1.5rem] bg-white p-6 shadow-inner sm:p-7">
 
@@ -396,11 +366,13 @@
                   <span class="transition-transform group-hover/btn:translate-x-1">→</span>
                 </NuxtLink>
 
+                <!-- 🎯 Book button now goes to /download-app -->
                 <NuxtLink
-                  :to="`/venues/${venue.id}`"
-                  class="flex items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs font-black text-emerald-700 transition hover:bg-emerald-600 hover:text-white"
+                  to="/download-app"
+                  class="flex items-center justify-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs font-black text-emerald-700 transition hover:bg-emerald-600 hover:text-white"
+                  title="Download app to book"
                 >
-                  Book
+                  📱 Book
                 </NuxtLink>
               </div>
             </div>
@@ -463,8 +435,6 @@ import { ref, computed } from 'vue'
 
 /* IMAGES */
 import heroBg from '~/assets/images/images.jpg'
-import sideImage1 from '~/assets/images/venue.jpg'
-import sideImage2 from '~/assets/images/images.jpg'
 
 useHead({
   title: 'Venues - CombolojoSPORT',
@@ -486,32 +456,26 @@ const selectedSubCity = ref('')
 const selectedSport = ref('')
 const activeSport = ref('')
 
-const placeholderSvg = 'data:image/svg+xml;charset=UTF-8,%3Csvg...'
+const placeholderSvg = 'data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 300%22%3E%3Crect fill=%22%23e2e8f0%22 width=%22400%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2224%22 fill=%22%2394a3b8%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22%3EVenue%3C/text%3E%3C/svg%3E'
 
 /* ═══════════════════════════════════════════
-   ✅ FIXED: Fast loading with cache
+   Fast loading with cache
    ═══════════════════════════════════════════ */
-const { 
-  data: rawResponse, 
-  pending, 
-  error, 
-  refresh 
+const {
+  data: rawResponse,
+  pending,
+  error,
+  refresh
 } = await useAsyncData(
-  'combolojo-venues',  // ✅ unique key
+  'combolojo-venues',
   () => $fetch(`${API_BASE}/venues`),
   {
-    // ✅ ወዲያውኑ ይመልሳል
     lazy: true,
-    
-    // ✅ Cache ተጠቀም — ዳግም ጉብኝት ፈጣን ይሆናል
     getCachedData: (key) => {
       const cached = useNuxtData(key).data.value
-      // Cache ካለ እሱን ተጠቀም — refetch አታድርግ
       if (cached) return cached
       return undefined
     },
-    
-    // ✅ 5 ደቂቃ በኋላ አድስ (background ላይ)
     default: () => null,
   }
 )
@@ -526,11 +490,6 @@ const venuesList = computed(() => {
 /* Image error handlers */
 function onHeroError(e: Event) {
   (e.target as HTMLImageElement).style.opacity = '0'
-}
-
-function onSideImageError(e: Event) {
-  const img = e.target as HTMLImageElement
-  if (img.parentElement) img.parentElement.style.display = 'none'
 }
 
 /* Helpers */
