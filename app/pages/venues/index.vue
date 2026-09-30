@@ -4,9 +4,9 @@
     <!-- ═══════════════════════════════════════════════════
          HERO — CLEAN SEARCH CARD (NO SIDE IMAGES)
     ═══════════════════════════════════════════════════ -->
-    <section class="relative overflow-hidden bg-gradient-to-br from-emerald-900 via-green-800 to-teal-950">
+    <section class="relative overflow-hidden bg-slate-900">
 
-      <!-- Background image -->
+      <!-- Background image - Clear visibility with crisp blend -->
       <img
         :src="heroBg"
         alt="Sports field"
@@ -15,13 +15,13 @@
         @error="onHeroError"
       />
 
-      <!-- Overlay gradient -->
-      <div class="absolute inset-0 bg-gradient-to-r from-emerald-950/90 via-emerald-900/75 to-teal-900/60"></div>
+      <!-- Soft Gradient Overlay (Lightened so image stays clear) -->
+      <div class="absolute inset-0 bg-gradient-to-r from-slate-950/70 via-slate-900/40 to-emerald-950/30"></div>
 
-      <!-- Decorative blobs -->
+      <!-- Subtle Ambient Glow -->
       <div class="pointer-events-none absolute inset-0 overflow-hidden">
-        <div class="absolute -top-40 -right-40 h-96 w-96 rounded-full bg-emerald-500/30 blur-3xl"></div>
-        <div class="absolute -bottom-40 -left-40 h-96 w-96 rounded-full bg-teal-500/20 blur-3xl"></div>
+        <div class="absolute -top-40 -right-40 h-96 w-96 rounded-full bg-emerald-500/10 blur-3xl"></div>
+        <div class="absolute -bottom-40 -left-40 h-96 w-96 rounded-full bg-teal-500/10 blur-3xl"></div>
       </div>
 
       <div class="relative mx-auto max-w-7xl px-5 pb-20 pt-28 sm:px-8 lg:px-10">
@@ -29,59 +29,59 @@
 
           <!-- LEFT — TEXT -->
           <div>
-            <div class="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-emerald-300 backdrop-blur">
+            <div class="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-950/40 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-emerald-300 backdrop-blur-md">
               <span class="h-2 w-2 animate-pulse rounded-full bg-emerald-400"></span>
               CombolojoSPORT Venues
             </div>
 
-            <h1 class="mt-6 text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl lg:text-6xl">
+            <h1 class="mt-6 text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl lg:text-6xl drop-shadow-md">
               Find the perfect
-              <span class="bg-gradient-to-r from-emerald-300 to-teal-400 bg-clip-text text-transparent">
+              <span class="bg-gradient-to-r from-emerald-300 to-teal-300 bg-clip-text text-transparent">
                 place to play.
               </span>
             </h1>
 
-            <p class="mt-6 max-w-xl text-base leading-8 text-emerald-100/90 sm:text-lg">
+            <p class="mt-6 max-w-xl text-base leading-8 text-emerald-100 sm:text-lg drop-shadow">
               Discover sports venues, compare locations and find the right place for your next game.
             </p>
 
             <!-- Trust badges -->
-            <div class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-emerald-200/95">
-              <span class="flex items-center gap-2">
-                <span class="text-emerald-400">✓</span> Verified venues
+            <div class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-emerald-100">
+              <span class="flex items-center gap-2 drop-shadow">
+                <span class="text-emerald-400 font-bold">✓</span> Verified venues
               </span>
-              <span class="flex items-center gap-2">
-                <span class="text-emerald-400">✓</span> Easy booking
+              <span class="flex items-center gap-2 drop-shadow">
+                <span class="text-emerald-400 font-bold">✓</span> Easy booking
               </span>
-              <span class="flex items-center gap-2">
-                <span class="text-emerald-400">✓</span> Secure payment
+              <span class="flex items-center gap-2 drop-shadow">
+                <span class="text-emerald-400 font-bold">✓</span> Secure payment
               </span>
             </div>
 
             <!-- Quick stats -->
             <div class="mt-8 grid max-w-md grid-cols-3 gap-3">
-              <div class="rounded-2xl border border-white/15 bg-white/10 px-4 py-3 shadow-lg backdrop-blur-md">
+              <div class="rounded-2xl border border-white/20 bg-slate-900/40 px-4 py-3 backdrop-blur-md">
                 <div class="text-2xl font-black text-white">{{ venuesList.length }}+</div>
-                <div class="text-xs text-emerald-200/80">Venues</div>
+                <div class="text-xs text-emerald-200">Venues</div>
               </div>
-              <div class="rounded-2xl border border-white/15 bg-white/10 px-4 py-3 shadow-lg backdrop-blur-md">
+              <div class="rounded-2xl border border-white/20 bg-slate-900/40 px-4 py-3 backdrop-blur-md">
                 <div class="text-2xl font-black text-white">{{ cities.length }}+</div>
-                <div class="text-xs text-emerald-200/80">Cities</div>
+                <div class="text-xs text-emerald-200">Cities</div>
               </div>
-              <div class="rounded-2xl border border-white/15 bg-white/10 px-4 py-3 shadow-lg backdrop-blur-md">
+              <div class="rounded-2xl border border-white/20 bg-slate-900/40 px-4 py-3 backdrop-blur-md">
                 <div class="text-2xl font-black text-white">{{ sports.length }}+</div>
-                <div class="text-xs text-emerald-200/80">Sports</div>
+                <div class="text-xs text-emerald-200">Sports</div>
               </div>
             </div>
           </div>
 
-          <!-- RIGHT — CLEAN SEARCH CARD (NO SIDE IMAGES) -->
+          <!-- RIGHT — CLEAN SEARCH CARD (NO HEAVY SHADOWS) -->
           <div class="relative">
-            <div class="relative z-10 rounded-[2rem] border border-white/25 bg-white/15 p-2 shadow-2xl shadow-emerald-950/50 backdrop-blur-xl">
-              <div class="rounded-[1.5rem] bg-white p-6 shadow-inner sm:p-7">
+            <div class="relative z-10 rounded-[2rem] border border-white/30 bg-white/20 p-2 backdrop-blur-md">
+              <div class="rounded-[1.5rem] bg-white p-6 sm:p-7">
 
                 <div class="flex items-center gap-3">
-                  <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/30">
+                  <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-6-6m2-5a7 7 0 1 1 14 0Z" />
                     </svg>
@@ -140,7 +140,7 @@
 
                 <button
                   type="button"
-                  class="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 px-5 py-4 text-sm font-black text-white shadow-lg shadow-emerald-600/40 transition hover:from-emerald-500 hover:to-teal-500 hover:shadow-emerald-500/50"
+                  class="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 px-5 py-4 text-sm font-black text-white transition hover:from-emerald-500 hover:to-teal-500"
                   @click="scrollToVenues"
                 >
                   <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -366,7 +366,7 @@
                   <span class="transition-transform group-hover/btn:translate-x-1">→</span>
                 </NuxtLink>
 
-                <!-- 🎯 Book button now goes to /download-app -->
+                <!-- Book button -->
                 <NuxtLink
                   to="/download-app"
                   class="flex items-center justify-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs font-black text-emerald-700 transition hover:bg-emerald-600 hover:text-white"
