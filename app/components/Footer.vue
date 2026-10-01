@@ -47,7 +47,7 @@
             class="max-w-sm text-sm leading-7 text-slate-400"
           >
             Book football fields, sports venues,
-            events and recreational facilities
+             and recreational facilities
             easily across Ethiopia.
           </p>
 
@@ -141,14 +141,7 @@
               </NuxtLink>
             </li>
 
-            <li>
-              <NuxtLink
-                to="/events"
-                class="footer-link"
-              >
-                Events
-              </NuxtLink>
-            </li>
+           
 
             <li>
               <NuxtLink
@@ -199,28 +192,6 @@
               </NuxtLink>
             </li>
 
-            <li>
-              <NuxtLink
-                to="/auth"
-                class="footer-link"
-              >
-                Sign In / Register
-              </NuxtLink>
-            </li>
-
-            <li>
-              <NuxtLink
-                to="/venues/create"
-                class="flex items-center gap-2 text-sm font-semibold text-[#FBBF24] transition-colors hover:text-[#FCD34D]"
-              >
-                <Icon
-                  name="lucide:plus-circle"
-                  class="h-4 w-4"
-                />
-
-                List Your Venue
-              </NuxtLink>
-            </li>
 
           </ul>
         </div>
@@ -237,7 +208,7 @@
             class="mb-4 text-sm leading-6 text-slate-400"
           >
             Get updates about new venues,
-            events and available booking slots.
+            and available booking slots.
           </p>
 
           <form

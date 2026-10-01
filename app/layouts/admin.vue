@@ -552,7 +552,7 @@
 
                 <div class="min-w-0">
                   <p class="text-[10px] font-black text-emerald-700 dark:text-emerald-400">
-                    Addis Ababa
+                    Ethiopia
                   </p>
 
                   <p class="mt-0.5 truncate text-[9px] font-semibold text-slate-500 dark:text-slate-400">

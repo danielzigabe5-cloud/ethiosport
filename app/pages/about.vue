@@ -3,16 +3,24 @@ import { ref } from 'vue'
 
 import venueImg from '~/assets/images/venuess12.png'
 
+/* =========================================================
+   PAGE SEO
+========================================================= */
+
 useHead({
-  title: 'About Us - Combolojo',
+  title: 'About Us - CombolojoSPORT',
   meta: [
     {
       name: 'description',
       content:
-        'Learn about Combolojo and how we connect sports players, venues and communities across Ethiopia.',
+        'Learn about CombolojoSPORT and how we connect sports players, venues and communities across Ethiopia.',
     },
   ],
 })
+
+/* =========================================================
+   STATS
+========================================================= */
 
 const stats = [
   {
@@ -45,13 +53,21 @@ const stats = [
   },
 ]
 
+/* =========================================================
+   ACTIVE TAB
+========================================================= */
+
 const activeTab = ref<'players' | 'venues' | 'community'>('players')
+
+/* =========================================================
+   ECOSYSTEM TAB CONTENT
+========================================================= */
 
 const tabContent = {
   players: {
     title: 'For Athletes & Players',
     desc:
-      'Find sports venues, discover games and connect with other players. Combolojo makes it easier to organize your next match.',
+      'Find sports venues, discover games and connect with other players. CombolojoSPORT makes it easier to organize your next match.',
     highlights: [
       'Easy venue discovery',
       'Find available sports facilities',
@@ -75,7 +91,7 @@ const tabContent = {
   community: {
     title: 'For Sports Communities',
     desc:
-      'Combolojo helps sports communities connect players, organize games and create more opportunities to play.',
+      'CombolojoSPORT helps sports communities connect players, organize games and create more opportunities to play.',
     highlights: [
       'Community sports events',
       'Tournament opportunities',
@@ -84,6 +100,10 @@ const tabContent = {
     ],
   },
 }
+
+/* =========================================================
+   FEATURES
+========================================================= */
 
 const features = [
   {
@@ -124,12 +144,16 @@ const features = [
   },
 ]
 
+/* =========================================================
+   REVIEWS
+========================================================= */
+
 const reviews = [
   {
     name: 'Abebe Tadesse',
     role: 'Football Player',
     comment:
-      'Finding a football field for our weekend game is much easier with Combolojo.',
+      'Finding a football field for our weekend game is much easier with CombolojoSPORT.',
     avatar: '👨',
   },
   {
@@ -148,6 +172,10 @@ const reviews = [
   },
 ]
 
+/* =========================================================
+   LOCATIONS
+========================================================= */
+
 const subCities = [
   'Bole',
   'Yeka',
@@ -160,18 +188,15 @@ const subCities = [
   'Bahir Dar',
 ]
 
-/*
-|--------------------------------------------------------------------------
-| Navigation
-|--------------------------------------------------------------------------
-| All booking/download actions now go to the mobile app download page.
-*/
+/* =========================================================
+   NAVIGATION
+========================================================= */
 
 function exploreVenues() {
   navigateTo('/venues')
 }
 
-function findGames() {
+function downloadApp() {
   navigateTo('/download-app')
 }
 
@@ -181,44 +206,40 @@ function registerVenue() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-slate-50 text-slate-800">
+  <div class="about-page min-h-screen bg-slate-50 text-slate-800">
 
-    <!-- ===================================================== -->
-    <!-- 1. HERO SECTION -->
-    <!-- ===================================================== -->
+    <!-- =====================================================
+         1. HERO SECTION
+         CLEAN IMAGE — NO COLORED SHADOW
+    ====================================================== -->
 
-    <section class="relative flex min-h-[500px] items-center overflow-hidden">
-
+    <section
+      class="about-hero relative flex min-h-[540px] items-center overflow-hidden"
+    >
       <!-- Background image -->
       <img
         :src="venueImg"
-        alt="Combolojo sports venue"
-        class="absolute inset-0 h-full w-full object-cover object-center"
+        alt="CombolojoSPORT sports venue"
+        class="hero-background absolute inset-0 h-full w-full object-cover object-center"
       />
 
-      <!-- Main overlay -->
-      <div
-        class="absolute inset-0 bg-gradient-to-r from-slate-950/80 via-slate-950/55 to-slate-950/30"
-      ></div>
+      <!--
+        CLEAN NEUTRAL OVERLAY
+        No green shadow
+        No emerald gradient
+        No colored glow
+      -->
+      <div class="hero-neutral-overlay absolute inset-0"></div>
 
-      <!-- Bottom overlay -->
+      <!-- Content -->
       <div
-        class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-slate-950/50 to-transparent"
-      ></div>
-
-      <!-- Green glow -->
-      <div
-        class="absolute -left-24 top-20 h-64 w-64 rounded-full bg-emerald-500/10 blur-3xl"
-      ></div>
-
-      <div
-        class="relative z-10 mx-auto w-full max-w-7xl px-5 py-16 sm:px-8 lg:px-10"
+        class="relative z-10 mx-auto w-full max-w-7xl px-5 py-20 sm:px-8 lg:px-10"
       >
         <div class="max-w-3xl">
 
           <!-- Badge -->
           <div
-            class="inline-flex items-center gap-3 rounded-full border border-emerald-400/40 bg-slate-950/60 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.18em] text-emerald-300 shadow-lg shadow-black/20 backdrop-blur-md"
+            class="about-badge inline-flex items-center gap-3 rounded-full border border-emerald-400/40 bg-slate-950/60 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-emerald-300 shadow-lg shadow-black/20 backdrop-blur-md"
           >
             <span class="relative flex h-2.5 w-2.5">
               <span
@@ -230,47 +251,47 @@ function registerVenue() {
               ></span>
             </span>
 
-            About CombolojoS
+            About CombolojoSPORT
           </div>
 
           <!-- Title -->
           <h1
-            class="mt-5 text-4xl font-black leading-tight tracking-tight text-white drop-shadow-2xl sm:text-5xl lg:text-6xl"
+            class="hero-title mt-6 text-4xl font-black leading-[1.05] tracking-tight text-white drop-shadow-2xl sm:text-5xl lg:text-7xl"
           >
             Connecting
             <span class="text-emerald-400">Players</span>,
             <br />
 
             Venues &
-            <span class="text-amber-300">Communities</span>
+            <span class="text-lime-300">Communities</span>
           </h1>
 
           <!-- Description -->
           <p
-            class="mt-5 max-w-2xl text-base leading-7 text-slate-200 drop-shadow-lg sm:text-lg"
+            class="mt-6 max-w-2xl text-base leading-7 text-slate-200 drop-shadow-lg sm:text-lg"
           >
-            Combolojo is a digital sports platform designed to make
-            finding, booking and enjoying sports venues easier for players,
-            teams and communities across Ethiopia.
+            CombolojoSPORT is a digital sports platform designed to make
+            finding, discovering and enjoying sports venues easier for
+            players, teams and communities across Ethiopia.
           </p>
 
           <!-- Buttons -->
-          <div class="mt-7 flex flex-wrap gap-4">
+          <div class="mt-8 flex flex-wrap gap-4">
 
-            <!-- Explore Venues -->
+            <!-- Explore -->
             <button
               type="button"
-              class="rounded-xl bg-emerald-600 px-6 py-3 font-bold text-white shadow-xl shadow-emerald-950/40 transition duration-300 hover:-translate-y-1 hover:bg-emerald-500 hover:shadow-emerald-900/50"
+              class="primary-button rounded-xl bg-emerald-600 px-6 py-3.5 font-bold text-white shadow-xl shadow-black/30 transition duration-300 hover:-translate-y-1 hover:bg-emerald-500 hover:shadow-black/40 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2 focus:ring-offset-slate-950"
               @click="exploreVenues"
             >
               ⚽ Explore Venues
             </button>
 
-            <!-- Download App -->
+            <!-- Download -->
             <button
               type="button"
-              class="rounded-xl border border-white/30 bg-white/10 px-6 py-3 font-bold text-white shadow-xl shadow-black/30 backdrop-blur-md transition duration-300 hover:-translate-y-1 hover:bg-white/20"
-              @click="findGames"
+              class="secondary-button rounded-xl border border-white/30 bg-white/10 px-6 py-3.5 font-bold text-white shadow-xl shadow-black/30 backdrop-blur-md transition duration-300 hover:-translate-y-1 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50"
+              @click="downloadApp"
             >
               📱 Download App
             </button>
@@ -279,34 +300,42 @@ function registerVenue() {
 
           <!-- Trust information -->
           <div
-            class="mt-7 flex flex-wrap items-center gap-6 text-sm text-slate-300"
+            class="mt-8 flex flex-wrap items-center gap-x-7 gap-y-3 text-sm text-slate-300"
           >
             <div class="flex items-center gap-2">
-              <span class="text-emerald-400">✓</span>
+              <span class="font-black text-emerald-400">✓</span>
               Easy Booking
             </div>
 
             <div class="flex items-center gap-2">
-              <span class="text-emerald-400">✓</span>
+              <span class="font-black text-emerald-400">✓</span>
               Sports Communities
             </div>
 
             <div class="flex items-center gap-2">
-              <span class="text-emerald-400">✓</span>
+              <span class="font-black text-emerald-400">✓</span>
               Growing Across Ethiopia
             </div>
           </div>
 
         </div>
       </div>
+
+      <!-- Scroll indicator -->
+      <div
+        class="absolute bottom-6 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-white/60 sm:flex"
+      >
+        <span>Explore</span>
+        <span class="scroll-arrow">↓</span>
+      </div>
     </section>
 
-    <!-- ===================================================== -->
-    <!-- 2. STATS -->
-    <!-- ===================================================== -->
+    <!-- =====================================================
+         2. STATS
+    ====================================================== -->
 
     <section
-      class="relative z-20 border-b border-slate-200 bg-slate-100/80 px-4 py-10 sm:px-6 lg:px-8"
+      class="relative z-20 border-b border-slate-200 bg-slate-100/90 px-4 py-10 sm:px-6 lg:px-8"
     >
       <div class="mx-auto max-w-7xl">
 
@@ -315,10 +344,10 @@ function registerVenue() {
           <div
             v-for="stat in stats"
             :key="stat.id"
-            class="group rounded-2xl border border-slate-200 bg-white p-5 text-center shadow-md transition duration-300 hover:-translate-y-1 hover:border-emerald-300 hover:shadow-xl"
+            class="stat-card group rounded-2xl border border-slate-200 bg-white p-5 text-center shadow-md transition duration-300 hover:-translate-y-1 hover:border-emerald-300 hover:shadow-xl"
           >
 
-            <!-- Modern Icon -->
+            <!-- Icon -->
             <div
               class="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 shadow-sm transition duration-300 group-hover:scale-110 group-hover:bg-emerald-100"
             >
@@ -423,17 +452,17 @@ function registerVenue() {
       </div>
     </section>
 
-    <!-- ===================================================== -->
-    <!-- 3. ABOUT INTRO -->
-    <!-- ===================================================== -->
+    <!-- =====================================================
+         3. ABOUT INTRO
+    ====================================================== -->
 
-    <section class="bg-slate-50 px-4 py-14 sm:px-6 lg:px-8">
+    <section class="bg-slate-50 px-4 py-16 sm:px-6 lg:px-8">
       <div
-        class="mx-auto grid max-w-7xl grid-cols-1 items-center gap-10 lg:grid-cols-2"
+        class="mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 lg:grid-cols-2"
       >
 
         <!-- Text -->
-        <div>
+        <div class="reveal-section">
 
           <p
             class="text-xs font-bold uppercase tracking-[0.18em] text-emerald-600"
@@ -442,46 +471,47 @@ function registerVenue() {
           </p>
 
           <h2
-            class="mt-3 text-2xl font-black leading-tight text-slate-900 sm:text-3xl lg:text-4xl"
+            class="mt-3 text-3xl font-black leading-tight text-slate-900 sm:text-4xl"
           >
             One platform for your
             <span class="text-emerald-600">sports journey.</span>
           </h2>
 
-          <p class="mt-4 leading-7 text-slate-600">
+          <p class="mt-5 leading-7 text-slate-600">
             Finding the right sports venue should not be difficult.
-            Combolojo brings players and sports facilities together
+            CombolojoSPORT brings players and sports facilities together
             through an easy-to-use digital platform.
           </p>
 
-          <p class="mt-3 leading-7 text-slate-600">
+          <p class="mt-4 leading-7 text-slate-600">
             Whether you are looking for a football field for your team,
             a basketball court with your friends, or a venue for a community
             event, our goal is to make the process simple and convenient.
           </p>
 
           <!-- Tags -->
-          <div class="mt-6 flex flex-wrap gap-3">
+          <div class="mt-7 flex flex-wrap gap-3">
 
             <div
-              class="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-md"
+              class="tag-card rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-md"
             >
               ⚽ Players
             </div>
 
             <div
-              class="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-md"
+              class="tag-card rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-md"
             >
               🏟️ Venues
             </div>
 
             <div
-              class="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-md"
+              class="tag-card rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-md"
             >
               🤝 Communities
             </div>
 
           </div>
+
         </div>
 
         <!-- Image -->
@@ -492,7 +522,7 @@ function registerVenue() {
           ></div>
 
           <div
-            class="relative overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white p-2 shadow-xl"
+            class="about-image-wrapper relative overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white p-2 shadow-xl"
           >
             <div class="relative overflow-hidden rounded-[1rem]">
 
@@ -500,36 +530,39 @@ function registerVenue() {
                 :src="venueImg"
                 alt="Sports venue"
                 loading="lazy"
-                class="block h-[340px] w-full object-cover transition duration-700 hover:scale-105"
+                class="about-image block h-[340px] w-full object-cover"
               />
 
               <div
-                class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"
+                class="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-transparent to-transparent"
               ></div>
 
               <div class="absolute bottom-5 left-5 right-5 text-white">
+
                 <div class="text-lg font-black">
                   Find your place to play.
                 </div>
 
-                <div class="mt-0.5 text-xs text-slate-200">
-                  Discover sports venues through Combolojo.
+                <div class="mt-1 text-xs text-slate-200">
+                  Discover sports venues through CombolojoSPORT.
                 </div>
+
               </div>
 
             </div>
           </div>
+
         </div>
 
       </div>
     </section>
 
-    <!-- ===================================================== -->
-    <!-- 4. MISSION & VISION -->
-    <!-- ===================================================== -->
+    <!-- =====================================================
+         4. MISSION & VISION
+    ====================================================== -->
 
     <section
-      class="border-y border-slate-200 bg-white px-4 py-14 sm:px-6 lg:px-8"
+      class="border-y border-slate-200 bg-white px-4 py-16 sm:px-6 lg:px-8"
     >
       <div class="mx-auto max-w-6xl">
 
@@ -542,12 +575,12 @@ function registerVenue() {
           </p>
 
           <h2
-            class="mt-2 text-2xl font-black text-slate-900 sm:text-3xl"
+            class="mt-2 text-3xl font-black text-slate-900 sm:text-4xl"
           >
             Our Mission & Vision
           </h2>
 
-          <p class="mt-2 text-sm leading-6 text-slate-500">
+          <p class="mt-3 text-sm leading-6 text-slate-500">
             We are building a connected digital sports ecosystem for players,
             venues and communities.
           </p>
@@ -558,11 +591,11 @@ function registerVenue() {
 
           <!-- Mission -->
           <div
-            class="group rounded-2xl border border-slate-200 bg-slate-50 p-6 transition duration-300 hover:-translate-y-1 hover:border-emerald-300 hover:shadow-lg"
+            class="purpose-card group rounded-2xl border border-slate-200 bg-slate-50 p-7 transition duration-300 hover:-translate-y-1 hover:border-emerald-300 hover:shadow-xl"
           >
 
             <div
-              class="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-2xl shadow-sm"
+              class="flex h-14 w-14 items-center justify-center rounded-xl bg-emerald-100 text-2xl shadow-sm"
             >
               🎯
             </div>
@@ -581,11 +614,11 @@ function registerVenue() {
 
           <!-- Vision -->
           <div
-            class="group rounded-2xl border border-slate-200 bg-slate-50 p-6 transition duration-300 hover:-translate-y-1 hover:border-amber-300 hover:shadow-lg"
+            class="purpose-card group rounded-2xl border border-slate-200 bg-slate-50 p-7 transition duration-300 hover:-translate-y-1 hover:border-lime-300 hover:shadow-xl"
           >
 
             <div
-              class="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100 text-2xl shadow-sm"
+              class="flex h-14 w-14 items-center justify-center rounded-xl bg-lime-100 text-2xl shadow-sm"
             >
               🚀
             </div>
@@ -606,11 +639,11 @@ function registerVenue() {
       </div>
     </section>
 
-    <!-- ===================================================== -->
-    <!-- 5. FEATURES -->
-    <!-- ===================================================== -->
+    <!-- =====================================================
+         5. FEATURES
+    ====================================================== -->
 
-    <section class="bg-slate-50 px-4 py-14 sm:px-6 lg:px-8">
+    <section class="bg-slate-50 px-4 py-16 sm:px-6 lg:px-8">
       <div class="mx-auto max-w-7xl">
 
         <div class="mx-auto max-w-2xl text-center">
@@ -622,12 +655,12 @@ function registerVenue() {
           </p>
 
           <h2
-            class="mt-2 text-2xl font-black text-slate-900 sm:text-3xl"
+            class="mt-2 text-3xl font-black text-slate-900 sm:text-4xl"
           >
             Everything starts with a game.
           </h2>
 
-          <p class="mt-2 text-sm leading-6 text-slate-500">
+          <p class="mt-3 text-sm leading-6 text-slate-500">
             Simple digital tools designed to make sports venue discovery,
             booking and community activities easier.
           </p>
@@ -641,16 +674,16 @@ function registerVenue() {
           <div
             v-for="(feature, index) in features"
             :key="index"
-            class="group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-emerald-300 hover:shadow-lg"
+            class="feature-card group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-emerald-300 hover:shadow-xl"
           >
 
             <div
-              class="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-2xl shadow-sm transition duration-300 group-hover:scale-110 group-hover:bg-emerald-100"
+              class="feature-icon flex h-13 w-13 items-center justify-center rounded-xl bg-emerald-50 text-2xl shadow-sm transition duration-300 group-hover:scale-110 group-hover:bg-emerald-100"
             >
               {{ feature.icon }}
             </div>
 
-            <h3 class="mt-4 text-lg font-black text-slate-900">
+            <h3 class="mt-5 text-lg font-black text-slate-900">
               {{ feature.title }}
             </h3>
 
@@ -659,7 +692,7 @@ function registerVenue() {
             </p>
 
             <div
-              class="mt-4 h-1 w-8 rounded-full bg-emerald-500 transition-all duration-300 group-hover:w-16"
+              class="mt-5 h-1 w-8 rounded-full bg-emerald-500 transition-all duration-300 group-hover:w-16"
             ></div>
 
           </div>
@@ -668,12 +701,12 @@ function registerVenue() {
       </div>
     </section>
 
-    <!-- ===================================================== -->
-    <!-- 6. ECOSYSTEM TABS -->
-    <!-- ===================================================== -->
+    <!-- =====================================================
+         6. ECOSYSTEM TABS
+    ====================================================== -->
 
     <section
-      class="border-y border-slate-200 bg-white px-4 py-14 sm:px-6 lg:px-8"
+      class="border-y border-slate-200 bg-white px-4 py-16 sm:px-6 lg:px-8"
     >
       <div class="mx-auto max-w-6xl">
 
@@ -686,12 +719,12 @@ function registerVenue() {
           </p>
 
           <h2
-            class="mt-2 text-2xl font-black text-slate-900 sm:text-3xl"
+            class="mt-2 text-3xl font-black text-slate-900 sm:text-4xl"
           >
             Built for everyone who loves sports
           </h2>
 
-          <p class="mt-2 text-xs leading-6 text-slate-500">
+          <p class="mt-3 text-sm leading-6 text-slate-500">
             Players, venue owners and sports communities all have a place
             on CombolojoSPORT.
           </p>
@@ -699,11 +732,13 @@ function registerVenue() {
         </div>
 
         <!-- Tabs -->
-        <div class="mt-8 flex justify-center gap-2 overflow-x-auto pb-2">
+        <div
+          class="mt-9 flex justify-center gap-2 overflow-x-auto pb-2"
+        >
 
           <button
             type="button"
-            class="whitespace-nowrap rounded-xl px-4 py-2.5 text-xs font-bold transition"
+            class="ecosystem-tab whitespace-nowrap rounded-xl px-5 py-3 text-xs font-bold transition"
             :class="
               activeTab === 'players'
                 ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20'
@@ -716,7 +751,7 @@ function registerVenue() {
 
           <button
             type="button"
-            class="whitespace-nowrap rounded-xl px-4 py-2.5 text-xs font-bold transition"
+            class="ecosystem-tab whitespace-nowrap rounded-xl px-5 py-3 text-xs font-bold transition"
             :class="
               activeTab === 'venues'
                 ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20'
@@ -729,7 +764,7 @@ function registerVenue() {
 
           <button
             type="button"
-            class="whitespace-nowrap rounded-xl px-4 py-2.5 text-xs font-bold transition"
+            class="ecosystem-tab whitespace-nowrap rounded-xl px-5 py-3 text-xs font-bold transition"
             :class="
               activeTab === 'community'
                 ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20'
@@ -744,28 +779,29 @@ function registerVenue() {
 
         <!-- Tab content -->
         <div
-          class="mt-8 grid grid-cols-1 items-center gap-10 lg:grid-cols-2"
+          class="mt-10 grid grid-cols-1 items-center gap-12 lg:grid-cols-2"
         >
 
+          <!-- Content -->
           <div>
 
             <div
-              class="inline-flex rounded-lg bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700"
+              class="inline-flex rounded-lg bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700"
             >
-              Combolojo
+              CombolojoSPORT
             </div>
 
             <h3
-              class="mt-3 text-xl font-black text-slate-900 sm:text-2xl"
+              class="mt-4 text-2xl font-black text-slate-900 sm:text-3xl"
             >
               {{ tabContent[activeTab].title }}
             </h3>
 
-            <p class="mt-3 text-sm leading-7 text-slate-600">
+            <p class="mt-4 text-sm leading-7 text-slate-600">
               {{ tabContent[activeTab].desc }}
             </p>
 
-            <ul class="mt-6 space-y-3">
+            <ul class="mt-7 space-y-3">
 
               <li
                 v-for="(point, index) in tabContent[activeTab].highlights"
@@ -774,21 +810,22 @@ function registerVenue() {
               >
 
                 <span
-                  class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-xs font-black text-emerald-700"
+                  class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-xs font-black text-emerald-700"
                 >
                   ✓
                 </span>
 
-                <span class="text-xs font-semibold text-slate-700">
+                <span class="text-sm font-semibold text-slate-700">
                   {{ point }}
                 </span>
 
               </li>
 
             </ul>
+
           </div>
 
-          <!-- Tab image -->
+          <!-- Image -->
           <div class="relative">
 
             <div
@@ -802,13 +839,13 @@ function registerVenue() {
 
                 <img
                   :src="venueImg"
-                  alt="Combolojo venue"
+                  alt="CombolojoSPORT venue"
                   loading="lazy"
-                  class="block h-[300px] w-full object-cover"
+                  class="ecosystem-image block h-[320px] w-full object-cover"
                 />
 
                 <div
-                  class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"
+                  class="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-transparent to-transparent"
                 ></div>
 
                 <div
@@ -818,7 +855,7 @@ function registerVenue() {
                   <div class="flex items-center gap-3">
 
                     <div
-                      class="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-600 text-lg shadow-lg shadow-emerald-950/30"
+                      class="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-600 text-lg shadow-lg shadow-emerald-950/30"
                     >
                       ⚡
                     </div>
@@ -829,7 +866,7 @@ function registerVenue() {
                         Fast & Simple
                       </div>
 
-                      <div class="text-[11px] text-slate-300">
+                      <div class="mt-0.5 text-[11px] text-slate-300">
                         Designed for an easy sports experience.
                       </div>
 
@@ -847,11 +884,144 @@ function registerVenue() {
       </div>
     </section>
 
-    <!-- ===================================================== -->
-    <!-- 7. POPULAR SPORTS HUBS -->
-    <!-- ===================================================== -->
+    <!-- =====================================================
+         7. WEBSITE + MOBILE APP
+    ====================================================== -->
 
-    <section class="bg-slate-50 px-4 py-14 sm:px-6 lg:px-8">
+    <section class="bg-slate-50 px-4 py-16 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-7xl">
+
+        <div class="mx-auto max-w-2xl text-center">
+
+          <p
+            class="text-xs font-bold uppercase tracking-[0.18em] text-emerald-600"
+          >
+            Website + Mobile App
+          </p>
+
+          <h2
+            class="mt-2 text-3xl font-black text-slate-900 sm:text-4xl"
+          >
+            Discover on the web. Book on mobile.
+          </h2>
+
+          <p class="mt-3 text-sm leading-7 text-slate-500">
+            CombolojoSPORT gives you a simple experience across the website
+            and mobile application.
+          </p>
+
+        </div>
+
+        <div class="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2">
+
+          <!-- Website -->
+          <div
+            class="platform-card rounded-3xl border border-slate-200 bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+          >
+
+            <div
+              class="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-900 text-2xl shadow-lg"
+            >
+              🌐
+            </div>
+
+            <h3 class="mt-5 text-xl font-black text-slate-900">
+              CombolojoSPORT Website
+            </h3>
+
+            <p class="mt-3 text-sm leading-7 text-slate-600">
+              Use the website to discover sports venues, explore events,
+              learn about the platform and find sports opportunities.
+            </p>
+
+            <ul class="mt-5 space-y-3">
+
+              <li class="flex gap-3 text-sm text-slate-600">
+                <span class="text-emerald-600">✓</span>
+                Explore sports venues
+              </li>
+
+              <li class="flex gap-3 text-sm text-slate-600">
+                <span class="text-emerald-600">✓</span>
+                Discover events
+              </li>
+
+              <li class="flex gap-3 text-sm text-slate-600">
+                <span class="text-emerald-600">✓</span>
+                Find sports activities
+              </li>
+
+            </ul>
+
+            <button
+              type="button"
+              class="mt-7 rounded-xl bg-slate-900 px-5 py-3 text-xs font-bold text-white transition hover:bg-slate-800"
+              @click="exploreVenues"
+            >
+              Explore Venues →
+            </button>
+
+          </div>
+
+          <!-- Mobile -->
+          <div
+            class="platform-card rounded-3xl border border-emerald-200 bg-emerald-50 p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+          >
+
+            <div
+              class="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-600 text-2xl text-white shadow-lg shadow-emerald-600/20"
+            >
+              📱
+            </div>
+
+            <h3 class="mt-5 text-xl font-black text-slate-900">
+              CombolojoSPORT Mobile App
+            </h3>
+
+            <p class="mt-3 text-sm leading-7 text-slate-600">
+              The mobile app is designed for booking sports venues,
+              selecting available time slots and managing your sports
+              activities.
+            </p>
+
+            <ul class="mt-5 space-y-3">
+
+              <li class="flex gap-3 text-sm text-slate-600">
+                <span class="font-bold text-emerald-600">✓</span>
+                Book sports venues
+              </li>
+
+              <li class="flex gap-3 text-sm text-slate-600">
+                <span class="font-bold text-emerald-600">✓</span>
+                Select available slots
+              </li>
+
+              <li class="flex gap-3 text-sm text-slate-600">
+                <span class="font-bold text-emerald-600">✓</span>
+                Manage your bookings
+              </li>
+
+            </ul>
+
+            <button
+              type="button"
+              class="mt-7 rounded-xl bg-emerald-600 px-5 py-3 text-xs font-bold text-white shadow-lg shadow-emerald-600/20 transition hover:-translate-y-0.5 hover:bg-emerald-500"
+              @click="downloadApp"
+            >
+              Download App →
+            </button>
+
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================
+         8. POPULAR SPORTS HUBS
+    ====================================================== -->
+
+    <section class="bg-white px-4 py-16 sm:px-6 lg:px-8">
       <div class="mx-auto max-w-6xl">
 
         <div class="text-center">
@@ -863,38 +1033,44 @@ function registerVenue() {
           </p>
 
           <h2
-            class="mt-2 text-2xl font-black text-slate-900 sm:text-3xl"
+            class="mt-2 text-3xl font-black text-slate-900 sm:text-4xl"
           >
             Popular Sports Hubs
           </h2>
 
-          <p class="mt-2 text-xs text-slate-500">
+          <p class="mt-3 text-sm text-slate-500">
             Explore sports opportunities in different locations.
           </p>
 
         </div>
 
         <div
-          class="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5"
+          class="mt-9 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5"
         >
 
           <NuxtLink
             v-for="city in subCities"
             :key="city"
             to="/venues"
-            class="group rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-emerald-400 hover:shadow-md"
+            class="location-card group rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm transition duration-300 hover:-translate-y-1 hover:border-emerald-400 hover:shadow-lg"
           >
 
             <div
-              class="mx-auto flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-50 text-lg transition group-hover:bg-emerald-100"
+              class="mx-auto flex h-11 w-11 items-center justify-center rounded-lg bg-emerald-50 text-lg transition group-hover:bg-emerald-100"
             >
               📍
             </div>
 
             <div
-              class="mt-2 text-xs font-bold text-slate-700 group-hover:text-emerald-700"
+              class="mt-3 text-xs font-bold text-slate-700 group-hover:text-emerald-700"
             >
               {{ city }}
+            </div>
+
+            <div
+              class="mt-1 text-[10px] font-semibold text-slate-400 opacity-0 transition group-hover:opacity-100"
+            >
+              Explore venues →
             </div>
 
           </NuxtLink>
@@ -903,11 +1079,11 @@ function registerVenue() {
       </div>
     </section>
 
-    <!-- ===================================================== -->
-    <!-- 8. TESTIMONIALS -->
-    <!-- ===================================================== -->
+    <!-- =====================================================
+         9. TESTIMONIALS
+    ====================================================== -->
 
-    <section class="bg-white px-4 py-14 sm:px-6 lg:px-8">
+    <section class="bg-slate-50 px-4 py-16 sm:px-6 lg:px-8">
       <div class="mx-auto max-w-6xl">
 
         <div class="mx-auto max-w-2xl text-center">
@@ -919,13 +1095,13 @@ function registerVenue() {
           </p>
 
           <h2
-            class="mt-2 text-2xl font-black text-slate-900 sm:text-3xl"
+            class="mt-2 text-3xl font-black text-slate-900 sm:text-4xl"
           >
             Loved by Players & Venue Partners
           </h2>
 
-          <p class="mt-2 text-xs text-slate-500">
-            See how CombolojoS can make sports activities easier.
+          <p class="mt-3 text-sm text-slate-500">
+            See how CombolojoSPORT can make sports activities easier.
           </p>
 
         </div>
@@ -935,23 +1111,24 @@ function registerVenue() {
           <div
             v-for="(review, index) in reviews"
             :key="index"
-            class="rounded-2xl border border-slate-200 bg-slate-50 p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg"
+            class="review-card rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-emerald-200 hover:shadow-xl"
           >
 
-            <div class="text-3xl text-emerald-600">
+            <!-- Quote -->
+            <div class="text-4xl font-black leading-none text-emerald-500">
               “
             </div>
 
-            <p class="mt-1 text-xs leading-6 italic text-slate-600">
+            <p class="mt-2 text-sm leading-7 italic text-slate-600">
               {{ review.comment }}
             </p>
 
             <div
-              class="mt-5 flex items-center gap-3 border-t border-slate-200 pt-4"
+              class="mt-6 flex items-center gap-3 border-t border-slate-200 pt-4"
             >
 
               <div
-                class="flex h-10 w-10 items-center justify-center rounded-full bg-white text-xl shadow-sm"
+                class="flex h-11 w-11 items-center justify-center rounded-full bg-emerald-50 text-xl shadow-sm"
               >
                 {{ review.avatar }}
               </div>
@@ -963,7 +1140,7 @@ function registerVenue() {
                 </div>
 
                 <div
-                  class="mt-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-600"
+                  class="mt-1 text-[10px] font-bold uppercase tracking-wider text-emerald-600"
                 >
                   {{ review.role }}
                 </div>
@@ -971,21 +1148,22 @@ function registerVenue() {
               </div>
 
             </div>
+
           </div>
 
         </div>
       </div>
     </section>
 
-    <!-- ===================================================== -->
-    <!-- 9. FINAL CTA -->
-    <!-- ===================================================== -->
+    <!-- =====================================================
+         10. FINAL CTA
+    ====================================================== -->
 
-    <section class="px-4 py-14 sm:px-6 lg:px-8">
+    <section class="px-4 py-16 sm:px-6 lg:px-8">
       <div class="mx-auto max-w-7xl">
 
         <div
-          class="relative overflow-hidden rounded-3xl bg-slate-950 px-6 py-14 shadow-2xl sm:px-10 lg:px-16"
+          class="cta-section relative overflow-hidden rounded-[2rem] bg-slate-950 px-6 py-16 shadow-2xl sm:px-10 lg:px-16"
         >
 
           <!-- Background -->
@@ -993,13 +1171,22 @@ function registerVenue() {
             class="absolute inset-0 bg-gradient-to-r from-emerald-950 via-slate-950 to-slate-950"
           ></div>
 
-          <!-- Green glow -->
+          <!-- Glow -->
           <div
-            class="absolute -right-20 -top-20 h-60 w-60 rounded-full bg-emerald-500/20 blur-3xl"
+            class="absolute -right-20 -top-20 h-72 w-72 rounded-full bg-emerald-500/20 blur-3xl"
           ></div>
 
           <div
-            class="absolute -bottom-20 -left-20 h-60 w-60 rounded-full bg-emerald-400/10 blur-3xl"
+            class="absolute -bottom-20 -left-20 h-72 w-72 rounded-full bg-lime-400/10 blur-3xl"
+          ></div>
+
+          <!-- Decorative circle -->
+          <div
+            class="absolute right-10 top-10 hidden h-24 w-24 rounded-full border border-emerald-400/10 lg:block"
+          ></div>
+
+          <div
+            class="absolute right-16 top-16 hidden h-12 w-12 rounded-full bg-emerald-400/5 lg:block"
           ></div>
 
           <!-- Content -->
@@ -1012,39 +1199,40 @@ function registerVenue() {
             </p>
 
             <h2
-              class="mt-3 text-2xl font-black text-white sm:text-3xl lg:text-4xl"
+              class="mt-3 text-3xl font-black text-white sm:text-4xl lg:text-5xl"
             >
               Ready to play?
             </h2>
 
             <p
-              class="mx-auto mt-3 max-w-xl text-xs leading-6 text-slate-300 sm:text-sm"
+              class="mx-auto mt-4 max-w-xl text-sm leading-7 text-slate-300"
             >
               Find a venue, discover a game and start your next sports
               experience with CombolojoSPORT.
             </p>
 
-            <div class="mt-7 flex flex-wrap justify-center gap-4">
+            <div class="mt-8 flex flex-wrap justify-center gap-4">
 
-              <!-- Explore Venues -->
+              <!-- Explore -->
               <button
                 type="button"
-                class="rounded-xl bg-emerald-600 px-6 py-3 text-xs font-bold text-white shadow-xl shadow-emerald-950/40 transition duration-300 hover:-translate-y-0.5 hover:bg-emerald-500"
+                class="rounded-xl bg-emerald-600 px-7 py-3.5 text-sm font-bold text-white shadow-xl shadow-emerald-950/40 transition duration-300 hover:-translate-y-1 hover:bg-emerald-500"
                 @click="exploreVenues"
               >
                 ⚽ Explore Venues
               </button>
 
-              <!-- Book Now -> Download App -->
+              <!-- App -->
               <button
                 type="button"
-                class="rounded-xl border border-white/20 bg-white/10 px-6 py-3 text-xs font-bold text-white shadow-lg shadow-black/20 backdrop-blur-sm transition duration-300 hover:-translate-y-0.5 hover:bg-white/20"
+                class="rounded-xl border border-white/20 bg-white/10 px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-black/20 backdrop-blur-sm transition duration-300 hover:-translate-y-1 hover:bg-white/20"
                 @click="registerVenue"
               >
-                📱 Book Now
+                📱 Download App
               </button>
 
             </div>
+
           </div>
         </div>
       </div>
@@ -1052,3 +1240,325 @@ function registerVenue() {
 
   </div>
 </template>
+
+<style scoped>
+
+/* =========================================================
+   ABOUT PAGE CUSTOM CSS
+========================================================= */
+
+.about-page {
+  overflow-x: hidden;
+}
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.about-hero {
+  isolation: isolate;
+}
+
+/*
+  CLEAN HERO IMAGE
+
+  The previous colored green/emerald shadows
+  have been removed.
+*/
+
+.hero-background {
+  object-position: center center;
+  transform: scale(1.01);
+  filter: saturate(1.02) contrast(1.02);
+  transition:
+    transform 0.8s ease,
+    filter 0.5s ease;
+}
+
+/*
+  Neutral overlay only.
+
+  No green shadow.
+  No emerald gradient.
+  No colored glow.
+
+  This keeps the image visible while
+  making the white text readable.
+*/
+
+.hero-neutral-overlay {
+  background: rgba(0, 0, 0, 0.30);
+}
+
+/* Hero content stays above image */
+
+.hero-title {
+  animation: heroTitleIn 0.8s ease-out both;
+}
+
+.about-badge {
+  animation: heroBadgeIn 0.7s ease-out both;
+}
+
+/* =========================================================
+   HERO ANIMATIONS
+========================================================= */
+
+@keyframes heroTitleIn {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroBadgeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================================================
+   SCROLL INDICATOR
+========================================================= */
+
+.scroll-arrow {
+  animation: scrollArrow 1.5s ease-in-out infinite;
+}
+
+@keyframes scrollArrow {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+
+  50% {
+    transform: translateY(6px);
+    opacity: 1;
+  }
+}
+
+/* =========================================================
+   CARDS
+========================================================= */
+
+.stat-card,
+.feature-card,
+.purpose-card,
+.platform-card,
+.review-card,
+.location-card,
+.tag-card {
+  will-change: transform;
+}
+
+/* =========================================================
+   IMAGE EFFECTS
+========================================================= */
+
+.about-image-wrapper {
+  transform: translateZ(0);
+}
+
+.about-image {
+  transition:
+    transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1),
+    filter 0.5s ease;
+}
+
+.about-image-wrapper:hover .about-image {
+  transform: scale(1.045);
+  filter: saturate(1.08);
+}
+
+.ecosystem-image {
+  transition:
+    transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1),
+    filter 0.5s ease;
+}
+
+.ecosystem-image:hover {
+  transform: scale(1.04);
+  filter: saturate(1.08);
+}
+
+/* =========================================================
+   FEATURE ICON
+========================================================= */
+
+.feature-icon {
+  min-width: 52px;
+  min-height: 52px;
+}
+
+/* =========================================================
+   TAB
+========================================================= */
+
+.ecosystem-tab {
+  position: relative;
+}
+
+.ecosystem-tab:active {
+  transform: scale(0.97);
+}
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.primary-button,
+.secondary-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.primary-button::after,
+.secondary-button::after {
+  position: absolute;
+  inset: 0;
+  content: '';
+  background: linear-gradient(
+    120deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.12) 50%,
+    transparent 80%
+  );
+  transform: translateX(-120%);
+  transition: transform 0.6s ease;
+}
+
+.primary-button:hover::after,
+.secondary-button:hover::after {
+  transform: translateX(120%);
+}
+
+/* =========================================================
+   CTA
+========================================================= */
+
+.cta-section {
+  isolation: isolate;
+}
+
+.cta-section::before {
+  position: absolute;
+  inset: 0;
+  content: '';
+  pointer-events: none;
+
+  background:
+    radial-gradient(
+      circle at 15% 30%,
+      rgba(16, 185, 129, 0.08),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 85% 70%,
+      rgba(132, 204, 22, 0.06),
+      transparent 25%
+    );
+}
+
+/* =========================================================
+   ACCESSIBILITY
+========================================================= */
+
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid #10b981;
+  outline-offset: 3px;
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 640px) {
+
+  .about-hero {
+    min-height: 620px;
+  }
+
+  .hero-background {
+    object-position: center center;
+  }
+
+  .hero-neutral-overlay {
+    background: rgba(0, 0, 0, 0.35);
+  }
+
+  .hero-title {
+    font-size: 2.5rem;
+    line-height: 1.08;
+  }
+
+  .about-badge {
+    font-size: 9px;
+    letter-spacing: 0.13em;
+  }
+
+  .stat-card {
+    padding: 1rem;
+  }
+
+  .stat-card .text-2xl {
+    font-size: 1.5rem;
+  }
+
+  .about-image {
+    height: 280px;
+  }
+
+  .ecosystem-image {
+    height: 280px;
+  }
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (min-width: 641px) and (max-width: 1024px) {
+
+  .about-hero {
+    min-height: 580px;
+  }
+
+  .hero-title {
+    font-size: 3.6rem;
+  }
+
+  .hero-background {
+    object-position: center center;
+  }
+}
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+</style>
