@@ -541,13 +541,13 @@ onUnmounted(() => {
             Refresh
           </button>
 
-          <button
-            type="button"
-            class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-emerald-500/30 transition hover:from-emerald-600 hover:to-teal-700 hover:shadow-emerald-500/40"
+         <NuxtLink
+            to="/venues/create"
+            class="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-slate-900 shadow-lg transition hover:bg-emerald-50"
           >
-            <Plus :size="18" />
+            <span class="text-lg leading-none">+</span>
             Add Sport Field
-          </button>
+          </NuxtLink>
         </div>
       </header>
 

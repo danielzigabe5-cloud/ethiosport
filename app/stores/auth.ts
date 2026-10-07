@@ -1,3 +1,4 @@
+// stores/auth.ts
 import { defineStore } from 'pinia'
 
 export const useAuthStore = defineStore('auth', {
@@ -6,6 +7,7 @@ export const useAuthStore = defineStore('auth', {
     token: null as string | null,
     tempEmail: '',
     tempPhone: '',
+    googleLoading: false,
   }),
 
   getters: {
@@ -19,36 +21,36 @@ export const useAuthStore = defineStore('auth', {
   },
 
   actions: {
+    /* ═══════════════════════════════════════════
+       API URL BUILDER
+       ✅ apiBase already ends with /api
+       ═══════════════════════════════════════════ */
     getApiUrl(path: string) {
       const config = useRuntimeConfig()
-      const base = config.public.apiBase.endsWith('/')
-        ? config.public.apiBase.slice(0, -1)
-        : config.public.apiBase
-      return `${base}${path}`
+      const base = String(config.public.apiBase || '').replace(/\/$/, '')
+      const cleanPath = path.startsWith('/') ? path : `/${path}`
+      return `${base}${cleanPath}`
     },
 
     /* ═══════════════════════════════════════════
-       SAVE AUTH — token + user በአንድ ቦታ
+       SAVE AUTH
        ═══════════════════════════════════════════ */
     saveAuth(token: string, user: any) {
       this.token = token
       this.user = user
 
       if (import.meta.client) {
-        // ✅ localStorage
         localStorage.setItem('auth_token', token)
         localStorage.setItem('auth_user', JSON.stringify(user))
         localStorage.setItem('userRole', user?.role || 'user')
 
-        // ✅ COOKIE — ለ middleware እና SSR
         const cookie = useCookie<string | null>('auth_token', {
-          maxAge: 60 * 60 * 24 * 7, // 7 days
+          maxAge: 60 * 60 * 24 * 7,
           path: '/',
           sameSite: 'lax',
         })
         cookie.value = token
 
-        // ✅ Role state
         const roleState = useState('userRole')
         roleState.value = user?.role || 'user'
       }
@@ -80,6 +82,87 @@ export const useAuthStore = defineStore('auth', {
           throw { message: 'invalid credintial' }
         }
         throw error.data || { message: 'server error!' }
+      }
+    },
+
+    /* ═══════════════════════════════════════════
+       GOOGLE SIGN-IN — popup + postMessage
+       ═══════════════════════════════════════════ */
+    async signInWithGoogle(): Promise<{
+      success: boolean
+      message: string
+      nextScreen?: 'home' | 'complete_profile'
+    }> {
+      if (!import.meta.client) {
+        return { success: false, message: 'Google Sign-In is client-only' }
+      }
+
+      this.googleLoading = true
+
+      try {
+        const config = useRuntimeConfig()
+        const expectedOrigin = String(config.public.frontendOrigin || '').replace(/\/$/, '')
+
+        const popupUrl = this.getApiUrl('/auth/google/redirect?origin=web')
+
+        const popup = window.open(
+          popupUrl,
+          'google-oauth',
+          'width=500,height=650,left=200,top=100',
+        )
+
+        if (!popup) {
+          throw new Error('Popup blocked. Please allow popups for this site.')
+        }
+
+        const result = await new Promise<{
+          token: string
+          user: any
+          next_screen: 'home' | 'complete_profile'
+        }>((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            window.removeEventListener('message', onMessage)
+            reject(new Error('Google Sign-In timed out'))
+          }, 120_000)
+
+          const onMessage = (event: MessageEvent) => {
+            // ⚠️ SECURITY: exact origin match — never "*"
+            if (event.origin !== expectedOrigin) return
+            if (event.data?.type !== 'google-oauth-success') return
+
+            clearTimeout(timeout)
+            window.removeEventListener('message', onMessage)
+
+            if (event.data.error) {
+              reject(new Error(event.data.error))
+              return
+            }
+
+            resolve({
+              token: event.data.token,
+              user: event.data.user,
+              next_screen: event.data.next_screen || 'home',
+            })
+          }
+
+          window.addEventListener('message', onMessage)
+        })
+
+        this.saveAuth(result.token, result.user)
+
+        return {
+          success: true,
+          message: 'Signed in with Google',
+          nextScreen: result.next_screen,
+        }
+      } catch (e: any) {
+        const raw = String(e?.message || e || '')
+        return {
+          success: false,
+          message: raw || 'Google Sign-In failed',
+        }
+      } finally {
+        this.googleLoading = false
       }
     },
 
@@ -140,7 +223,7 @@ export const useAuthStore = defineStore('auth', {
               'Content-Type': 'application/json',
             },
             body: payload,
-          }
+          },
         )
 
         if (res.success) {
@@ -155,7 +238,7 @@ export const useAuthStore = defineStore('auth', {
     },
 
     /* ═══════════════════════════════════════════
-       FETCH USER — ከ API አድስ (avatar ወዘተ)
+       FETCH USER
        ═══════════════════════════════════════════ */
     async fetchUser() {
       if (!import.meta.client) return null
@@ -183,15 +266,14 @@ export const useAuthStore = defineStore('auth', {
     },
 
     /* ═══════════════════════════════════════════
-       INIT — ገጹ ሲጫን ከ localStorage/cookie መልስ
+       INIT
        ═══════════════════════════════════════════ */
     init() {
       if (!import.meta.client) return
 
-      // 1️⃣ localStorage
-      let token = localStorage.getItem('auth_token') || localStorage.getItem('token')
+      let token =
+        localStorage.getItem('auth_token') || localStorage.getItem('token')
 
-      // 2️⃣ cookie (fallback)
       if (!token) {
         const cookie = useCookie<string | null>('auth_token')
         if (cookie.value) token = cookie.value
@@ -228,7 +310,6 @@ export const useAuthStore = defineStore('auth', {
         localStorage.removeItem('auth_user')
         localStorage.removeItem('userRole')
 
-        // ✅ Cookie ን አጥፋ
         const cookie = useCookie<string | null>('auth_token')
         cookie.value = null
 

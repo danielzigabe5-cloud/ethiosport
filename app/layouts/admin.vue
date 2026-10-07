@@ -1,15 +1,11 @@
 <template>
-  <div
-    class="flex h-screen w-full flex-col overflow-hidden bg-slate-50 text-slate-800 antialiased dark:bg-[#070b12] dark:text-slate-100"
-  >
+  <div class="flex h-screen w-full flex-col overflow-hidden bg-slate-50 text-slate-800 antialiased dark:bg-[#070b12] dark:text-slate-100">
     <!-- =========================================================
          HEADER
     ========================================================== -->
-    <header
-      class="relative z-50 flex h-16 shrink-0 items-center justify-between border-b border-slate-200 bg-white px-4 shadow-sm dark:border-slate-800 dark:bg-[#0d1421] lg:px-7"
-    >
+    <header class="relative z-50 flex h-16 shrink-0 items-center justify-between border-b border-slate-200 bg-white px-3 shadow-sm dark:border-slate-800 dark:bg-[#0d1421] sm:px-4 lg:px-7">
       <!-- LEFT -->
-      <div class="flex min-w-0 items-center gap-3">
+      <div class="flex min-w-0 items-center gap-2 sm:gap-3">
         <!-- Sidebar Toggle -->
         <button
           type="button"
@@ -21,25 +17,17 @@
         </button>
 
         <!-- Logo -->
-        <NuxtLink
-          to="/admin"
-          class="group flex min-w-0 items-center gap-2"
-        >
-          <div
-            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500 text-lg shadow-sm shadow-emerald-500/20"
-          >
+        <NuxtLink to="/admin" class="group flex min-w-0 items-center gap-2">
+          <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500 text-lg shadow-sm shadow-emerald-500/20">
             ⚽
           </div>
 
           <div class="hidden min-w-0 sm:block">
-            <div class="flex items-center gap-1 text-lg font-black tracking-tight">
+            <div class="flex items-center gap-1 text-base font-black tracking-tight lg:text-lg">
               <span class="text-slate-900 dark:text-white">COMBO</span>
               <span class="text-emerald-500">LOJO</span>
             </div>
-
-            <p
-              class="truncate text-[9px] font-bold uppercase tracking-[1.8px] text-slate-400"
-            >
+            <p class="truncate text-[9px] font-bold uppercase tracking-[1.8px] text-slate-400">
               Sport Field Management
             </p>
           </div>
@@ -49,46 +37,30 @@
         <div class="mx-1 hidden h-7 w-px bg-slate-200 dark:bg-slate-800 md:block"></div>
 
         <!-- Location -->
-        <div
-          class="hidden items-center gap-2 rounded-lg bg-slate-50 px-3 py-2 dark:bg-slate-800/60 md:flex"
-        >
-          <Icon
-            name="lucide:map-pin"
-            class="h-4 w-4 text-emerald-500"
-          />
-
+        <div class="hidden items-center gap-2 rounded-lg bg-slate-50 px-3 py-2 dark:bg-slate-800/60 md:flex">
+          <Icon name="lucide:map-pin" class="h-4 w-4 text-emerald-500" />
           <div class="leading-none">
-            <p class="text-[9px] font-bold uppercase tracking-wider text-slate-400">
-              Location
-            </p>
-            <p class="mt-1 text-xs font-bold text-slate-700 dark:text-slate-200">
-              Ethiopia
-            </p>
+            <p class="text-[9px] font-bold uppercase tracking-wider text-slate-400">Location</p>
+            <p class="mt-1 text-xs font-bold text-slate-700 dark:text-slate-200">Ethiopia</p>
           </div>
         </div>
       </div>
 
       <!-- RIGHT -->
-      <div class="flex items-center gap-2 md:gap-3">
-
+      <div class="flex items-center gap-1.5 sm:gap-2 md:gap-3">
         <!-- View Public Site -->
         <NuxtLink
-          to="/"
-          class="hidden items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold text-slate-500 transition hover:bg-slate-100 hover:text-emerald-600 dark:text-slate-400 dark:hover:bg-slate-800 sm:flex"
-        >
-          <Icon name="lucide:external-link" class="h-4 w-4" />
-          <span>View Site</span>
-        </NuxtLink>
+  to="/"
+  target="_blank"
+  class="flex items-center gap-1.5 rounded-xl px-2 py-2 text-xs font-bold text-slate-500 transition hover:bg-slate-100 hover:text-emerald-600 dark:text-slate-400 dark:hover:bg-slate-800 sm:gap-2 sm:px-3"
+  title="View Site"
+>
+  <Icon name="lucide:external-link" class="h-4 w-4 shrink-0" />
+  <span class="hidden sm:inline">View Site</span>
+</NuxtLink>
 
-        <!-- Add Venue -->
-        <NuxtLink
-          :to="authStore.user ? '/venues/create' : '/auth?redirect=/venues/create'"
-          class="flex items-center gap-2 rounded-xl bg-emerald-500 px-3.5 py-2.5 text-xs font-black text-white shadow-sm shadow-emerald-500/20 transition hover:bg-emerald-600 active:scale-95"
-        >
-          <Icon name="lucide:plus" class="h-4 w-4 stroke-[3]" />
-          <span class="hidden sm:inline">Add Sport Field</span>
-          <span class="sm:hidden">Add</span>
-        </NuxtLink>
+        
+  
 
         <!-- Notifications -->
         <button
@@ -97,58 +69,44 @@
           title="Notifications"
         >
           <Icon name="lucide:bell" class="h-5 w-5" />
-
-          <span
-            class="absolute right-2 top-2 h-2 w-2 rounded-full border-2 border-white bg-red-500 dark:border-[#0d1421]"
-          ></span>
+          <span class="absolute right-2 top-2 h-2 w-2 rounded-full border-2 border-white bg-red-500 dark:border-[#0d1421]"></span>
         </button>
 
         <!-- Profile -->
-        <div
-          ref="dropdownRef"
-          class="relative"
-        >
+        <div ref="dropdownRef" class="relative">
           <button
             type="button"
             @click="toggleDropdown"
-            class="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-1.5 pr-2 transition hover:border-emerald-300 hover:shadow-sm dark:border-slate-800 dark:bg-slate-900"
+            class="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white p-1 pr-1.5 transition hover:border-emerald-300 hover:shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:gap-2 sm:p-1.5 sm:pr-2"
           >
             <!-- Avatar -->
-            <div class="relative h-10 w-10 shrink-0">
+            <div class="relative h-9 w-9 shrink-0 sm:h-10 sm:w-10">
               <img
                 v-if="userAvatar"
                 :src="userAvatar"
                 alt="Admin"
-                class="h-10 w-10 rounded-xl object-cover ring-1 ring-slate-200 dark:ring-slate-700"
+                class="h-9 w-9 rounded-xl object-cover ring-1 ring-slate-200 dark:ring-slate-700 sm:h-10 sm:w-10"
                 @error="onAvatarError"
               />
               <div
                 v-else
-                class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500 font-black text-white"
+                class="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500 font-black text-white sm:h-10 sm:w-10"
               >
                 {{ userInitials }}
               </div>
-
-              <!-- ✅ Online indicator ከ avatar ውስጥ መሆን አለበት -->
-              <span
-                class="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-emerald-500 dark:border-slate-900"
-              ></span>
+              <span class="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-emerald-500 dark:border-slate-900"></span>
             </div>
 
             <div class="hidden text-left lg:block">
               <p class="max-w-[110px] truncate text-xs font-bold text-slate-800 dark:text-slate-100">
                 {{ adminName }}
               </p>
-
               <p class="text-[9px] font-semibold uppercase tracking-wider text-slate-400">
                 Administrator
               </p>
             </div>
 
-            <Icon
-              name="lucide:chevron-down"
-              class="hidden h-3.5 w-3.5 text-slate-400 lg:block"
-            />
+            <Icon name="lucide:chevron-down" class="hidden h-3.5 w-3.5 text-slate-400 lg:block" />
           </button>
 
           <!-- Profile Dropdown -->
@@ -164,12 +122,8 @@
               v-if="isProfileOpen"
               class="absolute right-0 mt-2.5 w-64 overflow-hidden rounded-2xl border border-slate-200 bg-white p-2 shadow-xl dark:border-slate-800 dark:bg-[#0d1421]"
             >
-              <!-- Account -->
-              <div
-                class="mb-1 rounded-xl bg-slate-50 p-3 dark:bg-slate-800/60"
-              >
+              <div class="mb-1 rounded-xl bg-slate-50 p-3 dark:bg-slate-800/60">
                 <div class="flex items-center gap-3">
-                  <!-- ✅ Avatar with image + fallback (hardcoded "A" ተቀይሯል) -->
                   <div class="relative h-10 w-10 shrink-0">
                     <img
                       v-if="userAvatar"
@@ -185,12 +139,8 @@
                       {{ userInitials }}
                     </div>
                   </div>
-
                   <div class="min-w-0">
-                    <p class="truncate text-xs font-bold">
-                      {{ adminName }}
-                    </p>
-
+                    <p class="truncate text-xs font-bold">{{ adminName }}</p>
                     <p class="mt-0.5 truncate text-[10px] text-slate-400">
                       {{ authStore.user?.email || 'admin@combolojo.com' }}
                     </p>
@@ -198,7 +148,6 @@
                 </div>
               </div>
 
-              <!-- Profile -->
               <NuxtLink
                 to="/admin/profile"
                 @click="handleSidebarNavigation"
@@ -208,7 +157,6 @@
                 Profile Settings
               </NuxtLink>
 
-              <!-- Settings -->
               <NuxtLink
                 to="/admin/settings"
                 @click="handleSidebarNavigation"
@@ -220,7 +168,6 @@
 
               <div class="my-1 border-t border-slate-100 dark:border-slate-800"></div>
 
-              <!-- Logout -->
               <button
                 type="button"
                 @click="handleLogout"
@@ -231,16 +178,8 @@
                   v-if="isLoggingOut"
                   class="h-4 w-4 animate-spin rounded-full border-2 border-rose-500 border-t-transparent"
                 ></span>
-
-                <Icon
-                  v-else
-                  name="lucide:log-out"
-                  class="h-4 w-4"
-                />
-
-                <span>
-                  {{ isLoggingOut ? 'Logging out...' : 'Logout' }}
-                </span>
+                <Icon v-else name="lucide:log-out" class="h-4 w-4" />
+                <span>{{ isLoggingOut ? 'Logging out...' : 'Logout' }}</span>
               </button>
             </div>
           </Transition>
@@ -252,7 +191,6 @@
          BODY
     ========================================================== -->
     <div class="relative flex min-h-0 flex-1 overflow-hidden">
-
       <!-- Mobile Backdrop -->
       <Transition
         enter-active-class="transition-opacity duration-200"
@@ -275,19 +213,12 @@
       <aside
         class="fixed bottom-0 left-0 top-16 z-50 flex h-[calc(100vh-64px)] shrink-0 flex-col border-r border-slate-200 bg-white transition-all duration-300 dark:border-slate-800 dark:bg-[#0b111d] lg:static lg:z-30"
         :class="[
-          isMobileSidebarOpen
-            ? 'translate-x-0'
-            : '-translate-x-full lg:translate-x-0',
-
-          isSidebarCollapsed
-            ? 'lg:w-0 lg:overflow-hidden lg:border-0'
-            : 'w-64'
+          isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
+          isSidebarCollapsed ? 'lg:w-0 lg:overflow-hidden lg:border-0' : 'w-64'
         ]"
       >
-
         <!-- Sidebar Content -->
         <div class="flex h-full min-w-[256px] flex-col">
-
           <!-- Sidebar Header -->
           <div class="border-b border-slate-100 px-4 py-4 dark:border-slate-800">
             <div class="flex items-center justify-between">
@@ -295,19 +226,12 @@
                 <p class="text-[10px] font-black uppercase tracking-[1.5px] text-slate-400">
                   Admin Panel
                 </p>
-
                 <h2 class="mt-1 text-sm font-black text-slate-900 dark:text-white">
                   Sport Management
                 </h2>
               </div>
-
-              <div
-                class="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-500/10"
-              >
-                <Icon
-                  name="lucide:shield-check"
-                  class="h-4 w-4 text-emerald-500"
-                />
+              <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-500/10">
+                <Icon name="lucide:shield-check" class="h-4 w-4 text-emerald-500" />
               </div>
             </div>
           </div>
@@ -315,18 +239,13 @@
           <!-- Search -->
           <div class="px-3 pt-3">
             <div class="relative">
-              <Icon
-                name="lucide:search"
-                class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
-              />
-
+              <Icon name="lucide:search" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <input
                 v-model="searchQuery"
                 type="text"
                 placeholder="Search menu..."
                 class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-9 pr-8 text-xs font-semibold text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-emerald-400 focus:bg-white focus:ring-2 focus:ring-emerald-500/10 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:focus:bg-slate-950"
               />
-
               <button
                 v-if="searchQuery"
                 type="button"
@@ -340,15 +259,11 @@
 
           <!-- Navigation -->
           <div class="custom-scrollbar flex-1 overflow-y-auto px-3 py-4">
-
             <!-- Main -->
             <div class="mb-5">
-              <p
-                class="mb-2 px-3 text-[9px] font-black uppercase tracking-[1.5px] text-slate-400"
-              >
+              <p class="mb-2 px-3 text-[9px] font-black uppercase tracking-[1.5px] text-slate-400">
                 Overview
               </p>
-
               <nav class="space-y-1">
                 <NuxtLink
                   v-for="item in filteredOverviewItems"
@@ -365,17 +280,9 @@
                   <Icon
                     :name="item.icon"
                     class="h-[17px] w-[17px] shrink-0"
-                    :class="
-                      isLinkActive(item.path)
-                        ? 'text-white'
-                        : 'text-slate-400 group-hover:text-emerald-500'
-                    "
+                    :class="isLinkActive(item.path) ? 'text-white' : 'text-slate-400 group-hover:text-emerald-500'"
                   />
-
-                  <span class="truncate">
-                    {{ item.label }}
-                  </span>
-
+                  <span class="truncate">{{ item.label }}</span>
                   <span
                     v-if="item.badge"
                     class="ml-auto rounded-full px-1.5 py-0.5 text-[9px] font-black"
@@ -393,12 +300,9 @@
 
             <!-- Management -->
             <div class="mb-5">
-              <p
-                class="mb-2 px-3 text-[9px] font-black uppercase tracking-[1.5px] text-slate-400"
-              >
+              <p class="mb-2 px-3 text-[9px] font-black uppercase tracking-[1.5px] text-slate-400">
                 Management
               </p>
-
               <nav class="space-y-1">
                 <NuxtLink
                   v-for="item in filteredManagementItems"
@@ -415,17 +319,9 @@
                   <Icon
                     :name="item.icon"
                     class="h-[17px] w-[17px] shrink-0"
-                    :class="
-                      isLinkActive(item.path)
-                        ? 'text-white'
-                        : 'text-slate-400 group-hover:text-emerald-500'
-                    "
+                    :class="isLinkActive(item.path) ? 'text-white' : 'text-slate-400 group-hover:text-emerald-500'"
                   />
-
-                  <span class="truncate">
-                    {{ item.label }}
-                  </span>
-
+                  <span class="truncate">{{ item.label }}</span>
                   <span
                     v-if="item.badge"
                     class="ml-auto rounded-full bg-amber-100 px-1.5 py-0.5 text-[9px] font-black text-amber-700 dark:bg-amber-500/10 dark:text-amber-400"
@@ -438,12 +334,9 @@
 
             <!-- Finance -->
             <div class="mb-5">
-              <p
-                class="mb-2 px-3 text-[9px] font-black uppercase tracking-[1.5px] text-slate-400"
-              >
+              <p class="mb-2 px-3 text-[9px] font-black uppercase tracking-[1.5px] text-slate-400">
                 Finance
               </p>
-
               <nav class="space-y-1">
                 <NuxtLink
                   v-for="item in filteredFinanceItems"
@@ -460,28 +353,18 @@
                   <Icon
                     :name="item.icon"
                     class="h-[17px] w-[17px] shrink-0"
-                    :class="
-                      isLinkActive(item.path)
-                        ? 'text-white'
-                        : 'text-slate-400 group-hover:text-emerald-500'
-                    "
+                    :class="isLinkActive(item.path) ? 'text-white' : 'text-slate-400 group-hover:text-emerald-500'"
                   />
-
-                  <span class="truncate">
-                    {{ item.label }}
-                  </span>
+                  <span class="truncate">{{ item.label }}</span>
                 </NuxtLink>
               </nav>
             </div>
 
             <!-- Account -->
             <div>
-              <p
-                class="mb-2 px-3 text-[9px] font-black uppercase tracking-[1.5px] text-slate-400"
-              >
+              <p class="mb-2 px-3 text-[9px] font-black uppercase tracking-[1.5px] text-slate-400">
                 Account
               </p>
-
               <nav class="space-y-1">
                 <NuxtLink
                   v-for="item in filteredAccountItems"
@@ -498,16 +381,9 @@
                   <Icon
                     :name="item.icon"
                     class="h-[17px] w-[17px] shrink-0"
-                    :class="
-                      isLinkActive(item.path)
-                        ? 'text-white'
-                        : 'text-slate-400 group-hover:text-emerald-500'
-                    "
+                    :class="isLinkActive(item.path) ? 'text-white' : 'text-slate-400 group-hover:text-emerald-500'"
                   />
-
-                  <span class="truncate">
-                    {{ item.label }}
-                  </span>
+                  <span class="truncate">{{ item.label }}</span>
                 </NuxtLink>
               </nav>
             </div>
@@ -517,51 +393,29 @@
               v-if="hasNoSearchResults"
               class="flex flex-col items-center justify-center px-4 py-10 text-center"
             >
-              <div
-                class="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-800"
-              >
-                <Icon
-                  name="lucide:search-x"
-                  class="h-5 w-5 text-slate-400"
-                />
+              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-800">
+                <Icon name="lucide:search-x" class="h-5 w-5 text-slate-400" />
               </div>
-
-              <p class="mt-3 text-xs font-bold text-slate-500">
-                No menu found
-              </p>
-
-              <p class="mt-1 text-[10px] text-slate-400">
-                Try another keyword
-              </p>
+              <p class="mt-3 text-xs font-bold text-slate-500">No menu found</p>
+              <p class="mt-1 text-[10px] text-slate-400">Try another keyword</p>
             </div>
           </div>
 
           <!-- Sidebar Bottom -->
           <div class="border-t border-slate-100 p-3 dark:border-slate-800">
-
-            <!-- Ethiopia Card -->
-            <div
-              class="rounded-2xl border border-emerald-100 bg-emerald-50 p-3 dark:border-emerald-500/10 dark:bg-emerald-500/5"
-            >
+            <div class="rounded-2xl border border-emerald-100 bg-emerald-50 p-3 dark:border-emerald-500/10 dark:bg-emerald-500/5">
               <div class="flex items-center gap-2.5">
-                <div
-                  class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500 text-white"
-                >
+                <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500 text-white">
                   <Icon name="lucide:map-pin" class="h-4 w-4" />
                 </div>
-
                 <div class="min-w-0">
-                  <p class="text-[10px] font-black text-emerald-700 dark:text-emerald-400">
-                    Ethiopia
-                  </p>
-
+                  <p class="text-[10px] font-black text-emerald-700 dark:text-emerald-400">Ethiopia</p>
                   <p class="mt-0.5 truncate text-[9px] font-semibold text-slate-500 dark:text-slate-400">
                     Sport field network
                   </p>
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       </aside>
@@ -569,10 +423,8 @@
       <!-- =======================================================
            MAIN CONTENT
       ======================================================== -->
-      <main
-        class="custom-scrollbar min-w-0 flex-1 overflow-y-auto bg-slate-50 dark:bg-[#070b12]"
-      >
-        <div class="mx-auto min-h-full w-full max-w-[1600px] p-4 md:p-6 lg:p-8">
+      <main class="custom-scrollbar min-w-0 flex-1 overflow-y-auto bg-slate-50 dark:bg-[#070b12]">
+        <div class="mx-auto min-h-full w-full max-w-[1600px] p-3 sm:p-4 md:p-6 lg:p-8">
           <slot />
         </div>
       </main>
@@ -593,7 +445,6 @@ const config = useRuntimeConfig()
 /* =========================================================
    STATE
 ========================================================= */
-
 const isMobileSidebarOpen = ref(false)
 const isSidebarCollapsed = ref(false)
 const isProfileOpen = ref(false)
@@ -604,29 +455,20 @@ const searchQuery = ref('')
 /* =========================================================
    API BASE
 ========================================================= */
-
 const apiBase = computed(() => {
-  const base = String(config.public.apiBase || 'http://127.0.0.1:8000')
-    .replace(/\/+$/, '')
+  const base = String(config.public.apiBase || 'http://127.0.0.1:8000').replace(/\/+$/, '')
   return base.endsWith('/api') ? base.replace(/\/api$/, '') : base
 })
 
 /* =========================================================
    USER — Avatar URL builder
 ========================================================= */
-
 const userAvatar = computed<string | null>(() => {
   const raw = authStore.user?.avatar || (authStore.user as any)?.avatar_url
   if (!raw) return null
-
-  if (
-    raw.startsWith('http://') ||
-    raw.startsWith('https://') ||
-    raw.startsWith('data:')
-  ) {
+  if (raw.startsWith('http://') || raw.startsWith('https://') || raw.startsWith('data:')) {
     return raw
   }
-
   return `${apiBase.value}/storage/${raw.replace(/^\/+/, '')}`
 })
 
@@ -637,28 +479,17 @@ const onAvatarError = (e: Event) => {
 
 const userInitials = computed(() => {
   const name = authStore.user?.name || 'Admin'
-  return String(name)
-    .split(' ')
-    .slice(0, 2)
-    .map((n: string) => n.charAt(0))
-    .join('')
-    .toUpperCase() || 'A'
+  return String(name).split(' ').slice(0, 2).map((n: string) => n.charAt(0)).join('').toUpperCase() || 'A'
 })
 
 const adminName = computed(() => {
   const user = authStore.user
-  return (
-    user?.name ||
-    (user as any)?.full_name ||
-    (user as any)?.fullName ||
-    'Admin'
-  )
+  return user?.name || (user as any)?.full_name || (user as any)?.fullName || 'Admin'
 })
 
 /* =========================================================
    ADMIN MENU
 ========================================================= */
-
 const overviewItems = [
   { path: '/admin',              label: 'Dashboard',  icon: 'lucide:layout-dashboard' },
   { path: '/admin/my-venues',    label: 'Sport Fields', icon: 'lucide:map-pin' },
@@ -684,11 +515,9 @@ const accountItems = [
 /* =========================================================
    SEARCH
 ========================================================= */
-
 const filterItems = (items: typeof overviewItems) => {
   const query = searchQuery.value.trim().toLowerCase()
   if (!query) return items
-
   return items.filter(item =>
     item.label.toLowerCase().includes(query) ||
     item.path.toLowerCase().includes(query)
@@ -713,9 +542,8 @@ const hasNoSearchResults = computed(() => {
 /* =========================================================
    SIDEBAR
 ========================================================= */
-
 const toggleSidebar = () => {
-  if (window.innerWidth < 1024) {
+  if (import.meta.client && window.innerWidth < 1024) {
     isMobileSidebarOpen.value = !isMobileSidebarOpen.value
   } else {
     isSidebarCollapsed.value = !isSidebarCollapsed.value
@@ -731,7 +559,6 @@ const handleSidebarNavigation = () => {
 /* =========================================================
    ACTIVE LINK
 ========================================================= */
-
 const isLinkActive = (path: string) => {
   if (path === '/admin') return route.path === '/admin'
   return route.path === path || route.path.startsWith(`${path}/`)
@@ -740,18 +567,13 @@ const isLinkActive = (path: string) => {
 /* =========================================================
    PROFILE DROPDOWN
 ========================================================= */
-
 const toggleDropdown = () => {
   isProfileOpen.value = !isProfileOpen.value
 }
 
 const handleClickOutside = (event: MouseEvent) => {
   const target = event.target as Node | null
-  if (
-    dropdownRef.value &&
-    target &&
-    !dropdownRef.value.contains(target)
-  ) {
+  if (dropdownRef.value && target && !dropdownRef.value.contains(target)) {
     isProfileOpen.value = false
   }
 }
@@ -759,11 +581,9 @@ const handleClickOutside = (event: MouseEvent) => {
 /* =========================================================
    LOGOUT
 ========================================================= */
-
 const handleLogout = async () => {
   if (isLoggingOut.value) return
   isLoggingOut.value = true
-
   try {
     await authStore.logout()
     isProfileOpen.value = false
@@ -778,16 +598,11 @@ const handleLogout = async () => {
 /* =========================================================
    LIFECYCLE
 ========================================================= */
-
 onMounted(() => {
-  // ✅ 1. Token ከ localStorage/cookie መልስ
   authStore.init()
-
-  // ✅ 2. የቅርብ ጊዜ user data (avatar ወዘተ) አድስ
   if (authStore.token && authStore.fetchUser) {
     authStore.fetchUser().catch(() => {})
   }
-
   document.addEventListener('click', handleClickOutside)
 })
 

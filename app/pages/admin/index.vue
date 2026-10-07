@@ -331,14 +331,6 @@ onMounted(async () => {
             <RefreshCw :size="16" :class="isLoading ? 'animate-spin' : ''" />
             Refresh
           </button>
-
-          <NuxtLink
-            to="/admin/venues/create"
-            class="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-slate-900 shadow-lg transition hover:bg-emerald-50"
-          >
-            <span class="text-lg leading-none">+</span>
-            Add Sport Field
-          </NuxtLink>
         </div>
       </div>
     </div>

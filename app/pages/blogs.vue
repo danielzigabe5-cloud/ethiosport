@@ -821,7 +821,7 @@ onMounted(() => {
                 </button>
 
                 <NuxtLink
-                  to="/blog"
+                  to="/venues"
                   class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-xs font-black transition"
                 >
                   Browse All
