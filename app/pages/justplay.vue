@@ -154,7 +154,7 @@ const openGames = ref([
     >
 
       <!-- Football field markings -->
-      <div class="absolute inset-0 pointer-events-none opacity-20">
+      <div class="absolute inset-0 pointer-events-none opacity-10">
 
         <div
           class="absolute left-1/2 top-0 h-full w-px bg-white"
@@ -189,15 +189,15 @@ const openGames = ref([
         <img
           :src="venueImg"
           alt="Addis Ababa sports field"
-          class="h-full w-full object-cover opacity-80"
+          class="h-full w-full object-cover opacity-100"
         />
 
         <div
           class="absolute inset-0
                  bg-gradient-to-r
-                 from-[#07150f]/55
-                 via-[#0b1f16]/30
-                 to-[#0b1f16]/20"
+                 from-[#07150f]/35
+                 via-[#0b1f16]/15
+                 to-[#0b1f16]/5"
         ></div>
 
       </div>
@@ -231,7 +231,7 @@ const openGames = ref([
           <h1
             class="mt-6 text-4xl sm:text-5xl md:text-7xl
                    font-black uppercase tracking-tight
-                   text-white leading-tight"
+                   text-white leading-tight drop-shadow-[0_3px_12px_rgba(0,0,0,0.8)]"
           >
             Find Players.
 
@@ -247,7 +247,7 @@ const openGames = ref([
           <p
             class="mt-6 max-w-2xl mx-auto
                    text-base md:text-lg
-                   text-slate-200 leading-relaxed"
+                   text-slate-100 leading-relaxed drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
           >
             Connect with players around Addis Ababa,
             discover pickup games, and get ready for

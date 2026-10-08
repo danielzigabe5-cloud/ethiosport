@@ -317,9 +317,10 @@ onMounted(() => {
     <!-- ═══════════════════════════════════════
          HERO
          ═══════════════════════════════════════ -->
-    <section class="relative overflow-hidden bg-gradient-to-br from-green-800 via-emerald-900 to-green-950 text-white">
-      <img :src="heroImage" alt="Sports field" class="absolute inset-0 h-full w-full object-cover object-center" />
-      <div class="absolute inset-0 bg-gradient-to-r from-green-950/75 via-green-900/50 to-green-900/20" />
+    <section class="relative overflow-hidden bg-gradient-to-br from-green-800 via-emerald-900 to-green-950 text-white shadow-xl shadow-green-950/30">
+      <img :src="heroImage" alt="Sports field" class="absolute inset-0 h-full w-full object-cover object-center brightness-125 saturate-110" />
+      <div class="absolute inset-0 bg-gradient-to-r from-green-950/60 via-green-900/35 to-green-900/10" />
+      <div class="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-green-950/30 to-transparent" />
       <div class="absolute right-[10%] top-24 hidden lg:block w-32 h-px bg-green-400/50" />
 
       <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
@@ -651,24 +652,24 @@ onMounted(() => {
     <!-- ═══════════════════════════════════════
          CTA
          ═══════════════════════════════════════ -->
-    <section class="bg-green-800 text-white py-16">
+    <section class="bg-[#a8ff3e] py-16 text-[#0d2d22]">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="relative overflow-hidden rounded-2xl border border-green-600/40 bg-green-900/60 p-8 md:p-12">
-          <div class="absolute -right-20 -top-20 w-64 h-64 rounded-full bg-green-400/10 blur-3xl pointer-events-none" />
+        <div class="relative overflow-hidden rounded-2xl border border-[#0d2d22]/20 p-8 md:p-12">
+          <div class="absolute -right-20 -top-20 w-64 h-64 rounded-full bg-[#0d2d22]/10 blur-3xl pointer-events-none" />
           <div class="relative flex flex-col lg:flex-row lg:items-center justify-between gap-8">
             <div class="max-w-2xl">
-              <p class="text-green-300 text-[10px] font-black uppercase tracking-[0.2em]">CombolojoSPORT Mobile App</p>
+              <p class="text-[#315e0e] text-[10px] font-black uppercase tracking-[0.2em]">CombolojoSPORT Mobile App</p>
               <h2 class="mt-3 text-3xl md:text-4xl font-black">Ready to Play?</h2>
-              <p class="mt-3 text-sm md:text-base text-slate-300 leading-7">
+              <p class="mt-3 text-sm md:text-base text-[#294434] leading-7">
                 Discover sports venues and events on the website. When you are ready to reserve a playing slot, continue with the CombolojoSPORT mobile app.
               </p>
             </div>
             <div class="flex flex-wrap gap-3">
-              <NuxtLink to="/venues" class="inline-flex items-center gap-2 bg-green-500 hover:bg-green-400 text-white px-6 py-3.5 rounded-xl text-xs font-black transition">
+              <NuxtLink to="/venues" class="inline-flex items-center gap-2 bg-[#0d2d22] hover:bg-[#163b2d] text-white px-6 py-3.5 rounded-xl text-xs font-black transition">
                 Find a Venue
                 <Icon name="lucide:map-pin" class="w-4 h-4" />
               </NuxtLink>
-              <NuxtLink to="/download-app" class="inline-flex items-center gap-2 border border-white/20 bg-white/5 hover:bg-white/10 px-6 py-3.5 rounded-xl text-xs font-black transition">
+              <NuxtLink to="/download-app" class="inline-flex items-center gap-2 border border-[#0d2d22] bg-white hover:bg-white/80 px-6 py-3.5 rounded-xl text-xs font-black transition">
                 Get Mobile App
                 <Icon name="lucide:smartphone" class="w-4 h-4" />
               </NuxtLink>

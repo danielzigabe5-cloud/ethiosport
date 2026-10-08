@@ -22,6 +22,7 @@ import venue11Image from '~/assets/images/venuess11.jpg'
 import venue12Image from '~/assets/images/venuess12.png'
 import venue13Image from '~/assets/images/venuess13.jpg'
 import venue7Image from '~/assets/images/venues7.jpg'
+import venue14Image from '~/assets/images/venuess14.jpg'
 
 
 /* =========================================================
@@ -50,9 +51,7 @@ interface SportEvent {
   location: string
   image: string
   description: string
-  organizer: string
   sport: string
-  participants: string
 }
 
 
@@ -66,10 +65,7 @@ const searchSport = ref('All Sports')
 const searchLocation = ref('')
 
 const selectedVenue = ref<Venue | null>(null)
-const selectedEvent = ref<SportEvent | null>(null)
-
 const showVenueModal = ref(false)
-const showEventModal = ref(false)
 const selectedVenueImages = computed(() => {
   if (!selectedVenue.value) {
     return []
@@ -95,7 +91,8 @@ const heroImages = [
   venue11Image,
   venue12Image,
   venue13Image,
-  venue7Image
+  venue7Image,
+  venue14Image
 ]
 
 onMounted(() => {
@@ -236,6 +233,44 @@ const venues: Venue[] = [
     ]
   }
 ]
+
+/* =========================================================
+   EVENTS
+========================================================= */
+
+const events: SportEvent[] = [
+  {
+    id: 1,
+    title: 'Community Football Weekend',
+    date: 'Oct 05, 2026',
+    time: '09:00 AM',
+    location: 'Sarbet Football Field, Addis Ababa',
+    image: venue20Image,
+    description: 'Join a competitive and social football tournament for teams and players in Addis Ababa.',
+    sport: 'Football'
+  },
+  {
+    id: 2,
+    title: 'City Basketball Meetup',
+    date: 'Oct 12, 2026',
+    time: '02:00 PM',
+    location: 'City Basketball Court, Kazanchis',
+    image: venue10Image,
+    description: 'A friendly basketball event with pickup games, skill drills and community energy.',
+    sport: 'Basketball'
+  },
+  {
+    id: 3,
+    title: 'Volleyball Challenge',
+    date: 'Oct 18, 2026',
+    time: '10:00 AM',
+    location: 'Unity Volleyball Center, Piassa',
+    image: venue11Image,
+    description: 'Compete or participate in a weekend volleyball challenge built for active teams and community players.',
+    sport: 'Volleyball'
+  }
+]
+
 /* =========================================================
    TESTIMONIALS
 ========================================================= */
@@ -362,27 +397,6 @@ function bookVenue() {
   navigateTo('/download-app')
 }
 
-function openEvent(event: SportEvent) {
-  selectedEvent.value = event
-  showEventModal.value = true
-}
-
-function closeEvent() {
-  showEventModal.value = false
-  selectedEvent.value = null
-}
-
-function joinEvent() {
-  closeEvent()
-
-  navigateTo({
-    path: '/download-app',
-    query: {
-      type: 'event'
-    }
-  })
-}
-
 function toggleFaq(index: number) {
   openFaq.value =
     openFaq.value === index
@@ -418,10 +432,10 @@ function toggleFaq(index: number) {
           }"
         />
 
-        <div class="absolute inset-0 bg-black/50"></div>
+        <div class="absolute inset-0 bg-black/20"></div>
 
         <div
-          class="absolute inset-0 bg-gradient-to-b from-[#07150f]/40 via-[#07150f]/20 to-[#07150f]"
+          class="absolute inset-0 bg-gradient-to-b from-[#07150f]/15 via-[#07150f]/10 to-[#07150f]/80"
         ></div>
 
       </div>
@@ -596,21 +610,30 @@ function toggleFaq(index: number) {
 
               <!-- BUTTON -->
 
-              <button
-                type="button"
-                class="flex items-center justify-center gap-2 rounded-xl bg-emerald-700 px-7 py-3 text-sm font-black text-white transition hover:bg-emerald-800"
-                @click="searchVenues"
-              >
-
-                Find a Venue
-
-                <span
-                  class="text-lg text-lime-400 transition-transform group-hover:translate-x-1"
+              <div class="flex flex-col gap-2 sm:flex-row">
+                <button
+                  type="button"
+                  class="flex items-center justify-center gap-2 rounded-xl bg-emerald-700 px-7 py-3 text-sm font-black text-white transition hover:bg-emerald-800"
+                  @click="searchVenues"
                 >
-                  →
-                </span>
+                  Find a Venue
 
-              </button>
+                  <span
+                    class="text-lg text-lime-400 transition-transform group-hover:translate-x-1"
+                  >
+                    →
+                  </span>
+                </button>
+
+                <a
+                  :href="`https://www.youtube.com/results?search_query=${encodeURIComponent(searchLocation.trim())}`"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="flex items-center justify-center rounded-xl border border-white/20 bg-white/10 px-5 py-3 text-sm font-black text-white transition hover:bg-white/20"
+                >
+                  Search YouTube
+                </a>
+              </div>
 
             </div>
 
@@ -1173,13 +1196,12 @@ function toggleFaq(index: number) {
                 {{ event.description }}
               </p>
 
-              <button
-                type="button"
-                class="mt-5 rounded-lg bg-slate-900 px-4 py-2.5 text-xs font-black text-white transition hover:bg-emerald-700"
-                @click="openEvent(event)"
+              <NuxtLink
+                to="/events"
+                class="mt-5 inline-flex items-center rounded-lg bg-slate-900 px-4 py-2.5 text-xs font-black text-white transition hover:bg-emerald-700"
               >
                 View Event
-              </button>
+              </NuxtLink>
 
             </div>
 
@@ -1334,26 +1356,26 @@ function toggleFaq(index: number) {
 
 
             <div
-              class="relative w-[255px] rounded-[2.5rem] border-[7px] border-emerald-950 bg-[#011d17] p-2 shadow-[0_30px_80px_rgba(0,0,0,0.5)] sm:w-[285px]"
+              class="relative w-[255px] rounded-[2.5rem] border-[7px] border-[#020806] bg-[#050b09] p-2 shadow-[0_30px_80px_rgba(0,0,0,0.5)] sm:w-[285px]"
             >
 
               <!-- SPEAKER -->
 
               <div
-                class="absolute left-1/2 top-2 z-20 h-5 w-20 -translate-x-1/2 rounded-full bg-[#064e3b]"
+                class="absolute left-1/2 top-2 z-20 h-5 w-20 -translate-x-1/2 rounded-full bg-[#183329]"
               ></div>
 
 
               <!-- SCREEN -->
 
               <div
-                class="overflow-hidden rounded-[2rem] bg-[#022c22]"
+                class="overflow-hidden rounded-[2rem] bg-[#08130f]"
               >
 
                 <!-- APP HEADER -->
 
                 <div
-                  class="bg-[#064e3b] px-5 pb-5 pt-10 text-white"
+                  class="bg-[#10251b] px-5 pb-5 pt-10 text-white"
                 >
 
                   <div
@@ -1386,7 +1408,7 @@ function toggleFaq(index: number) {
 
 
                   <div
-                    class="mt-5 rounded-xl bg-white/10 p-3"
+                    class="mt-5 rounded-xl border border-white/10 bg-white/5 p-3"
                   >
 
                     <p
@@ -1408,7 +1430,7 @@ function toggleFaq(index: number) {
 
                 <!-- APP CONTENT -->
 
-                <div class="bg-[#022c22] p-3">
+                <div class="bg-[#08130f] p-3">
 
                   <img
                     :src="venue20Image"
@@ -1416,7 +1438,7 @@ function toggleFaq(index: number) {
                     class="h-36 w-full rounded-xl object-cover ring-1 ring-white/10"
                   />
 
-                  <div class="mt-3 rounded-xl border border-emerald-300/15 bg-[#064e3b] p-3">
+                  <div class="mt-3 rounded-xl border border-white/10 bg-[#14291f] p-3">
 
                     <p
                       class="text-xs font-black text-white"
@@ -1461,7 +1483,7 @@ function toggleFaq(index: number) {
             <!-- FLOATING CARD -->
 
             <div
-              class="absolute -bottom-4 left-2 rounded-2xl border border-emerald-300/15 bg-[#064e3b]/95 p-4 shadow-2xl backdrop-blur sm:left-6"
+              class="absolute -bottom-4 left-2 rounded-2xl border border-white/10 bg-[#101e18]/95 p-4 shadow-2xl backdrop-blur sm:left-6"
             >
 
               <p
@@ -1773,120 +1795,6 @@ function toggleFaq(index: number) {
     </div>
 
 
-    <!-- =====================================================
-         EVENT MODAL
-    ====================================================== -->
-
-    <div
-      v-if="showEventModal && selectedEvent"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
-      @click.self="closeEvent"
-    >
-
-      <div
-        class="w-full max-w-lg overflow-hidden rounded-3xl bg-slate-900 text-white shadow-2xl"
-      >
-
-        <div
-          class="relative h-52 overflow-hidden"
-        >
-
-          <img
-            :src="selectedEvent.image"
-            :alt="selectedEvent.title"
-            class="h-full w-full object-cover"
-          />
-
-          <div
-            class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"
-          ></div>
-
-          <button
-            type="button"
-            class="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-black/50 text-white"
-            @click="closeEvent"
-          >
-            ✕
-          </button>
-
-        </div>
-
-
-        <div class="p-6">
-
-          <span
-            class="rounded-md bg-lime-400 px-2.5 py-1 text-xs font-bold text-slate-950"
-          >
-            {{ selectedEvent.sport }}
-          </span>
-
-          <h3
-            class="mt-4 text-2xl font-black"
-          >
-            {{ selectedEvent.title }}
-          </h3>
-
-          <p
-            class="mt-2 text-sm font-bold text-lime-400"
-          >
-            📅 {{ selectedEvent.date }}
-            at {{ selectedEvent.time }}
-          </p>
-
-          <p
-            class="mt-2 text-xs text-white/60"
-          >
-            📍 {{ selectedEvent.location }}
-          </p>
-
-          <p
-            class="mt-4 text-sm leading-7 text-white/75"
-          >
-            {{ selectedEvent.description }}
-          </p>
-
-
-          <div
-            class="mt-5 space-y-2 text-xs text-white/60"
-          >
-
-            <p>
-              <strong class="text-white">
-                Organizer:
-              </strong>
-              {{ selectedEvent.organizer }}
-            </p>
-
-            <p>
-              <strong class="text-white">
-                Participants:
-              </strong>
-              {{ selectedEvent.participants }}
-            </p>
-
-          </div>
-
-
-          <div
-            class="mt-7 flex justify-end border-t border-white/10 pt-5"
-          >
-
-            <button
-              type="button"
-              class="rounded-xl bg-lime-400 px-6 py-3 text-sm font-black text-slate-950 transition hover:bg-lime-300"
-              @click="joinEvent"
-            >
-              Continue in App
-            </button>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-
   </div>
 </template>
 
@@ -1905,16 +1813,12 @@ function toggleFaq(index: number) {
   object-fit: cover;
   object-position: center;
   opacity: 0;
-  transition:
-    opacity 900ms ease-in-out,
-    transform 7s ease-in-out;
-  transform: scale(1.03);
-  will-change: opacity, transform;
+  transition: opacity 900ms ease-in-out;
+  will-change: opacity;
 }
 
 .hero-image-active {
   opacity: 1;
-  transform: scale(1);
 }
 
 

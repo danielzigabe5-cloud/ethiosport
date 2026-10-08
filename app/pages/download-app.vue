@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import venuePreviewImage from '~/assets/images/venues7.jpg'
+
 const router = useRouter()
 
 /* =========================================================
@@ -203,11 +205,11 @@ useHead({
       </div>
 
       <!-- HERO CONTENT -->
-      <div class="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24">
-        <div class="mx-auto max-w-4xl text-center">
+      <div class="relative z-10 mx-auto grid max-w-7xl items-center gap-12 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[1.1fr_0.9fr] lg:px-8 lg:py-24">
+        <div class="mx-auto max-w-4xl text-center lg:mx-0 lg:text-left">
 
           <!-- BADGE -->
-          <div class="mx-auto inline-flex items-center gap-2 rounded-full border border-lime-300/30 bg-lime-300/10 px-4 py-2">
+          <div class="mx-auto inline-flex items-center gap-2 rounded-full border border-lime-300/30 bg-lime-300/10 px-4 py-2 lg:mx-0">
             <span class="h-2 w-2 rounded-full bg-lime-300 animate-pulse"></span>
             <span class="text-[10px] font-black uppercase tracking-[0.25em] text-lime-200 sm:text-xs">
               Official Mobile App
@@ -221,14 +223,14 @@ useHead({
           </h1>
 
           <!-- DESCRIPTION -->
-          <p class="mx-auto mt-6 max-w-2xl text-sm leading-7 text-emerald-50/75 sm:text-base">
+          <p class="mx-auto mt-6 max-w-2xl text-sm leading-7 text-emerald-50/75 sm:text-base lg:mx-0">
             Download the CombolojoSPORT mobile app to book sports venues,
             choose available time slots, join games and manage your
             sports activities from your phone.
           </p>
 
           <!-- ✅ VERSION INFO -->
-          <div class="mx-auto mt-6 flex flex-wrap items-center justify-center gap-3 text-xs">
+          <div class="mx-auto mt-6 flex flex-wrap items-center justify-center gap-3 text-xs lg:mx-0 lg:justify-start">
             <div class="flex items-center gap-2 rounded-lg border border-lime-300/20 bg-lime-300/5 px-3 py-1.5">
               <span class="text-lime-300">📦</span>
               <span class="text-lime-100">v{{ APK_VERSION }}</span>
@@ -244,7 +246,7 @@ useHead({
           </div>
 
           <!-- HERO BUTTONS -->
-          <div class="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <div class="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row lg:justify-start">
 
             <!-- ✅ ANDROID - Real Google Play Icon -->
             <button type="button" @click="downloadAndroid" class="group flex w-full items-center justify-center gap-3 rounded-xl bg-lime-400 px-7 py-4 text-sm font-black text-[#022c22] shadow-xl shadow-black/10 transition hover:-translate-y-1 hover:bg-lime-300 sm:w-auto">
@@ -266,7 +268,7 @@ useHead({
           </div>
 
           <!-- ✅ TRUST BADGES -->
-          <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+          <div class="mt-8 flex flex-wrap items-center justify-center gap-4 lg:justify-start">
             <div v-for="badge in trustBadges" :key="badge.label" class="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-emerald-100/60">
               <span>{{ badge.icon }}</span>
               <span>{{ badge.label }}</span>
@@ -274,10 +276,107 @@ useHead({
           </div>
 
           <!-- SMALL INFO -->
-          <p class="mt-5 text-[10px] font-bold uppercase tracking-widest text-emerald-100/50">
+          <p class="mt-5 text-center text-[10px] font-bold uppercase tracking-widest text-emerald-100/50 lg:text-left">
             Play · Book · Connect
           </p>
 
+        </div>
+
+        <div class="relative mx-auto flex w-full max-w-[420px] items-end justify-center gap-2 px-1 pb-3 sm:gap-3 lg:max-w-none">
+          <div class="absolute inset-x-8 bottom-8 top-8 rounded-full bg-lime-400/15 blur-3xl"></div>
+          <div class="absolute right-2 top-10 h-24 w-24 rounded-full border border-lime-300/20 sm:right-6"></div>
+          <div class="absolute bottom-10 left-1 h-16 w-16 rounded-full border border-white/10 sm:left-5"></div>
+
+          <div class="relative z-10 w-[min(40vw,180px)] shrink-0 rotate-0 rounded-[2.6rem] border-[7px] border-[#020806] bg-[#050b09] p-2 shadow-[0_30px_90px_rgba(0,0,0,0.55)] transition-transform duration-500 hover:-translate-y-1">
+            <div class="absolute left-1/2 top-2 z-20 h-5 w-20 -translate-x-1/2 rounded-full bg-[#183329]"></div>
+            <div class="overflow-hidden rounded-[2rem] border border-white/10 bg-[#08130f]">
+              <div class="flex items-center justify-between px-3 pb-2 pt-4 text-[8px] font-bold text-white/70">
+                <span>9:41</span>
+                <span aria-hidden="true">● ▮ ▰</span>
+              </div>
+              <div class="flex items-center justify-between bg-[#10251b] px-3 py-3 text-white">
+                <div>
+                  <p class="text-[7px] font-bold uppercase tracking-wider text-lime-400">CombolojoSPORT</p>
+                  <p class="mt-1 text-xs font-black">Find your next game</p>
+                </div>
+                <span class="flex h-8 w-8 items-center justify-center rounded-full bg-lime-400 text-sm text-[#0b1f16]">⚽</span>
+              </div>
+              <div class="relative">
+                <img
+                  :src="venuePreviewImage"
+                  alt="Football venue shown in the CombolojoSPORT app"
+                  class="h-36 w-full object-cover"
+                />
+                <span class="absolute bottom-2 left-2 rounded-full border border-white/10 bg-[#050b09]/85 px-2 py-1 text-[7px] font-black uppercase tracking-wider text-lime-300 backdrop-blur">
+                  Nearby venue
+                </span>
+              </div>
+              <div class="bg-[#08130f] p-2">
+                <div class="rounded-xl border border-white/10 bg-[#14291f] p-2">
+                  <div class="flex items-start justify-between gap-1">
+                    <div>
+                      <p class="text-[9px] font-black text-white">National Stadium</p>
+                      <p class="mt-1 text-[7px] text-slate-400">Addis Ababa · Bole</p>
+                    </div>
+                    <span class="text-[9px] font-black text-lime-300">★ 4.9</span>
+                  </div>
+                  <div class="mt-3 flex items-center justify-between border-t border-white/10 pt-2">
+                    <span class="text-[8px] font-bold text-lime-300">ETB 500 / hour</span>
+                    <span class="rounded-lg bg-lime-400 px-2 py-1.5 text-[7px] font-black text-[#0b1f16]">Book now</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="relative z-10 w-[min(32vw,160px)] shrink-0 rotate-0 rounded-[2.6rem] border-[7px] border-[#020806] bg-[#050b09] p-1.5 shadow-[0_30px_90px_rgba(0,0,0,0.55)] transition-transform duration-500 hover:-translate-y-1">
+            <div class="absolute left-1/2 top-2 z-20 h-4 w-16 -translate-x-1/2 rounded-full bg-[#183329]"></div>
+            <div class="overflow-hidden rounded-[2rem] border border-white/10 bg-[#08130f]">
+              <div class="flex items-center justify-between px-3 pb-1.5 pt-3 text-[7px] font-bold text-white/70">
+                <span>9:41</span>
+                <span aria-hidden="true">● ▮ ▰</span>
+              </div>
+              <div class="bg-[#10251b] px-2.5 py-2.5 text-white">
+                <p class="text-[6px] font-bold uppercase tracking-wider text-lime-400">BOOK A VENUE</p>
+                <p class="mt-1 text-[10px] font-black">Choose a time</p>
+              </div>
+              <div class="space-y-2 bg-[#08130f] p-2">
+                <div class="rounded-lg border border-white/10 bg-[#14291f] p-1.5">
+                  <p class="text-[6px] font-bold text-slate-400">SELECTED VENUE</p>
+                  <p class="mt-1 text-[8px] font-black leading-tight text-white">National Stadium</p>
+                  <p class="mt-1 text-[6px] text-slate-400">Addis Ababa · Bole</p>
+                </div>
+                <div>
+                  <div class="flex items-center justify-between">
+                    <p class="text-[7px] font-black text-white">Choose date</p>
+                    <span class="text-[6px] text-lime-300">October 2026</span>
+                  </div>
+                  <div class="mt-1 grid grid-cols-4 gap-1">
+                    <span class="rounded-md border border-white/10 bg-[#142019] py-1 text-center text-[6px] text-slate-300">10</span>
+                    <span class="rounded-md border border-lime-400 bg-lime-400 py-1 text-center text-[6px] font-black text-[#0b1f16]">11</span>
+                    <span class="rounded-md border border-white/10 bg-[#142019] py-1 text-center text-[6px] text-slate-300">12</span>
+                    <span class="rounded-md border border-white/10 bg-[#142019] py-1 text-center text-[6px] text-slate-300">13</span>
+                  </div>
+                </div>
+                <div>
+                  <p class="text-[7px] font-black text-white">Available slots</p>
+                  <div class="mt-1 grid grid-cols-2 gap-1">
+                    <span class="rounded-md border border-white/10 bg-[#142019] px-0.5 py-1 text-center text-[6px] text-slate-300">09:00 AM</span>
+                    <span class="rounded-md border border-lime-400 bg-lime-400/10 px-0.5 py-1 text-center text-[6px] font-bold text-lime-300">10:00 AM</span>
+                    <span class="rounded-md border border-white/10 bg-[#142019] px-0.5 py-1 text-center text-[6px] text-slate-300">11:00 AM</span>
+                    <span class="rounded-md border border-white/10 bg-[#142019] px-0.5 py-1 text-center text-[6px] text-slate-300">12:00 PM</span>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between border-t border-white/10 pt-1.5">
+                  <div>
+                    <p class="text-[6px] text-slate-400">Total</p>
+                    <p class="text-[8px] font-black text-lime-300">ETB 500</p>
+                  </div>
+                  <span class="rounded-md bg-lime-400 px-1.5 py-1 text-[6px] font-black text-[#0b1f16]">Confirm</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -723,7 +822,7 @@ useHead({
         </div>
 
         <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-          © {{ new Date().getFullYear() }} CombolojoSPORT
+          © {{ new Date().getFullYear() }} CombolojoS
         </p>
 
       </div>

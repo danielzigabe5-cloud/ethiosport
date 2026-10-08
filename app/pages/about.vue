@@ -233,7 +233,7 @@ function registerVenue() {
 
       <!-- Content -->
       <div
-        class="relative z-10 mx-auto w-full max-w-7xl px-5 py-20 sm:px-8 lg:px-10"
+        class="relative z-10 mx-auto grid w-full max-w-7xl items-center gap-12 px-5 py-16 sm:px-8 sm:py-20 lg:grid-cols-[minmax(0,1fr)_320px] lg:px-10"
       >
         <div class="max-w-3xl">
 
@@ -318,6 +318,88 @@ function registerVenue() {
             </div>
           </div>
 
+        </div>
+
+        <div class="relative mx-auto w-full max-w-[290px]">
+          <div class="absolute -inset-6 rounded-full bg-emerald-400/20 blur-3xl"></div>
+
+          <div class="relative rounded-[2.6rem] border-[7px] border-[#020806] bg-[#050b09] p-2 shadow-[0_30px_90px_rgba(0,0,0,0.6)]">
+            <div class="absolute left-1/2 top-2 z-20 h-5 w-20 -translate-x-1/2 rounded-full bg-[#183329]"></div>
+
+            <div class="overflow-hidden rounded-[2rem] border border-white/10 bg-[#08130f]">
+              <div class="flex items-center justify-between px-4 pb-2 pt-4 text-[9px] font-bold text-white/70">
+                <span>9:41</span>
+                <span aria-hidden="true">● ▮ ▰</span>
+              </div>
+
+              <div class="bg-[#10251b] px-4 py-3 text-white">
+                <p class="text-[8px] font-bold uppercase tracking-wider text-lime-400">
+                  Book a venue
+                </p>
+                <p class="mt-1 text-sm font-black">
+                  Plan your next game
+                </p>
+              </div>
+
+              <div class="relative">
+                <img
+                  :src="venueImg"
+                  alt="Sports venue selected for booking"
+                  class="h-28 w-full object-cover"
+                />
+                <span class="absolute bottom-2 left-2 rounded-full border border-white/10 bg-[#050b09]/85 px-2.5 py-1 text-[8px] font-black text-lime-300 backdrop-blur">
+                  ★ 4.9 · Addis Ababa
+                </span>
+              </div>
+
+              <div class="space-y-3 bg-[#08130f] p-3">
+                <div class="rounded-xl border border-white/10 bg-[#14291f] p-3">
+                  <div class="flex items-center justify-between gap-2">
+                    <div>
+                      <p class="text-[10px] font-black text-white">
+                        Choose a date
+                      </p>
+                      <p class="mt-1 text-[8px] text-slate-400">
+                        Select your game day
+                      </p>
+                    </div>
+                    <span class="text-xs text-lime-300">▦</span>
+                  </div>
+
+                  <div class="mt-3 grid grid-cols-4 gap-1.5">
+                    <span class="rounded-lg border border-white/10 bg-[#0c1711] py-2 text-center text-[8px] text-slate-300">10</span>
+                    <span class="rounded-lg border border-lime-400 bg-lime-400 py-2 text-center text-[8px] font-black text-[#0b1f16]">11</span>
+                    <span class="rounded-lg border border-white/10 bg-[#0c1711] py-2 text-center text-[8px] text-slate-300">12</span>
+                    <span class="rounded-lg border border-white/10 bg-[#0c1711] py-2 text-center text-[8px] text-slate-300">13</span>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="flex items-center justify-between">
+                    <p class="text-[10px] font-black text-white">
+                      Available time
+                    </p>
+                    <span class="text-[8px] text-slate-400">ETB 500 / hour</span>
+                  </div>
+
+                  <div class="mt-2 grid grid-cols-2 gap-1.5">
+                    <span class="rounded-lg border border-white/10 bg-[#142019] px-2 py-2 text-center text-[8px] text-slate-300">09:00 AM</span>
+                    <span class="rounded-lg border border-lime-400 bg-lime-400/10 px-2 py-2 text-center text-[8px] font-bold text-lime-300">10:00 AM</span>
+                  </div>
+                </div>
+
+                <div class="flex items-center justify-between border-t border-white/10 pt-3">
+                  <div>
+                    <p class="text-[8px] text-slate-400">Booking total</p>
+                    <p class="text-xs font-black text-lime-300">ETB 500</p>
+                  </div>
+                  <span class="rounded-lg bg-lime-400 px-3 py-2 text-[8px] font-black text-[#0b1f16]">
+                    Confirm booking
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1163,49 +1245,49 @@ function registerVenue() {
       <div class="mx-auto max-w-7xl">
 
         <div
-          class="cta-section relative overflow-hidden rounded-[2rem] bg-slate-950 px-6 py-16 shadow-2xl sm:px-10 lg:px-16"
+          class="cta-section relative overflow-hidden rounded-[2rem] bg-[#a8ff3e] px-6 py-16 text-[#0b1f16] shadow-2xl shadow-emerald-950/15 sm:px-10 lg:px-16"
         >
 
           <!-- Background -->
           <div
-            class="absolute inset-0 bg-gradient-to-r from-emerald-950 via-slate-950 to-slate-950"
+            class="absolute inset-0 bg-gradient-to-br from-[#a8ff3e] via-[#a8ff3e] to-[#96ee2b]"
           ></div>
 
           <!-- Glow -->
           <div
-            class="absolute -right-20 -top-20 h-72 w-72 rounded-full bg-emerald-500/20 blur-3xl"
+            class="absolute -right-20 -top-20 h-72 w-72 rounded-full bg-white/20 blur-3xl"
           ></div>
 
           <div
-            class="absolute -bottom-20 -left-20 h-72 w-72 rounded-full bg-lime-400/10 blur-3xl"
+            class="absolute -bottom-20 -left-20 h-72 w-72 rounded-full bg-emerald-900/10 blur-3xl"
           ></div>
 
           <!-- Decorative circle -->
           <div
-            class="absolute right-10 top-10 hidden h-24 w-24 rounded-full border border-emerald-400/10 lg:block"
+            class="absolute -right-5 -top-20 hidden h-60 w-60 rounded-full border-2 border-emerald-950/20 lg:block"
           ></div>
 
           <div
-            class="absolute right-16 top-16 hidden h-12 w-12 rounded-full bg-emerald-400/5 lg:block"
+            class="absolute -bottom-24 right-8 hidden h-72 w-72 rounded-full border-2 border-emerald-950/20 lg:block"
           ></div>
 
           <!-- Content -->
           <div class="relative z-10 text-center">
 
             <p
-              class="text-xs font-bold uppercase tracking-[0.2em] text-emerald-400"
+              class="text-xs font-black uppercase tracking-[0.2em] text-emerald-950/75"
             >
-              CombolojoSPORT
+              Ready to play?
             </p>
 
             <h2
-              class="mt-3 text-3xl font-black text-white sm:text-4xl lg:text-5xl"
+              class="mt-3 text-3xl font-black uppercase text-[#0b1f16] sm:text-4xl lg:text-5xl"
             >
-              Ready to play?
+              Your next game is waiting.
             </h2>
 
             <p
-              class="mx-auto mt-4 max-w-xl text-sm leading-7 text-slate-300"
+              class="mx-auto mt-4 max-w-xl text-sm leading-7 text-emerald-950/80"
             >
               Find a venue, discover a game and start your next sports
               experience with CombolojoSPORT.
@@ -1216,7 +1298,7 @@ function registerVenue() {
               <!-- Explore -->
               <button
                 type="button"
-                class="rounded-xl bg-emerald-600 px-7 py-3.5 text-sm font-bold text-white shadow-xl shadow-emerald-950/40 transition duration-300 hover:-translate-y-1 hover:bg-emerald-500"
+                class="rounded-xl bg-[#0b1f16] px-7 py-3.5 text-sm font-black text-[#a8ff3e] shadow-xl shadow-emerald-950/20 transition duration-300 hover:-translate-y-1 hover:bg-[#173324]"
                 @click="exploreVenues"
               >
                 ⚽ Explore Venues
@@ -1225,7 +1307,7 @@ function registerVenue() {
               <!-- App -->
               <button
                 type="button"
-                class="rounded-xl border border-white/20 bg-white/10 px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-black/20 backdrop-blur-sm transition duration-300 hover:-translate-y-1 hover:bg-white/20"
+                class="rounded-xl border border-white/80 bg-white px-7 py-3.5 text-sm font-black text-[#0b1f16] shadow-lg shadow-emerald-950/10 transition duration-300 hover:-translate-y-1 hover:bg-slate-50"
                 @click="registerVenue"
               >
                 📱 Download App
