@@ -51,7 +51,6 @@
         <!-- View Public Site -->
         <NuxtLink
   to="/"
-  target="_blank"
   class="flex items-center gap-1.5 rounded-xl px-2 py-2 text-xs font-bold text-slate-500 transition hover:bg-slate-100 hover:text-emerald-600 dark:text-slate-400 dark:hover:bg-slate-800 sm:gap-2 sm:px-3"
   title="View Site"
 >
@@ -493,7 +492,7 @@ const adminName = computed(() => {
 const overviewItems = [
   { path: '/admin',              label: 'Dashboard',  icon: 'lucide:layout-dashboard' },
   { path: '/admin/my-venues',    label: 'Sport Fields', icon: 'lucide:map-pin' },
-  { path: '/admin/approvals',    label: 'Approvals',  icon: 'lucide:check-circle', badge: '9' },
+  { path: '/admin/approvals',    label: 'Approvals',  icon: 'lucide:check-circle', badge: '5' },
 ]
 
 const managementItems = [

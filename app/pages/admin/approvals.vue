@@ -1,381 +1,777 @@
+
 <template>
-  <div class="space-y-8 min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-[#070b10] dark:via-[#0a111c] dark:to-[#070b10] text-slate-800 dark:text-slate-100 p-4 sm:p-6 lg:p-8">
-
-    <!-- Decorative background blobs -->
-    <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-      <div class="absolute -top-40 -right-40 w-96 h-96 bg-emerald-400/10 dark:bg-emerald-500/5 rounded-full blur-3xl"></div>
-      <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-amber-400/10 dark:bg-amber-500/5 rounded-full blur-3xl"></div>
-    </div>
-
+  <div class="min-h-screen space-y-8 bg-slate-50 p-4 text-slate-800 dark:bg-[#070b10] dark:text-slate-100 sm:p-6 lg:p-8">
     <!-- Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <header class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
       <div class="flex items-center gap-4">
-        <div class="h-14 w-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/30 ring-4 ring-white dark:ring-slate-800/60">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
+        <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-600 text-white shadow-lg">
+          <Icon name="lucide:shield-check" class="h-7 w-7" />
         </div>
+
         <div>
-          <h1 class="text-3xl font-black tracking-tight bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">
-            Approvals
-          </h1>
-          <p class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">View and manage all venues</p>
+          <h1 class="text-3xl font-black tracking-tight">Venue Approvals</h1>
+          <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            Review partner venue submissions
+          </p>
         </div>
       </div>
 
-      <div class="flex items-center gap-3">
-        <div class="relative group">
-          <div class="absolute inset-0 bg-amber-400/30 dark:bg-amber-500/20 rounded-2xl blur-md group-hover:blur-lg transition-all"></div>
-          <div class="relative flex items-center gap-2 text-sm font-bold text-amber-700 dark:text-amber-300 bg-white/80 dark:bg-[#0b1320]/80 backdrop-blur-xl px-4 py-2.5 rounded-2xl border border-amber-200/60 dark:border-amber-800/60 shadow-lg">
-            <span class="relative flex h-2.5 w-2.5">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500"></span>
-            </span>
-            {{ pendingVenues.length }} Pending
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Tabs -->
-    <div class="flex flex-wrap items-center gap-2 p-1.5 bg-white/60 dark:bg-[#0b1320]/60 backdrop-blur-xl rounded-2xl border border-slate-200/60 dark:border-slate-800/60 shadow-sm w-fit">
-      <button
-        @click="activeTab = 'all'"
-        class="relative px-5 py-2.5 text-sm font-bold rounded-xl transition-all duration-300 flex items-center gap-2"
-        :class="activeTab === 'all'
-          ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/30 scale-105'
-          : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60'"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-        </svg>
-        All
-        <span class="ml-1 px-2 py-0.5 text-[10px] rounded-full" :class="activeTab === 'all' ? 'bg-white/25' : 'bg-slate-200 dark:bg-slate-700'">{{ allVenues.length }}</span>
-      </button>
-
-      <button
-        @click="activeTab = 'approved'"
-        class="relative px-5 py-2.5 text-sm font-bold rounded-xl transition-all duration-300 flex items-center gap-2"
-        :class="activeTab === 'approved'
-          ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/30 scale-105'
-          : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60'"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        Approved
-        <span class="ml-1 px-2 py-0.5 text-[10px] rounded-full" :class="activeTab === 'approved' ? 'bg-white/25' : 'bg-slate-200 dark:bg-slate-700'">{{ approvedVenues.length }}</span>
-      </button>
-
-      <button
-        @click="activeTab = 'pending'"
-        class="relative px-5 py-2.5 text-sm font-bold rounded-xl transition-all duration-300 flex items-center gap-2"
-        :class="activeTab === 'pending'
-          ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg shadow-amber-500/30 scale-105'
-          : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60'"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        Pending
-        <span class="ml-1 px-2 py-0.5 text-[10px] rounded-full" :class="activeTab === 'pending' ? 'bg-white/25' : 'bg-slate-200 dark:bg-slate-700'">{{ pendingVenues.length }}</span>
-      </button>
-    </div>
-
-    <!-- Error Message -->
-    <Transition
-      enter-active-class="transition duration-300 ease-out"
-      enter-from-class="opacity-0 -translate-y-2"
-      enter-to-class="opacity-100 translate-y-0"
-      leave-active-class="transition duration-200 ease-in"
-      leave-from-class="opacity-100"
-      leave-to-class="opacity-0"
-    >
-      <div v-if="errorMessage" class="p-4 bg-red-50/80 dark:bg-red-950/30 backdrop-blur-xl border border-red-200/60 dark:border-red-800/60 rounded-2xl shadow-lg">
-        <div class="flex items-center gap-3 text-red-700 dark:text-red-300">
-          <div class="p-2 bg-red-100 dark:bg-red-900/40 rounded-xl">
-            <Icon name="lucide:alert-circle" class="w-5 h-5" />
-          </div>
-          <span class="text-sm font-bold">{{ errorMessage }}</span>
-        </div>
-      </div>
-    </Transition>
-
-    <!-- Loading State -->
-    <div v-if="isLoading" class="text-center py-16">
-      <div class="relative inline-block">
-        <div class="animate-spin w-14 h-14 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full"></div>
-        <div class="absolute inset-0 flex items-center justify-center">
-          <div class="w-6 h-6 bg-emerald-500 rounded-full animate-pulse"></div>
-        </div>
-      </div>
-      <p class="mt-4 text-sm font-medium text-slate-500 dark:text-slate-400">Loading venues...</p>
-    </div>
-
-    <!-- Empty State -->
-    <div v-else-if="currentVenues.length === 0" class="text-center py-20 bg-white/60 dark:bg-[#0b1320]/60 backdrop-blur-xl rounded-3xl border border-slate-200/60 dark:border-slate-800/60 shadow-lg">
-      <div class="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-br from-emerald-100 to-teal-100 dark:from-emerald-900/30 dark:to-teal-900/30 mb-5">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      </div>
-      <h2 class="text-xl font-bold text-gray-900 dark:text-white">No venues found</h2>
-      <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">{{ emptyMessage }}</p>
-    </div>
-
-    <!-- Venues List -->
-    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-      <div
-        v-for="(venue, index) in currentVenues"
-        :key="venue.id"
-        class="group relative rounded-3xl overflow-hidden backdrop-blur-xl transition-all duration-500 hover:-translate-y-1.5 hover:shadow-2xl"
-        :class="venue.status === 'approved' || venue.is_active
-          ? 'bg-white/80 dark:bg-[#0b1320]/80 border border-emerald-200/60 dark:border-emerald-800/40 hover:shadow-emerald-500/10'
-          : 'bg-white/80 dark:bg-[#0b1320]/80 border border-amber-200/60 dark:border-amber-800/40 hover:shadow-amber-500/10'"
-        :style="{ animationDelay: `${index * 50}ms` }"
-      >
-        <!-- Colored top accent line -->
-        <div class="absolute top-0 left-0 right-0 h-1 z-10"
-          :class="venue.status === 'approved' || venue.is_active
-            ? 'bg-gradient-to-r from-emerald-400 to-teal-500'
-            : 'bg-gradient-to-r from-amber-400 to-orange-500'"
-        ></div>
-
-        <div class="relative h-44 bg-gradient-to-br from-slate-200 to-slate-300 dark:from-slate-800 dark:to-slate-900 overflow-hidden">
-          <img
-            v-if="venue.image"
-            :src="getVenueImage(venue)"
-            :alt="venue.name"
-            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+      <div class="flex flex-wrap items-center gap-3">
+        <button
+          type="button"
+          @click="fetchAllVenues(true)"
+          :disabled="isLoading"
+          class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold hover:bg-slate-100 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900"
+        >
+          <Icon
+            name="lucide:refresh-cw"
+            class="h-4 w-4"
+            :class="{ 'animate-spin': isLoading }"
           />
-          <div v-else class="w-full h-full flex items-center justify-center">
-            <Icon name="lucide:stadium" class="w-14 h-14 text-gray-400/60" />
+          Refresh
+        </button>
+
+        <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-2.5 text-sm font-bold text-amber-700 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-300">
+          {{ pendingVenues.length }} Pending
+        </div>
+      </div>
+    </header>
+
+    <!-- Error -->
+    <div
+      v-if="errorMessage"
+      role="alert"
+      class="flex items-start justify-between gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300"
+    >
+      <div>
+        <p class="font-bold">Request failed</p>
+        <p class="mt-1">{{ errorMessage }}</p>
+      </div>
+
+      <button
+        type="button"
+        aria-label="Dismiss error"
+        @click="errorMessage = ''"
+      >
+        <Icon name="lucide:x" class="h-5 w-5" />
+      </button>
+    </div>
+
+    <!-- Success -->
+    <div
+      v-if="successMessage"
+      role="status"
+      class="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-semibold text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/30 dark:text-emerald-300"
+    >
+      <Icon name="lucide:check-circle-2" class="h-5 w-5 shrink-0" />
+      {{ successMessage }}
+    </div>
+
+    <!-- Statistics -->
+    <section class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <button
+        v-for="stat in summaryCards"
+        :key="stat.key"
+        type="button"
+        @click="activeTab = stat.key"
+        class="rounded-2xl border bg-white p-5 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-lg dark:bg-[#0b1320]"
+        :class="[
+          stat.cardClass,
+          activeTab === stat.key ? 'ring-2 ring-emerald-500/40' : ''
+        ]"
+      >
+        <div class="flex items-center justify-between gap-3">
+          <div>
+            <p class="text-sm font-semibold text-slate-500 dark:text-slate-400">
+              {{ stat.label }}
+            </p>
+            <p class="mt-2 text-3xl font-black">{{ stat.value }}</p>
           </div>
 
-          <!-- Gradient overlay -->
-          <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-
-          <!-- Status Badge -->
-          <span class="absolute top-3 right-3 px-3.5 py-1.5 rounded-full text-xs font-bold text-white shadow-lg backdrop-blur-md flex items-center gap-1.5"
-            :class="venue.status === 'approved' || venue.is_active
-              ? 'bg-emerald-500/90 ring-1 ring-emerald-300/50'
-              : 'bg-amber-500/90 ring-1 ring-amber-300/50'"
+          <div
+            class="flex h-12 w-12 items-center justify-center rounded-xl"
+            :class="stat.iconClass"
           >
-            <span class="relative flex h-2 w-2">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
-                :class="venue.status === 'approved' || venue.is_active ? 'bg-emerald-200' : 'bg-amber-200'"></span>
-              <span class="relative inline-flex rounded-full h-2 w-2"
-                :class="venue.status === 'approved' || venue.is_active ? 'bg-white' : 'bg-white'"></span>
-            </span>
-            {{ venue.status === 'approved' || venue.is_active ? 'Approved' : 'Pending' }}
-          </span>
+            <Icon :name="stat.icon" class="h-6 w-6" />
+          </div>
+        </div>
+      </button>
+    </section>
 
-          <!-- City Badge -->
-          <span class="absolute bottom-3 left-3 px-3 py-1.5 rounded-full text-xs font-bold bg-black/50 text-white backdrop-blur-md flex items-center gap-1.5 ring-1 ring-white/20">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            {{ venue.city }}
+    <!-- Search and tabs -->
+    <section class="space-y-4 rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-[#0b1320]">
+      <div class="relative w-full">
+        <Icon
+          name="lucide:search"
+          class="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+        />
+
+        <input
+          v-model="searchQuery"
+          type="search"
+          placeholder="Search venue, owner, city, sport..."
+          class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-12 pr-4 text-sm outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 dark:border-slate-700 dark:bg-slate-900"
+        />
+      </div>
+
+      <div class="flex flex-wrap gap-2">
+        <button
+          v-for="tab in tabs"
+          :key="tab.key"
+          type="button"
+          @click="activeTab = tab.key"
+          class="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold transition"
+          :class="activeTab === tab.key
+            ? tab.activeClass
+            : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300'"
+        >
+          <Icon :name="tab.icon" class="h-4 w-4" />
+          {{ tab.label }}
+          <span class="rounded-full bg-black/10 px-2 py-0.5 text-xs dark:bg-white/10">
+            {{ tab.count }}
+          </span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Loading -->
+    <section
+      v-if="isLoading && allVenues.length === 0"
+      class="rounded-2xl border border-slate-200 bg-white py-20 text-center dark:border-slate-800 dark:bg-[#0b1320]"
+    >
+      <Icon name="lucide:loader-circle" class="mx-auto h-10 w-10 animate-spin text-emerald-500" />
+      <p class="mt-4 font-bold">Loading venues...</p>
+    </section>
+
+    <!-- Empty -->
+    <section
+      v-else-if="filteredVenues.length === 0"
+      class="rounded-2xl border border-slate-200 bg-white px-5 py-20 text-center dark:border-slate-800 dark:bg-[#0b1320]"
+    >
+      <Icon name="lucide:building-2" class="mx-auto h-12 w-12 text-slate-400" />
+
+      <h2 class="mt-4 text-xl font-black">
+        {{ searchQuery ? 'No matching venues' : 'No venues found' }}
+      </h2>
+
+      <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
+        {{ emptyMessage }}
+      </p>
+
+      <button
+        v-if="searchQuery"
+        type="button"
+        @click="searchQuery = ''"
+        class="mt-4 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-bold text-white"
+      >
+        Clear search
+      </button>
+    </section>
+
+    <!-- Venue cards -->
+    <section v-else class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+      <article
+        v-for="venue in filteredVenues"
+        :key="venue.id"
+        class="overflow-hidden rounded-2xl border bg-white shadow-sm transition hover:shadow-xl dark:bg-[#0b1320]"
+        :class="borderClass(venue)"
+      >
+        <!-- Image -->
+        <div class="relative h-48 bg-slate-200 dark:bg-slate-800">
+          <img
+            v-if="getVenueImage(venue)"
+            :src="getVenueImage(venue)"
+            :alt="venue.name || 'Sports venue'"
+            class="h-full w-full object-cover"
+            @error="handleImageError"
+          />
+
+          <div
+            v-else
+            class="flex h-full items-center justify-center bg-gradient-to-br from-emerald-100 to-teal-100 dark:from-slate-800 dark:to-slate-900"
+          >
+            <Icon name="lucide:building-2" class="h-14 w-14 text-emerald-500/60" />
+          </div>
+
+          <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-4 pt-12">
+            <h2 class="truncate text-xl font-black text-white">
+              {{ venue.name || 'Unnamed Venue' }}
+            </h2>
+            <p class="mt-1 flex items-center gap-1 text-sm text-white/80">
+              <Icon name="lucide:map-pin" class="h-4 w-4" />
+              {{ venue.city || venue.sub_city || 'Location not specified' }}
+            </p>
+          </div>
+
+          <span
+            class="absolute right-3 top-3 rounded-full px-3 py-1.5 text-xs font-black text-white"
+            :class="statusBadgeClass(venue)"
+          >
+            {{ approvalStatusLabel(venue) }}
           </span>
         </div>
 
-        <div class="p-5">
-          <h3 class="text-lg font-bold text-slate-900 dark:text-white truncate group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
-            {{ venue.name }}
-          </h3>
-          <p class="text-sm text-slate-500 dark:text-slate-400 truncate">{{ venue.location }}</p>
+        <!-- Details -->
+        <div class="space-y-4 p-5">
+          <p class="line-clamp-2 min-h-10 text-sm text-slate-500 dark:text-slate-400">
+            {{ venue.location || venue.address || 'No additional location details' }}
+          </p>
 
-          <div class="flex items-center gap-2 mt-2 text-xs text-slate-400">
-            <div class="w-5 h-5 rounded-full bg-gradient-to-br from-slate-300 to-slate-400 dark:from-slate-600 dark:to-slate-700 flex items-center justify-center text-[10px] font-bold text-white">
-              {{ (venue.user?.name || 'U').charAt(0).toUpperCase() }}
+          <div class="flex items-center gap-3 rounded-xl bg-slate-50 p-3 dark:bg-slate-800/60">
+            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-600 font-black text-white">
+              {{ ownerInitial(venue) }}
             </div>
-            <span>Owner: {{ venue.user?.name || 'Unknown' }}</span>
+
+            <div class="min-w-0 flex-1">
+              <p class="text-xs text-slate-400">Venue owner</p>
+              <p class="truncate text-sm font-bold">{{ ownerName(venue) }}</p>
+            </div>
           </div>
 
-          <div class="flex items-center justify-between mt-4">
-            <div class="flex items-center gap-4 text-sm">
-              <span class="flex items-center gap-1.5 text-slate-600 dark:text-slate-300">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-                {{ venue.capacity }}
-              </span>
+          <div class="grid grid-cols-2 gap-3">
+            <div class="rounded-xl border border-slate-100 p-3 dark:border-slate-800">
+              <p class="text-xs text-slate-400">Capacity</p>
+              <p class="mt-2 text-lg font-black">{{ venue.capacity ?? '—' }}</p>
             </div>
-            <span class="font-bold text-base"
-              :class="venue.status === 'approved' || venue.is_active ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'"
-            >
-              {{ venue.price_per_hour }} <span class="text-xs font-semibold opacity-70">ETB/hr</span>
-            </span>
+
+            <div class="rounded-xl border border-slate-100 p-3 dark:border-slate-800">
+              <p class="text-xs text-slate-400">Price per hour</p>
+              <p class="mt-2 text-lg font-black text-emerald-600 dark:text-emerald-400">
+                {{ formatPrice(venue.price_per_hour) }} ETB
+              </p>
+            </div>
           </div>
 
-          <!-- Admin Actions - Only for pending venues -->
           <div
-            v-if="venue.status === 'pending' || !venue.is_active"
-            class="flex gap-2.5 mt-5 pt-4 border-t border-amber-200/60 dark:border-amber-800/40"
+            v-if="venue.sport || venue.sport_type"
+            class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400"
+          >
+            <Icon name="lucide:trophy" class="h-4 w-4 text-emerald-500" />
+            {{ sportName(venue) }}
+          </div>
+
+          <!-- Pending venues only -->
+          <div
+            v-if="venueApprovalStatus(venue) === 'pending'"
+            class="grid grid-cols-2 gap-3 border-t border-slate-200 pt-4 dark:border-slate-800"
           >
             <button
-              @click="approveVenue(venue.id)"
-              class="flex-1 group/btn relative px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white text-sm font-bold rounded-xl transition-all duration-300 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 flex items-center justify-center gap-2 active:scale-95"
+              type="button"
+              @click="approveVenue(venue)"
+              :disabled="isProcessing(venue.id)"
+              class="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-3 py-3 text-sm font-black text-white hover:bg-emerald-700 disabled:opacity-50"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-              Approve
+              <Icon
+                :name="isProcessing(venue.id) ? 'lucide:loader-circle' : 'lucide:check-circle-2'"
+                class="h-4 w-4"
+                :class="{ 'animate-spin': isProcessing(venue.id) }"
+              />
+              {{ isProcessing(venue.id) ? 'Processing...' : 'Approve' }}
             </button>
+
             <button
-              @click="rejectVenue(venue.id)"
-              class="flex-1 group/btn relative px-4 py-2.5 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white text-sm font-bold rounded-xl transition-all duration-300 shadow-lg shadow-red-500/25 hover:shadow-red-500/40 flex items-center justify-center gap-2 active:scale-95"
+              type="button"
+              @click="rejectVenue(venue)"
+              :disabled="isProcessing(venue.id)"
+              class="inline-flex items-center justify-center gap-2 rounded-xl bg-red-600 px-3 py-3 text-sm font-black text-white hover:bg-red-700 disabled:opacity-50"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <Icon name="lucide:x-circle" class="h-4 w-4" />
               Reject
             </button>
           </div>
 
-          <!-- Approved indicator -->
+          <!-- Final status -->
           <div
             v-else
-            class="flex items-center gap-2 mt-5 pt-4 border-t border-emerald-200/60 dark:border-emerald-800/40 text-xs font-semibold text-emerald-600 dark:text-emerald-400"
+            class="flex items-center gap-2 border-t border-slate-200 pt-4 text-sm font-bold dark:border-slate-800"
+            :class="venueApprovalStatus(venue) === 'approved'
+              ? 'text-emerald-600 dark:text-emerald-400'
+              : 'text-red-600 dark:text-red-400'"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            Approved and active
+            <Icon :name="statusIcon(venue)" class="h-5 w-5" />
+            {{
+              venueApprovalStatus(venue) === 'approved'
+                ? 'This venue has been approved'
+                : 'This venue has been rejected'
+            }}
           </div>
         </div>
-      </div>
-    </div>
+      </article>
+    </section>
+
+    <footer class="flex flex-col justify-between gap-2 border-t border-slate-200 pt-5 text-xs text-slate-400 sm:flex-row dark:border-slate-800">
+      <p>CombolojoSPORT · Venue Approval Management</p>
+      <p>Showing {{ filteredVenues.length }} of {{ allVenues.length }} venues</p>
+    </footer>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useAuthStore } from '@/stores/auth'
+import { useAuthStore } from '~/stores/auth'
 import { useRouter } from 'vue-router'
 import { useRuntimeConfig } from '#imports'
+
+definePageMeta({
+  layout: 'admin'
+})
 
 const authStore = useAuthStore()
 const router = useRouter()
 const config = useRuntimeConfig()
 
 const allVenues = ref([])
-const approvedVenues = ref([])
-const pendingVenues = ref([])
 const isLoading = ref(false)
 const errorMessage = ref('')
-const activeTab = ref('all')
+const successMessage = ref('')
+const activeTab = ref('pending')
+const searchQuery = ref('')
+const processingIds = ref([])
 
-// Redirect if not admin
-onMounted(async () => {
-  if (authStore.user?.role !== 'admin') {
-    router.push('/')
-    return
+const configuredBase = String(
+  config.public.apiBase || 'http://127.0.0.1:8000'
+).replace(/\/+$/, '')
+
+const apiBase = computed(() =>
+  configuredBase.endsWith('/api')
+    ? configuredBase
+    : `${configuredBase}/api`
+)
+
+const storageBase = computed(() =>
+  apiBase.value.replace(/\/api$/, '')
+)
+
+/*
+ * All API requests use the same Laravel base URL
+ * and the logged-in user's Bearer token.
+ */
+const apiRequest = (path, options = {}) => {
+  if (!authStore.token) {
+    throw new Error('Your login session has expired. Please log in again.')
   }
-  await fetchAllVenues()
-})
-definePageMeta({ layout: 'admin' })
 
-// ============================================
-// FETCH ALL VENUES (Both Approved & Pending)
-// ============================================
-const fetchAllVenues = async () => {
+  return $fetch(`${apiBase.value}${path}`, {
+    ...options,
+    headers: {
+      Accept: 'application/json',
+      Authorization: `Bearer ${authStore.token}`,
+      ...options.headers
+    }
+  })
+}
+
+/*
+ * Handle common Laravel response shapes:
+ * [...]
+ * { data: [...] }
+ * { success: true, data: [...] }
+ * { data: { data: [...] } }
+ */
+const normalizeList = (response) => {
+  let result = response?.data ?? response
+
+  if (result && !Array.isArray(result) && Array.isArray(result.data)) {
+    result = result.data
+  }
+
+  return Array.isArray(result) ? result : []
+}
+
+/*
+ * IMPORTANT:
+ * The database approval status is authoritative.
+ * Do not use is_active to override an explicit status.
+ */
+const venueApprovalStatus = (venue) => {
+  const raw = venue?.approval_status
+    ?? venue?.status
+    ?? venue?.approvalStatus
+    ?? ''
+
+  const status = String(raw).toLowerCase().trim()
+
+  if (['approved', 'active'].includes(status)) return 'approved'
+  if (['rejected', 'declined'].includes(status)) return 'rejected'
+  if (['pending', 'awaiting_approval', 'awaiting approval'].includes(status)) {
+    return 'pending'
+  }
+
+  // Only use is_active when no status field was supplied.
+  if (!status) {
+    if (
+      venue?.is_active === true ||
+      venue?.is_active === 1 ||
+      venue?.is_active === '1'
+    ) {
+      return 'approved'
+    }
+  }
+
+  // Unknown/missing statuses should not be publicly treated as approved.
+  return 'pending'
+}
+
+const approvalStatusLabel = (venue) => {
+  const status = venueApprovalStatus(venue)
+  return status.charAt(0).toUpperCase() + status.slice(1)
+}
+
+const statusIcon = (venue) => {
+  const status = venueApprovalStatus(venue)
+  if (status === 'approved') return 'lucide:check-circle-2'
+  if (status === 'rejected') return 'lucide:x-circle'
+  return 'lucide:clock-3'
+}
+
+const statusBadgeClass = (venue) => {
+  const status = venueApprovalStatus(venue)
+  if (status === 'approved') return 'bg-emerald-600'
+  if (status === 'rejected') return 'bg-red-600'
+  return 'bg-amber-500'
+}
+
+const borderClass = (venue) => {
+  const status = venueApprovalStatus(venue)
+  if (status === 'approved') return 'border-emerald-200 dark:border-emerald-900/60'
+  if (status === 'rejected') return 'border-red-200 dark:border-red-900/60'
+  return 'border-amber-200 dark:border-amber-900/60'
+}
+
+const approvedVenues = computed(() =>
+  allVenues.value.filter(v => venueApprovalStatus(v) === 'approved')
+)
+
+const pendingVenues = computed(() =>
+  allVenues.value.filter(v => venueApprovalStatus(v) === 'pending')
+)
+
+const rejectedVenues = computed(() =>
+  allVenues.value.filter(v => venueApprovalStatus(v) === 'rejected')
+)
+
+const tabs = computed(() => [
+  {
+    key: 'all',
+    label: 'All',
+    icon: 'lucide:layout-grid',
+    count: allVenues.value.length,
+    activeClass: 'bg-emerald-600 text-white'
+  },
+  {
+    key: 'pending',
+    label: 'Pending',
+    icon: 'lucide:clock-3',
+    count: pendingVenues.value.length,
+    activeClass: 'bg-amber-500 text-white'
+  },
+  {
+    key: 'approved',
+    label: 'Approved',
+    icon: 'lucide:check-circle-2',
+    count: approvedVenues.value.length,
+    activeClass: 'bg-emerald-600 text-white'
+  },
+  {
+    key: 'rejected',
+    label: 'Rejected',
+    icon: 'lucide:x-circle',
+    count: rejectedVenues.value.length,
+    activeClass: 'bg-red-600 text-white'
+  }
+])
+
+const summaryCards = computed(() => [
+  {
+    key: 'all',
+    label: 'Total Venues',
+    value: allVenues.value.length,
+    icon: 'lucide:building-2',
+    cardClass: 'border-slate-200 dark:border-slate-800',
+    iconClass: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
+  },
+  {
+    key: 'approved',
+    label: 'Approved Venues',
+    value: approvedVenues.value.length,
+    icon: 'lucide:check-circle-2',
+    cardClass: 'border-emerald-200 dark:border-emerald-900/60',
+    iconClass: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
+  },
+  {
+    key: 'pending',
+    label: 'Pending Review',
+    value: pendingVenues.value.length,
+    icon: 'lucide:clock-3',
+    cardClass: 'border-amber-200 dark:border-amber-900/60',
+    iconClass: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300'
+  },
+  {
+    key: 'rejected',
+    label: 'Rejected Venues',
+    value: rejectedVenues.value.length,
+    icon: 'lucide:x-circle',
+    cardClass: 'border-red-200 dark:border-red-900/60',
+    iconClass: 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300'
+  }
+])
+
+const filteredVenues = computed(() => {
+  let venues = allVenues.value
+
+  if (activeTab.value === 'pending') venues = pendingVenues.value
+  if (activeTab.value === 'approved') venues = approvedVenues.value
+  if (activeTab.value === 'rejected') venues = rejectedVenues.value
+
+  const query = searchQuery.value.trim().toLowerCase()
+  if (!query) return venues
+
+  return venues.filter((venue) => {
+    const values = [
+      venue.name,
+      venue.city,
+      venue.sub_city,
+      venue.location,
+      venue.address,
+      venue.sport,
+      venue.sport_type,
+      venue.user?.name,
+      venue.owner?.name,
+      venue.partner?.name
+    ]
+
+    return values.some(value => {
+      const text = typeof value === 'object'
+        ? value?.name ?? ''
+        : value ?? ''
+
+      return String(text).toLowerCase().includes(query)
+    })
+  })
+})
+
+const emptyMessage = computed(() => {
+  if (searchQuery.value.trim()) {
+    return 'Try a different venue name, owner, city, or sport.'
+  }
+
+  const messages = {
+    all: 'No venues have been submitted yet.',
+    pending: 'There are no venues waiting for approval.',
+    approved: 'There are no approved venues yet.',
+    rejected: 'There are no rejected venues.'
+  }
+
+  return messages[activeTab.value] || 'No venues found.'
+})
+
+/*
+ * GET /api/admin/venues
+ * Force refresh is used after approval/rejection.
+ */
+const fetchAllVenues = async (force = false) => {
+  if (isLoading.value && !force) return
+
   isLoading.value = true
   errorMessage.value = ''
+
   try {
-    const response = await $fetch(`${config.public.apiBase}/admin/venues`, {
-      headers: {
-        'Authorization': `Bearer ${authStore.token}`
-      }
-    })
+    const response = await apiRequest('/admin/venues')
 
-    if (response.success) {
-      allVenues.value = response.data?.data || response.data || []
-
-      // Separate into approved and pending
-      approvedVenues.value = allVenues.value.filter(v => v.status === 'approved' || v.is_active === true)
-      pendingVenues.value = allVenues.value.filter(v => v.status === 'pending' || v.is_active === false)
+    if (response?.success === false) {
+      throw new Error(response.message || 'Unable to load venues.')
     }
+
+    allVenues.value = normalizeList(response)
   } catch (error) {
-    console.error('Error fetching venues:', error)
-    errorMessage.value = 'Failed to fetch venues. Please try again.'
+    console.error('Failed to fetch admin venues:', error)
+
+    if (error?.status === 401) {
+      errorMessage.value = 'Your session has expired. Please log in again.'
+      await router.replace('/login')
+    } else if (error?.status === 403) {
+      errorMessage.value = 'Access denied. An administrator account is required.'
+    } else {
+      errorMessage.value =
+        error?.data?.message ||
+        error?.message ||
+        'Failed to load venues. Check the Laravel API and try again.'
+    }
   } finally {
     isLoading.value = false
   }
 }
 
-// ============================================
-// COMPUTED
-// ============================================
-const currentVenues = computed(() => {
-  if (activeTab.value === 'all') return allVenues.value
-  if (activeTab.value === 'approved') return approvedVenues.value
-  if (activeTab.value === 'pending') return pendingVenues.value
-  return allVenues.value
-})
+const isProcessing = (id) => processingIds.value.includes(String(id))
 
-const emptyMessage = computed(() => {
-  if (activeTab.value === 'all') return 'No venues available'
-  if (activeTab.value === 'approved') return 'No approved venues yet'
-  if (activeTab.value === 'pending') return 'No pending venues to review'
-  return ''
-})
+/*
+ * POST /api/admin/approvals/{id}/approve
+ * POST /api/admin/approvals/{id}/reject
+ *
+ * Do not show success until Laravel accepts the request
+ * and the saved venue list is refreshed successfully.
+ */
+const updateVenueStatus = async (venue, action) => {
+  const id = venue?.id
 
-// ============================================
-// APPROVE VENUE
-// ============================================
-const approveVenue = async (id) => {
+  if (id === null || id === undefined || isProcessing(id)) return
+
+  if (venueApprovalStatus(venue) !== 'pending') {
+    errorMessage.value = 'Only pending venues can be approved or rejected.'
+    return
+  }
+
+  const approve = action === 'approve'
+
+  const confirmed = window.confirm(
+    approve
+      ? `Approve "${venue.name || 'this venue'}"? It should then appear on the public venues page.`
+      : `Reject "${venue.name || 'this venue'}"?`
+  )
+
+  if (!confirmed) return
+
   errorMessage.value = ''
-  if (!confirm('Are you sure you want to approve this venue?')) return
+  successMessage.value = ''
+  processingIds.value = [...processingIds.value, String(id)]
 
   try {
-    const response = await $fetch(`${config.public.apiBase}/admin/approvals/${id}/approve`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${authStore.token}`
+    const response = await apiRequest(
+      `/admin/approvals/${encodeURIComponent(id)}/${action}`,
+      { method: 'POST' }
+    )
+
+    if (response?.success === false) {
+      throw new Error(response.message || `Unable to ${action} this venue.`)
+    }
+
+    /*
+     * Update the local list immediately so the UI responds,
+     * then read the authoritative saved data from Laravel.
+     */
+    allVenues.value = allVenues.value.map((item) => {
+      if (String(item.id) !== String(id)) return item
+
+      return {
+        ...item,
+        status: approve ? 'approved' : 'rejected',
+        approval_status: approve ? 'approved' : 'rejected'
       }
     })
 
-    if (response.success) {
-      await fetchAllVenues()
-      alert('Venue approved successfully!')
+    const previousError = errorMessage.value
+    await fetchAllVenues(true)
+
+    if (errorMessage.value) {
+      // The mutation succeeded, but the reload failed.
+      successMessage.value = approve
+        ? 'Venue approved. Refresh failed; reload the page to verify the saved status.'
+        : 'Venue rejected. Refresh failed; reload the page to verify the saved status.'
+      return
     }
+
+    const savedVenue = allVenues.value.find(
+      item => String(item.id) === String(id)
+    )
+
+    if (savedVenue && venueApprovalStatus(savedVenue) !== (approve ? 'approved' : 'rejected')) {
+      errorMessage.value =
+        'Laravel accepted the request, but the returned venue status does not match. Check the AdminApprovalController status field.'
+      return
+    }
+
+    successMessage.value = approve
+      ? 'Venue approved successfully. It is now marked Approved.'
+      : 'Venue rejected successfully.'
+
+    // Approved venues disappear from the Pending tab.
+    activeTab.value = approve ? 'approved' : 'rejected'
   } catch (error) {
-    console.error('Error approving venue:', error)
-    errorMessage.value = 'Failed to approve venue. Please try again.'
+    console.error(`Failed to ${action} venue:`, error)
+
+    errorMessage.value =
+      error?.data?.message ||
+      error?.message ||
+      `Failed to ${action} venue. Please try again.`
+  } finally {
+    processingIds.value = processingIds.value.filter(
+      itemId => itemId !== String(id)
+    )
   }
 }
 
-// ============================================
-// REJECT VENUE
-// ============================================
-const rejectVenue = async (id) => {
-  errorMessage.value = ''
-  if (!confirm('Are you sure you want to reject this venue?')) return
-
-  try {
-    const response = await $fetch(`${config.public.apiBase}/admin/approvals/${id}/reject`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${authStore.token}`
-      }
-    })
-
-    if (response.success) {
-      await fetchAllVenues()
-      alert('Venue rejected!')
-    }
-  } catch (error) {
-    console.error('Error rejecting venue:', error)
-    errorMessage.value = 'Failed to reject venue. Please try again.'
-  }
-}
+const approveVenue = (venue) => updateVenueStatus(venue, 'approve')
+const rejectVenue = (venue) => updateVenueStatus(venue, 'reject')
 
 const getVenueImage = (venue) => {
-  if (!venue) return '/placeholder.png'
-  const img = venue.image_full_url || venue.image_url || venue.image
-  if (!img) return 'data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22400%22%20height%3D%22300%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20400%20300%22%3E%3Crect%20width%3D%22400%22%20height%3D%22300%22%20fill%3D%22%23eeeeee%22%3E%3C%2Frect%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20fill%3D%22%23999999%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'
-  return img.startsWith('http') ? img : `http://127.0.0.1:8000/storage/${img}`
+  const image = venue?.image_full_url || venue?.image_url || venue?.image
+
+  if (!image || typeof image !== 'string') return ''
+
+  if (/^(https?:\/\/|data:|blob:)/i.test(image)) return image
+
+  const path = image.replace(/^\/+/, '')
+
+  return path.startsWith('storage/')
+    ? `${storageBase.value}/${path}`
+    : `${storageBase.value}/storage/${path}`
 }
+
+const handleImageError = (event) => {
+  // Hide broken image; the image container retains its background.
+  event.target.style.display = 'none'
+}
+
+const ownerName = (venue) =>
+  venue?.user?.name ||
+  venue?.owner?.name ||
+  venue?.partner?.name ||
+  'Unknown owner'
+
+const ownerInitial = (venue) =>
+  ownerName(venue).charAt(0).toUpperCase() || 'U'
+
+const sportName = (venue) => {
+  const sport = venue?.sport || venue?.sport_type
+
+  if (typeof sport === 'object') return sport?.name || 'Sports venue'
+
+  return sport || 'Sports venue'
+}
+
+const formatPrice = (value) => {
+  if (value === null || value === undefined || value === '') return '—'
+
+  const amount = Number(value)
+
+  return Number.isFinite(amount)
+    ? new Intl.NumberFormat('en-ET', { maximumFractionDigits: 2 }).format(amount)
+    : String(value)
+}
+
+/*
+ * Resolve auth state before checking role, so an uninitialized
+ * Pinia store is not immediately redirected by this page.
+ */
+onMounted(async () => {
+  try {
+    if (typeof authStore.init === 'function') {
+      await authStore.init()
+    }
+  } catch (error) {
+    console.error('Unable to initialize authentication:', error)
+  }
+
+  if (!authStore.token) {
+    await router.replace('/login')
+    return
+  }
+
+  if (String(authStore.user?.role || '').toLowerCase() !== 'admin') {
+    await router.replace('/')
+    return
+  }
+
+  await fetchAllVenues()
+})
 </script>

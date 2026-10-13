@@ -167,6 +167,8 @@ const submitVenue = async () => {
     
     formData.append('sport_types', JSON.stringify(selectedSportTypes.value))
     formData.append('facilities', JSON.stringify(selectedFacilities.value))
+    formData.append('status', 'pending')
+    formData.append('is_active', '0')
     
     const response = await $fetch(`${API_BASE}/venues`, {
       method: 'POST',

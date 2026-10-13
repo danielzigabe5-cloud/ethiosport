@@ -1,9 +1,12 @@
-// nuxt.config.ts
+
 export default defineNuxtConfig({
   future: {
     compatibilityVersion: 4,
   },
-  devtools: { enabled: true },
+
+  devtools: {
+    enabled: true,
+  },
 
   css: ['~/assets/css/main.css'],
 
@@ -15,6 +18,7 @@ export default defineNuxtConfig({
   },
 
   compatibilityDate: '2026-08-19',
+
   ssr: false,
 
   modules: [
@@ -24,12 +28,30 @@ export default defineNuxtConfig({
     '@nuxt/image',
   ],
 
+  runtimeConfig: {
+    public: {
+      // Production API base includes /api.
+      // Override using NUXT_PUBLIC_API_BASE when needed.
+      apiBase:
+        process.env.NUXT_PUBLIC_API_BASE ||
+        'https://combolojo.etsgood.com/api',
+
+      frontendOrigin:
+        process.env.NUXT_PUBLIC_FRONTEND_ORIGIN ||
+        'http://localhost:3000',
+    },
+  },
+
   pinia: {
     storesDirs: ['./stores'],
   },
 
   image: {
-    domains: ['localhost', '127.0.0.1', 'combolojo.etsgood.com'],
+    domains: [
+      'localhost',
+      '127.0.0.1',
+      'combolojo.etsgood.com',
+    ],
     format: ['webp'],
     screens: {
       xs: 320,
@@ -41,26 +63,21 @@ export default defineNuxtConfig({
     },
   },
 
-  runtimeConfig: {
-    public: {
-      // ✅ Already includes /api — DO NOT add it again in store
-      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'https://combolojo.etsgood.com/api',
-      // ⚠️ Exact frontend origin for postMessage validation
-      frontendOrigin: process.env.NUXT_PUBLIC_FRONTEND_ORIGIN || 'http://localhost:3000',
-    },
-  },
-
   nitro: {
     prerender: {
       routes: ['/', '/app-download'],
     },
   },
+
   app: {
     head: {
       link: [
-        // ይህ መስመር የ venue.png ፋይልዎን እንደ አይኮን ይጠቀማል
-        { rel: 'icon', type: 'image/png', href: '/venue.png' }
-      ]
-    }
+        {
+          rel: 'icon',
+          type: 'image/png',
+          href: '/venue.png',
+        },
+      ],
+    },
   },
 })

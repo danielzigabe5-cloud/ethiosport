@@ -908,29 +908,38 @@ const venuesList = computed<any[]>(() => {
     return []
   }
 
+  let venues: any[] = []
+
   if (Array.isArray(rawResponse.value)) {
-    return rawResponse.value
+    venues = rawResponse.value
+  } else {
+    const response = rawResponse.value as any
+
+    if (Array.isArray(response.data)) {
+      venues = response.data
+    } else if (Array.isArray(response.venues)) {
+      venues = response.venues
+    } else if (Array.isArray(response.data?.data)) {
+      venues = response.data.data
+    }
   }
 
-  const response = rawResponse.value as any
-
-  if (Array.isArray(response.data)) {
-    return response.data
-  }
-
-  if (Array.isArray(response.venues)) {
-    return response.venues
-  }
-
-  if (
-    response.data &&
-    Array.isArray(response.data.data)
-  ) {
-    return response.data.data
-  }
-
-  return []
+  return venues.filter(isApprovedVenue)
 })
+
+function isApprovedVenue(venue: any): boolean {
+  const status = String(venue.status || '').toLowerCase()
+
+  if (status === 'pending' || status === 'rejected' || status === 'declined') {
+    return false
+  }
+
+  if (status === 'approved' || status === 'active') {
+    return true
+  }
+
+  return venue.is_active === true || venue.is_active === 1 || venue.is_active === '1'
+}
 
 /* =========================================================
    HERO ERROR

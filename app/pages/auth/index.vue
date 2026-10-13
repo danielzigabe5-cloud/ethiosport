@@ -1,178 +1,232 @@
+
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { useAuthStore } from '@/stores/auth.ts'
+import { useAuthStore } from '@/stores/auth'
+
+definePageMeta({
+  layout: false
+})
 
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
+
 const isLogin = ref(true)
 const loading = ref(false)
 const showPassword = ref(false)
 
-/* ═══════════════════════════════════════════
-   REDIRECT TARGET — ከ query ወይም role ጀምሮ
-   ═══════════════════════════════════════════ */
 const dashboardLink = computed(() => {
-  const role = String(authStore.user?.role || '').trim().toLowerCase()
+  const role = String(authStore.user?.role || '')
+    .trim()
+    .toLowerCase()
+
   if (role === 'admin') return '/admin'
   if (role === 'partner' || role === 'owner') return '/partner'
+
   return '/'
 })
 
-// ✅ redirect query ካለ → ወደዚያ፣ አለበለዚያ ወደ role dashboard
 const resolveRedirect = (): string => {
-  const q = route.query.redirect
-  if (q && typeof q === 'string') return q
+  const redirect = route.query.redirect
+
+  // Prevent external redirects
+  if (
+    typeof redirect === 'string' &&
+    redirect.startsWith('/') &&
+    !redirect.startsWith('//')
+  ) {
+    return redirect
+  }
+
   return dashboardLink.value
 }
 
-/* ═══════════════════════════════════════════
-   FEEDBACK
-   ═══════════════════════════════════════════ */
 const feedback = reactive({
   show: false,
   message: '',
-  type: 'success' as 'success' | 'error',
+  type: 'success' as 'success' | 'error'
 })
 
-const showAlert = (msg: string, type: 'success' | 'error' = 'success') => {
-  feedback.message = msg
+const showAlert = (
+  message: string,
+  type: 'success' | 'error' = 'success'
+) => {
+  feedback.message = message
   feedback.type = type
   feedback.show = true
-  setTimeout(() => { feedback.show = false }, 5000)
 }
 
-/* ═══════════════════════════════════════════
-   FORM
-   ═══════════════════════════════════════════ */
 const form = reactive({
   email: '',
   phone: '',
-  password: '',
+  password: ''
 })
 
 const errors = reactive({
   email: '',
   phone: '',
-  password: '',
+  password: ''
 })
 
-/* ═══════════════════════════════════════════
-   VALIDATION
-   ═══════════════════════════════════════════ */
 const validateEmail = () => {
-  if (!form.email) {
+  const email = form.email.trim()
+
+  if (!email) {
     errors.email = 'Email is required'
     return false
   }
+
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  if (!emailRegex.test(form.email)) {
+
+  if (!emailRegex.test(email)) {
     errors.email = 'Please enter a valid email address'
     return false
   }
+
   errors.email = ''
   return true
 }
 
 const validatePhone = () => {
-  if (!isLogin.value && !form.phone) {
+  if (isLogin.value) {
+    errors.phone = ''
+    return true
+  }
+
+  const phone = form.phone.replace(/\s/g, '')
+
+  if (!phone) {
     errors.phone = 'Phone number is required'
     return false
   }
+
   const phoneRegex = /^\+?[0-9]{9,12}$/
-  if (!isLogin.value && !phoneRegex.test(form.phone.replace(/\s/g, ''))) {
-    errors.phone = 'Please enter a valid phone number (e.g., +251...)'
+
+  if (!phoneRegex.test(phone)) {
+    errors.phone = 'Enter a valid phone number, e.g. +251911111111'
     return false
   }
+
   errors.phone = ''
   return true
 }
 
 const validatePassword = () => {
-  if (isLogin.value && !form.password) {
+  if (!isLogin.value) {
+    errors.password = ''
+    return true
+  }
+
+  if (!form.password) {
     errors.password = 'Password is required'
     return false
   }
-  if (isLogin.value && form.password.length < 6) {
+
+  if (form.password.length < 6) {
     errors.password = 'Password must be at least 6 characters'
     return false
   }
+
   errors.password = ''
   return true
 }
 
 const validateAll = () => {
-  const isEmailValid = validateEmail()
-  const isPhoneValid = validatePhone()
-  const isPasswordValid = validatePassword()
-  return isEmailValid && isPhoneValid && isPasswordValid
+  const emailValid = validateEmail()
+  const phoneValid = validatePhone()
+  const passwordValid = validatePassword()
+
+  return emailValid && phoneValid && passwordValid
 }
 
 const isFormValid = computed(() => {
   if (isLogin.value) {
-    return form.email && !errors.email && form.password && !errors.password
+    return (
+      !!form.email.trim() &&
+      !errors.email &&
+      !!form.password &&
+      form.password.length >= 6 &&
+      !errors.password
+    )
   }
-  return form.email && !errors.email && form.phone && !errors.phone
+
+  return (
+    !!form.email.trim() &&
+    !errors.email &&
+    !!form.phone.trim() &&
+    !errors.phone
+  )
 })
 
 const toggleMode = () => {
   isLogin.value = !isLogin.value
   showPassword.value = false
+
   form.password = ''
-  errors.password = ''
+
+  errors.email = ''
   errors.phone = ''
+  errors.password = ''
+
   feedback.show = false
 }
 
-/* ═══════════════════════════════════════════
-   ON MOUNT — አስቀድሞ ከተገባ ወደ redirect ሂድ
-   ═══════════════════════════════════════════ */
 onMounted(() => {
   authStore.init()
+
   if (authStore.token) {
-    router.push(resolveRedirect())
+    router.replace(resolveRedirect())
   }
 })
 
-/* ═══════════════════════════════════════════
-   SUBMIT
-   ═══════════════════════════════════════════ */
 const handleSubmit = async () => {
-  if (!validateAll()) return
+  if (loading.value || !validateAll()) return
+
   loading.value = true
   feedback.show = false
 
   try {
     if (isLogin.value) {
       const res = await authStore.login({
-        email: form.email,
-        password: form.password,
+        email: form.email.trim(),
+        password: form.password
       })
 
       if (res.success) {
         showAlert('Login successful!', 'success')
 
-        // ✅ ከ store የተመለሰውን user role በመጠቀም redirect ወስን
-        // (dashboardLink computed አሁን authStore.user ስለተሞላ ትክክለኛ ዋጋ ይሰጣል)
         setTimeout(() => {
-          router.push(resolveRedirect())
+          router.replace(resolveRedirect())
         }, 800)
+      } else {
+        showAlert('Login failed. Please check your credentials.', 'error')
       }
     } else {
       const res = await authStore.sendOTP({
-        email: form.email,
-        phone: form.phone,
+        email: form.email.trim(),
+        phone: form.phone.trim()
       })
+
       if (res.success) {
-        showAlert('OTP sent!', 'success')
-        router.push({ path: '/auth/otp', query: { email: form.email } })
+        showAlert('OTP sent successfully!', 'success')
+
+        router.push({
+          path: '/auth/otp',
+          query: { email: form.email.trim() }
+        })
+      } else {
+        showAlert('Unable to send OTP. Please try again.', 'error')
       }
     }
-  } catch (error: any) {
-    const msg = error.message || 'Connection error. Check if backend is running.'
-    showAlert(msg, 'error')
-    console.error('Login Error Details:', error)
+  } catch (error: unknown) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : 'Connection error. Please check the backend.'
+
+    showAlert(message, 'error')
+    console.error('Authentication error:', error)
   } finally {
     loading.value = false
   }
@@ -180,118 +234,194 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6">
-    <div class="w-full max-w-md bg-white rounded-3xl shadow-sm p-8">
+  <main
+    class="min-h-screen flex items-center justify-center
+           bg-slate-50 px-4 py-8 sm:px-6"
+  >
+    <section
+      class="w-full max-w-md overflow-hidden rounded-3xl
+             border border-gray-100 bg-white p-6 shadow-xl
+             sm:p-8"
+    >
+      <!-- Brand -->
+      <div class="mb-7 text-center">
+        <NuxtLink
+          to="/"
+          class="mb-5 inline-flex items-center gap-1 text-2xl
+                 font-black tracking-tight"
+        >
+          <span class="text-slate-900">COMBOLOJO</span>
+          <span class="text-green-600">SPORT</span>
+        </NuxtLink>
 
-      <!-- Header -->
-      <div class="flex flex-col items-center mb-6">
-        <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-4">
-          <span class="text-blue-600 text-4xl">🛍️</span>
+        <div
+          class="mx-auto mb-4 flex h-16 w-16 items-center
+                 justify-center rounded-2xl bg-green-50"
+        >
+          <span class="text-3xl">⚽</span>
         </div>
 
-        <h1 class="text-2xl font-bold text-gray-900">
+        <h1 class="text-2xl font-extrabold text-slate-900">
           {{ isLogin ? 'Welcome Back' : 'Create Account' }}
         </h1>
 
-        <p class="text-gray-500 text-center mt-2">
-          {{ isLogin ? 'Sign in to your account' : 'Enter details to receive OTP' }}
+        <p class="mt-2 text-sm text-gray-500">
+          {{
+            isLogin
+              ? 'Sign in to your CombolojoSPORT account'
+              : 'Enter your details to receive an OTP'
+          }}
         </p>
 
-        <!-- ✅ ማሳያ — redirect ካለ ተጠቃሚው ወዴት እንደሚሄድ ያሳያል -->
         <p
           v-if="route.query.redirect"
-          class="mt-2 text-xs text-blue-600 bg-blue-50 px-3 py-1 rounded-full"
+          class="mt-3 break-all rounded-lg bg-green-50
+                 px-3 py-2 text-xs text-green-700"
         >
-          → {{ route.query.redirect }}
+          Please sign in to continue to
+          {{ route.query.redirect }}
         </p>
       </div>
 
-      <!-- Alert -->
+      <!-- Feedback -->
       <div
         v-if="feedback.show"
+        role="status"
+        aria-live="polite"
         :class="[
-          'mb-6 p-4 rounded-xl text-sm font-medium flex items-center gap-3',
+          'mb-5 rounded-xl border p-3 text-sm',
           feedback.type === 'success'
-            ? 'bg-green-50 text-green-700 border border-green-100'
-            : 'bg-red-50 text-red-700 border border-red-100',
+            ? 'border-green-200 bg-green-50 text-green-700'
+            : 'border-red-200 bg-red-50 text-red-700'
         ]"
       >
-        <span>{{ feedback.type === 'success' ? '✅' : '⚠️' }}</span>
-        <p>{{ feedback.message }}</p>
+        {{ feedback.message }}
       </div>
 
-      <!-- Form -->
-      <form @submit.prevent="handleSubmit" class="space-y-5">
-
-        <!-- Phone - Register Only -->
+      <!-- Authentication form -->
+      <form
+        class="space-y-5"
+        @submit.prevent="handleSubmit"
+      >
+        <!-- Phone: registration only -->
         <div v-if="!isLogin">
-          <label class="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            for="phone"
+            class="mb-2 block text-sm font-semibold text-gray-700"
+          >
             Mobile Number *
           </label>
+
           <input
+            id="phone"
             v-model="form.phone"
             type="tel"
-            placeholder="+251..."
-            class="w-full p-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-gray-900"
+            autocomplete="tel"
+            placeholder="+251911111111"
+            required
+            :aria-invalid="!!errors.phone"
+            class="w-full rounded-xl border bg-gray-50
+                   px-4 py-3.5 text-gray-900 outline-none
+                   transition focus:border-green-500
+                   focus:ring-4 focus:ring-green-100"
             :class="errors.phone ? 'border-red-500' : 'border-gray-200'"
             @blur="validatePhone"
-            required
+            @input="errors.phone = ''"
           />
-          <p v-if="errors.phone" class="text-red-500 text-sm mt-1">{{ errors.phone }}</p>
+
+          <p v-if="errors.phone" class="mt-1 text-sm text-red-600">
+            {{ errors.phone }}
+          </p>
         </div>
 
         <!-- Email -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            for="email"
+            class="mb-2 block text-sm font-semibold text-gray-700"
+          >
             Email Address *
           </label>
+
           <input
+            id="email"
             v-model="form.email"
             type="email"
+            autocomplete="email"
             placeholder="example@gmail.com"
-            class="w-full p-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-gray-900"
+            required
+            :aria-invalid="!!errors.email"
+            class="w-full rounded-xl border bg-gray-50
+                   px-4 py-3.5 text-gray-900 outline-none
+                   transition focus:border-green-500
+                   focus:ring-4 focus:ring-green-100"
             :class="errors.email ? 'border-red-500' : 'border-gray-200'"
             @blur="validateEmail"
-            required
+            @input="errors.email = ''"
           />
-          <p v-if="errors.email" class="text-red-500 text-sm mt-1">{{ errors.email }}</p>
+
+          <p v-if="errors.email" class="mt-1 text-sm text-red-600">
+            {{ errors.email }}
+          </p>
         </div>
 
-        <!-- Password - Login Only -->
+        <!-- Password: login only -->
         <div v-if="isLogin">
-          <label class="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            for="password"
+            class="mb-2 block text-sm font-semibold text-gray-700"
+          >
             Password *
           </label>
+
           <div class="relative">
             <input
+              id="password"
               v-model="form.password"
               :type="showPassword ? 'text' : 'password'"
-              placeholder="Enter password"
-              class="w-full p-3 pr-12 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-gray-900"
+              autocomplete="current-password"
+              placeholder="Enter your password"
+              required
+              minlength="6"
+              :aria-invalid="!!errors.password"
+              class="w-full rounded-xl border bg-gray-50
+                     px-4 py-3.5 pr-14 text-gray-900 outline-none
+                     transition focus:border-green-500
+                     focus:ring-4 focus:ring-green-100"
               :class="errors.password ? 'border-red-500' : 'border-gray-200'"
               @blur="validatePassword"
-              required
+              @input="errors.password = ''"
             />
+
             <button
               type="button"
+              :aria-label="showPassword ? 'Hide password' : 'Show password'"
+              class="absolute inset-y-0 right-0 flex items-center
+                     px-4 text-gray-500 hover:text-green-600"
               @click="showPassword = !showPassword"
-              class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-blue-600 transition"
             >
-              <span class="text-xl">{{ showPassword ? '🙈' : '👁️' }}</span>
+              {{ showPassword ? '🙈' : '👁️' }}
             </button>
           </div>
-          <p v-if="errors.password" class="text-red-500 text-sm mt-1">{{ errors.password }}</p>
+
+          <p v-if="errors.password" class="mt-1 text-sm text-red-600">
+            {{ errors.password }}
+          </p>
         </div>
 
         <!-- Submit -->
         <button
           type="submit"
           :disabled="loading || !isFormValid"
-          class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 transition disabled:bg-blue-300 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          class="flex w-full items-center justify-center gap-2
+                 rounded-xl bg-green-600 py-4 font-bold text-white
+                 shadow-lg shadow-green-600/20 transition
+                 hover:bg-green-700
+                 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <svg
             v-if="loading"
-            class="animate-spin h-5 w-5 text-white"
+            class="h-5 w-5 animate-spin"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -303,32 +433,46 @@ const handleSubmit = async () => {
               r="10"
               stroke="currentColor"
               stroke-width="4"
-            ></circle>
+            />
             <path
               class="opacity-75"
               fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            ></path>
+              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+            />
           </svg>
-          <span>{{ loading ? 'PROCESSING...' : (isLogin ? 'LOGIN' : 'REGISTER & GET OTP') }}</span>
-        </button>
 
+          {{
+            loading
+              ? 'PLEASE WAIT...'
+              : isLogin
+                ? 'SIGN IN'
+                : 'REGISTER & GET OTP'
+          }}
+        </button>
       </form>
 
-      <!-- Toggle -->
-      <div class="mt-6 text-center">
-        <p class="text-gray-600">
-          {{ isLogin ? "Don't have an account?" : "Already have an account?" }}
-          <button
-            type="button"
-            @click="toggleMode"
-            class="text-blue-600 font-semibold ml-1 underline"
-          >
-            {{ isLogin ? 'Register here' : 'Login here' }}
-          </button>
-        </p>
+      <!-- Switch login / register -->
+      <div class="mt-6 text-center text-sm text-gray-600">
+        {{ isLogin ? "Don't have an account?" : 'Already have an account?' }}
+
+        <button
+          type="button"
+          class="ml-1 font-bold text-green-700 hover:text-green-800"
+          @click="toggleMode"
+        >
+          {{ isLogin ? 'Register here' : 'Sign in here' }}
+        </button>
       </div>
 
-    </div>
-  </div>
+      <!-- Back to website -->
+      <div class="mt-6 border-t border-gray-100 pt-5 text-center">
+        <NuxtLink
+          to="/"
+          class="text-sm font-medium text-gray-500 transition hover:text-green-700"
+        >
+          ← Back to CombolojoSPORT
+        </NuxtLink>
+      </div>
+    </section>
+  </main>
 </template>
