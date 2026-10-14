@@ -450,7 +450,7 @@ function toggleFaq(index: number) {
             <span
               class="text-[11px] font-black uppercase tracking-[0.18em] text-white"
             >
-              Ethiopia's Sports Venue Platform
+              Ethiopia's Sports Venue booking
             </span>
 
           </div>
@@ -465,11 +465,11 @@ function toggleFaq(index: number) {
             Welcome to
 
             <span class="my-2 block text-lime-400">
-              CombolojoSPORT
+              Combolojo platform
             </span>
 
             <span class="block text-white">
-              Ethiopia's Sports Venue Platform
+              Ethiopia's Sports Venue booking Platform
             </span>
 
           </h1>

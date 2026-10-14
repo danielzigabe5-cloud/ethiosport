@@ -56,7 +56,7 @@
 
             <!-- FACEBOOK -->
             <a
-              href="https://www.facebook.com/YOUR_COMBOLOJO_PAGE"
+              href="https://facebook.com/combolojo"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="CombolojoSPORT Facebook"
@@ -70,7 +70,7 @@
 
             <!-- TELEGRAM -->
             <a
-              href="https://t.me/YOUR_COMBOLOJO_CHANNEL"
+              href="https://t.me/combolojo"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="CombolojoSPORT Telegram"
@@ -82,16 +82,16 @@
               />
             </a>
 
-            <!-- YOUTUBE -->
+            <!-- INSTAGRAM -->
             <a
-              href="https://www.youtube.com/@YOUR_COMBOLOJO_CHANNEL"
+              href="https://instagram.com/combolojo"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="CombolojoSPORT YouTube"
+              aria-label="CombolojoSPORT Instagram"
               class="group flex h-10 w-10 items-center justify-center rounded-lg border border-[#1E293B] bg-[#111827] text-slate-300 transition-all duration-200 hover:border-[#94FF2B] hover:bg-[#94FF2B] hover:text-[#0B1220]"
             >
               <Icon
-                name="simple-icons:youtube"
+                name="simple-icons:instagram"
                 class="h-5 w-5 transition-transform duration-200 group-hover:scale-110"
               />
             </a>

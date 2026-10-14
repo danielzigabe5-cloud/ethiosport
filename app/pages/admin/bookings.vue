@@ -53,7 +53,7 @@ const previewBooking = ref<Booking | null>(null)
 const zoom = ref(1)
 const rotation = ref(0)
 
-const CHAPA_DEFAULT_IMAGE = '/images/chapa-default.png'
+const CHAPA_DEFAULT_IMAGE = '/images/chapa-default.svg'
 
 const CHAPA_FALLBACK =
   'data:image/svg+xml;charset=UTF-8,' +

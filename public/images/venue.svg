@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" role="img" aria-label="Sport venue">
+  <defs>
+    <linearGradient id="vbg" x1="0%" x2="100%" y1="0%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="200" fill="url(#vbg)"/>
+  <rect x="26" y="40" width="268" height="120" rx="18" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.3)"/>
+  <path d="M92 110h136l-16 34H108zm18-52h100v25H110zm-24 0h22v60h-22zm146 0h22v60h-22z" fill="#22c55e" opacity="0.9"/>
+  <circle cx="160" cy="92" r="22" fill="#f8fafc" opacity="0.9"/>
+</svg>
